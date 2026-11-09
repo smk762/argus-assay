@@ -54,7 +54,7 @@ export default function Queue() {
         {items.map((d) => (
           <li key={d.id}>
             <Link href={`/drafts/${d.id}`} className="block overflow-hidden rounded-lg border border-base-600/60 bg-base-800 hover:border-interactive">
-              <img src={draftImage(d.id, "image")} alt={`Card image of ${d.name}`} loading="lazy" className="aspect-[5/7] w-full bg-base-900 object-contain" />
+              <img src={draftImage(d.id, "image", d.image_sha256)} alt={`Card image of ${d.name}`} loading="lazy" className="aspect-[5/7] w-full bg-base-900 object-contain" />
               <div className="space-y-1 p-3">
                 <div className="flex items-center justify-between gap-2">
                   <span className="truncate font-medium">{d.name}</span>

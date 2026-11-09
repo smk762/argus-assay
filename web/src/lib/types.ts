@@ -23,6 +23,9 @@ export type {
   SampleRequest,
   Template,
   TemplateInfo,
+  TextEdit,
+  AutoCheck,
+  Edit,
   TextSlot,
 } from "./generated/mint";
 

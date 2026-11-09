@@ -70,6 +70,7 @@ function summary(d) {
 }
 
 function review(d, role, approve, by, note) {
+  // Only reviews of the current image count, as in argus-mint.
   if (d.status !== "pending" || !d.awaiting.includes(role)) return `the ${role} can't review this draft now`;
   d.draft.reviews = [...(d.draft.reviews ?? []), { role, decision: approve ? "approved" : "rejected", by, at: now(), image_sha256: d.draft.image_sha256, note }];
   d.awaiting = d.awaiting.filter((r) => r !== role);
@@ -120,7 +121,8 @@ createServer(async (req, res) => {
     if (p[0] === "drafts" && p[2] === "challenge") {
       const d = drafts.get(p[1]);
       if (!d) return fail(res, 404, "no draft");
-      const message = `localhost:3108 wants you to sign in with your Ethereum account:\n${d.draft.to}\n\n${b.approve ? "Approve" : "Reject"} the card image of argus-mint draft ${d.id} for minting.\n\nURI: https://localhost:3108\nVersion: 1\nChain ID: 84532\nNonce: mock${id16()}\nIssued At: ${now()}\nResources:\n- urn:argus-mint:draft:${d.id}\n- urn:sha256:${d.draft.image_sha256}`;
+      const statement = b.action === "edit" ? `Change the card text of argus-mint draft ${d.id}.` : `${b.approve ? "Approve" : "Reject"} the card image of argus-mint draft ${d.id} for minting.`;
+      const message = `localhost:3108 wants you to sign in with your Ethereum account:\n${d.draft.to}\n\n${statement}\n\nURI: https://localhost:3108\nVersion: 1\nChain ID: 84532\nNonce: mock${id16()}\nIssued At: ${now()}\nResources:\n- urn:argus-mint:draft:${d.id}\n- urn:sha256:${d.draft.image_sha256}`;
       return send(res, 200, { message, nonce: "mock", expires_at: new Date(Date.now() + 600_000).toISOString() });
     }
     if (p[0] === "drafts" && p[2] === "review") {
@@ -128,6 +130,32 @@ createServer(async (req, res) => {
       if (!d) return fail(res, 404, "no draft");
       const problem = review(d, b.role, b.approve, b.role === "owner" ? d.draft.to : b.by, b.note ?? "");
       return problem ? fail(res, 409, problem) : send(res, 200, d);
+    }
+    if (p[0] === "drafts" && p[2] === "text") {
+      // Text edits: the mock can't redraw the card, so the image stays the same; the record changes
+      // as argus-mint's would (new image hash, both approvals needed again, the edit recorded).
+      const d = drafts.get(p[1]);
+      if (!d) return fail(res, 404, "no draft");
+      if (d.status === "published") return fail(res, 409, "a published card can't be edited");
+      const fields = [];
+      if (b.name && b.name !== d.draft.name) (d.draft.name = b.name), fields.push("name");
+      if (b.bio && d.draft.bio && b.bio !== d.draft.bio.text) {
+        if (d.draft.description === d.draft.bio.text) d.draft.description = b.bio;
+        d.draft.bio = { ...d.draft.bio, text: b.bio, edited: true };
+        fields.push("bio");
+      }
+      for (const [slot, text] of Object.entries(b.texts ?? {})) {
+        if ((d.draft.texts[slot] ?? "") === text) continue;
+        if (text) d.draft.texts[slot] = text;
+        else delete d.draft.texts[slot];
+        fields.push(`texts.${slot}`);
+      }
+      if (!fields.length) return fail(res, 409, "nothing changed");
+      d.draft.image_sha256 = randomBytes(32).toString("hex");
+      const by = b.role === "owner" ? d.draft.to : b.by;
+      d.draft.edits = [...(d.draft.edits ?? []), { role: b.role, by, at: now(), fields, image_sha256: d.draft.image_sha256 }];
+      Object.assign(d, { status: "pending", awaiting: ["moderator", "owner"] });
+      return send(res, 200, d);
     }
     if (p[0] === "drafts" && p[2] === "publish") {
       const d = drafts.get(p[1]);

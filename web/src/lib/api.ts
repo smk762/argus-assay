@@ -16,6 +16,7 @@ import type {
   SampleJobList,
   SampleRequest,
   TemplateInfo,
+  TextEdit,
 } from "./types";
 
 export class ApiError extends Error {
@@ -86,7 +87,9 @@ export async function getHealth(): Promise<Health> {
 }
 
 export const imageUrl = (path: string): string => `${mintUrl()}${path}`;
-export const draftImage = (id: string, which: "image" | "art"): string => imageUrl(`/drafts/${encodeURIComponent(id)}/${which}`);
+/** `version` (the image's sha256) changes the URL when an edit redraws the card, so no stale copy is shown. */
+export const draftImage = (id: string, which: "image" | "art", version = ""): string =>
+  imageUrl(`/drafts/${encodeURIComponent(id)}/${which}${version ? `?v=${version.slice(0, 16)}` : ""}`);
 export const sampleImage = (id: string, n: number, which: "art" | "framed"): string =>
   imageUrl(`/samples/${encodeURIComponent(id)}/${n}/${which}`);
 export const frameOverlay = (id: string, version: number): string =>
@@ -130,6 +133,23 @@ export async function ownerReview(
 ): Promise<DraftDetail> {
   await requireCapability("owner_review");
   return post(`/drafts/${encodeURIComponent(id)}/review`, { role: "owner", approve, message, signature, note }, false);
+}
+
+/** Change a framed card's text as the moderator. The card is redrawn and needs both approvals again. */
+export async function moderatorEdit(id: string, edit: TextEdit, by: string): Promise<DraftDetail> {
+  await requireCapability("edit_text");
+  return post(`/drafts/${encodeURIComponent(id)}/text`, { ...edit, role: "moderator", by }, true);
+}
+
+/** The message the owner signs for exactly this edit. */
+export async function ownerEditChallenge(id: string, edit: TextEdit): Promise<Challenge> {
+  await requireCapability("edit_text");
+  return post(`/drafts/${encodeURIComponent(id)}/challenge`, { action: "edit", edit }, false);
+}
+
+export async function ownerEdit(id: string, edit: TextEdit, message: string, signature: string): Promise<DraftDetail> {
+  await requireCapability("edit_text");
+  return post(`/drafts/${encodeURIComponent(id)}/text`, { ...edit, role: "owner", message, signature }, false);
 }
 
 export async function publishDraft(id: string, price = 0): Promise<DraftDetail> {

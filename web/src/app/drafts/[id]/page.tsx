@@ -5,10 +5,11 @@ import { useParams } from "next/navigation";
 import { useState } from "react";
 
 import { DraftBadge, Hash, INPUT, PageTitle, useLoad } from "@/components/bits";
+import { EditPanel } from "@/components/EditPanel";
 import { useMint } from "@/components/MintProvider";
 import { Button, Card, Collapsible, Kv, Notice, SectionTitle, Spinner } from "@/components/ui";
-import { draftImage, getDraft, moderatorReview, ownerChallenge, ownerReview, publishDraft } from "@/lib/api";
-import { awaitingText, canPublish, moderatorCanReview, ownerCanReview, shortAddress } from "@/lib/status";
+import { draftImage, getDraft, getFrames, moderatorReview, ownerChallenge, ownerReview, publishDraft } from "@/lib/api";
+import { awaitingText, canPublish, isAutoReview, moderatorCanReview, ownerCanReview, shortAddress } from "@/lib/status";
 import { when } from "@/lib/time";
 import type { DraftDetail } from "@/lib/types";
 import { connectWallet, hasWallet, sameAddress, signMessage } from "@/lib/wallet";
@@ -176,6 +177,7 @@ function PublishPanel({ d, onDone }: { d: DraftDetail; onDone: (d: DraftDetail) 
 export default function DraftPage() {
   const { id } = useParams<{ id: string }>();
   const { data, error } = useLoad(() => getDraft(id), [id]);
+  const frames = useLoad(() => getFrames());
   const [updated, setUpdated] = useState<DraftDetail | null>(null);
   const [showArt, setShowArt] = useState(false);
   const d = updated ?? data;
@@ -189,7 +191,7 @@ export default function DraftPage() {
       <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
         <div className="space-y-2">
           <img
-            src={draftImage(d.id, showArt && framed ? "art" : "image")}
+            src={draftImage(d.id, showArt && framed ? "art" : "image", draft.image_sha256)}
             alt={showArt ? "The unframed render" : "The card image under review"}
             className="w-full rounded-lg border border-base-600/60 bg-base-900 object-contain"
           />
@@ -204,18 +206,50 @@ export default function DraftPage() {
         </div>
         <div className="space-y-4">
           {d.awaiting.length && d.status === "pending" ? <Notice tone="warning">{awaitingText(d.awaiting)}.</Notice> : null}
+          {draft.auto_check && draft.auto_check.image_sha256 === draft.image_sha256 ? (
+            draft.auto_check.passed ? (
+              <Notice tone="info">
+                Auto-moderation approved this image for the moderator: {draft.auto_check.checks.join("; ")}. The owner judges quality.
+              </Notice>
+            ) : (
+              <Notice tone="warning">Auto-moderation held this for a person: {(draft.auto_check.held ?? []).join("; ")}.</Notice>
+            )
+          ) : null}
           <ModeratorPanel d={d} onDone={setUpdated} />
           <OwnerPanel d={d} onDone={setUpdated} />
           <PublishPanel d={d} onDone={setUpdated} />
+          <EditPanel
+            key={draft.image_sha256}
+            d={d}
+            frame={frames.data?.find((f) => f.frame.id === draft.frame?.id && f.frame.version === draft.frame?.version)}
+            onDone={setUpdated}
+          />
           {draft.reviews?.length ? (
             <Card>
               <SectionTitle className="mb-2">Reviews</SectionTitle>
               <ul className="space-y-2 text-small">
-                {draft.reviews.map((r) => (
-                  <li key={`${r.role}-${r.at}`}>
-                    <span className={r.decision === "approved" ? "text-success" : "text-error"}>{r.decision === "approved" ? "✓ Approved" : "✕ Rejected"}</span> by the{" "}
-                    {r.role} ({r.role === "owner" ? shortAddress(r.by) : r.by}) · {when(r.at)}
-                    {r.note ? <p className="text-text-secondary">“{r.note}”</p> : null}
+                {draft.reviews.map((r) => {
+                  const current = r.image_sha256 === draft.image_sha256;
+                  return (
+                    <li key={`${r.role}-${r.at}`} className={current ? "" : "opacity-60"}>
+                      <span className={r.decision === "approved" ? "text-success" : "text-error"}>{r.decision === "approved" ? "✓ Approved" : "✕ Rejected"}</span> by the{" "}
+                      {r.role} ({r.role === "owner" ? shortAddress(r.by) : r.by}) · {when(r.at)}
+                      {isAutoReview(r.by) ? <span className="ml-1 rounded border border-info/50 px-1 text-caption text-info">auto</span> : null}
+                      {!current ? <span className="ml-1 text-caption text-text-muted">(an earlier version of the card)</span> : null}
+                      {r.note ? <p className="text-text-secondary">“{r.note}”</p> : null}
+                    </li>
+                  );
+                })}
+              </ul>
+            </Card>
+          ) : null}
+          {draft.edits?.length ? (
+            <Card>
+              <SectionTitle className="mb-2">Edits</SectionTitle>
+              <ul className="space-y-1 text-small">
+                {draft.edits.map((e) => (
+                  <li key={e.at}>
+                    {e.fields.join(", ")} changed by the {e.role} ({e.role === "owner" ? shortAddress(e.by) : e.by}) · {when(e.at)}
                   </li>
                 ))}
               </ul>
@@ -226,8 +260,9 @@ export default function DraftPage() {
               <SectionTitle className="mb-2">Bio</SectionTitle>
               <p className="text-small italic">{draft.bio.text}</p>
               <p className="mt-2 text-caption text-text-muted">
-                Written by {draft.bio.ref.model} from {draft.bio.ref.id} v{draft.bio.ref.version} in {draft.bio.attempts.length} attempt
-                {draft.bio.attempts.length === 1 ? "" : "s"}; darkroom screened it before you saw it.
+                {draft.bio.edited
+                  ? `Edited by hand after ${draft.bio.ref.model} wrote it; hand-written text reaches no model.`
+                  : `Written by ${draft.bio.ref.model} from ${draft.bio.ref.id} v${draft.bio.ref.version} in ${draft.bio.attempts.length} attempt${draft.bio.attempts.length === 1 ? "" : "s"}; darkroom screened it before you saw it.`}
               </p>
               {draft.bio.attempts.length > 1 ? (
                 <Collapsible title="Earlier attempts">

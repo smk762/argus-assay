@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { awaitingText, canPublish, catalogueAction, moderatorCanReview, ownerCanReview, shortHash, wireCompatible } from "./status";
+import { awaitingText, diffEdit, isAutoReview, canPublish, catalogueAction, moderatorCanReview, ownerCanReview, shortHash, wireCompatible } from "./status";
 import type { Health } from "./types";
 
 const health = (publish: boolean) => ({ capabilities: { publish } }) as unknown as Health;
@@ -37,5 +37,21 @@ describe("wire and formatting", () => {
   });
   it("shortens hashes", () => {
     expect(shortHash("0x0123456789abcdef")).toBe("0x0123456789…");
+  });
+});
+
+describe("text edits", () => {
+  const current = { name: "Hana", bio: "A line.", texts: { class: "Ranger" } };
+  it("sends only what changed", () => {
+    expect(diffEdit(current, { name: "Hana", bio: "A line.", texts: { class: "Ranger" } })).toBeNull();
+    expect(diffEdit(current, { name: "Hana II", bio: "A line.", texts: { class: "Ranger", stats: "No. 1" } })).toEqual({
+      name: "Hana II",
+      texts: { stats: "No. 1" },
+    });
+    expect(diffEdit(current, { name: "Hana", bio: "A line.", texts: { class: "" } })).toEqual({ texts: { class: "" } });
+  });
+  it("recognises the platform's review", () => {
+    expect(isAutoReview("auto: platform checks")).toBe(true);
+    expect(isAutoReview("moderator-1")).toBe(false);
   });
 });

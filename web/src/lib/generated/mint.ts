@@ -1,8 +1,9 @@
-// Generated from smk762/argus-mint@a731915bef88f0d5bcbe072853a30e725eab0079 schema/mint-wire.schema.json.
+// Generated from smk762/argus-mint@dev-uncommitted schema/mint-wire.schema.json.
 // Do not edit: change schema/pins.json and run `npm run wire:pull`.
 
 export interface MintWire {
   ArtSource?: ArtSource;
+  AutoCheck?: AutoCheck;
   BioInfo?: BioInfo;
   BioRecord?: BioRecord;
   BioRef?: BioRef;
@@ -17,6 +18,8 @@ export interface MintWire {
   DraftDetail?: DraftDetail;
   DraftList?: DraftList;
   DraftSummary?: DraftSummary;
+  Edit?: Edit;
+  EditTextRequest?: EditTextRequest;
   Frame?: Frame;
   FrameInfo?: FrameInfo;
   FramePreviewRequest?: FramePreviewRequest;
@@ -37,6 +40,7 @@ export interface MintWire {
   Sampling?: Sampling;
   Template?: Template;
   TemplateInfo?: TemplateInfo;
+  TextEdit?: TextEdit;
   TextSlot?: TextSlot;
 }
 /**
@@ -46,6 +50,16 @@ export interface ArtSource {
   draft?: string | null;
   n?: number | null;
   sample?: string | null;
+}
+/**
+ * What auto-moderation found for the current image. ``passed`` recorded the moderator's approval.
+ */
+export interface AutoCheck {
+  at: string;
+  checks: string[];
+  held?: string[];
+  image_sha256: string;
+  passed: boolean;
 }
 export interface BioInfo {
   bio: BioTemplate;
@@ -76,6 +90,7 @@ export interface BioRecord {
   attempts: {
     [k: string]: unknown;
   }[];
+  edited?: boolean;
   ref: BioRef;
   text: string;
 }
@@ -92,7 +107,9 @@ export interface BioRef {
  * What this server will do. A client disables a control whose capability is false.
  */
 export interface Capabilities {
+  auto_moderate?: boolean;
   create_drafts: boolean;
+  edit_text?: boolean;
   moderate: boolean;
   owner_review: boolean;
   publish: boolean;
@@ -109,10 +126,12 @@ export interface CardDraft {
   attempts: {
     [k: string]: unknown;
   }[];
+  auto_check?: AutoCheck | null;
   bio?: BioRecord | null;
   consumer: string;
   created_at: string;
   description?: string;
+  edits?: Edit[];
   external_url?: string | null;
   format?: 1;
   frame?: FrameRef | null;
@@ -125,6 +144,16 @@ export interface CardDraft {
     [k: string]: string;
   };
   to: string;
+}
+/**
+ * A change to the card's text, which redraws the card image on the same art.
+ */
+export interface Edit {
+  at: string;
+  by: string;
+  fields: string[];
+  image_sha256: string;
+  role: "moderator" | "owner";
 }
 /**
  * The reviewed frame composited onto the render (see :mod:`argus_mint.frames`).
@@ -203,9 +232,23 @@ export interface Challenge {
 }
 /**
  * POST /drafts/{id}/challenge: the owner asks for the message to sign.
+ *
+ * ``action: review`` with ``approve``; ``action: edit`` with the exact ``edit`` it will authorise.
  */
 export interface ChallengeRequest {
-  approve: boolean;
+  action?: "review" | "edit";
+  approve?: boolean;
+  edit?: TextEdit | null;
+}
+/**
+ * A change to the card's text. ``None`` leaves a field as it is; an empty slot text clears it.
+ */
+export interface TextEdit {
+  bio?: string | null;
+  name?: string | null;
+  texts?: {
+    [k: string]: string;
+  } | null;
 }
 /**
  * POST /drafts. The template, frame and bio are named by id and version, never by path.
@@ -273,6 +316,20 @@ export interface DraftSummary {
   status: "pending" | "approved" | "rejected" | "published";
   template: Ref;
   to: string;
+}
+/**
+ * POST /drafts/{id}/text: the moderator by token and ``by``; the owner with a signed edit challenge.
+ */
+export interface EditTextRequest {
+  bio?: string | null;
+  by?: string | null;
+  message?: string | null;
+  name?: string | null;
+  role: "moderator" | "owner";
+  signature?: string | null;
+  texts?: {
+    [k: string]: string;
+  } | null;
 }
 /**
  * One version of a frame, as reviewed and recorded in its YAML file.

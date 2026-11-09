@@ -17,6 +17,7 @@ import type {
   SampleRequest,
   TemplateInfo,
   TextEdit,
+  FrameLayout,
 } from "./types";
 
 export class ApiError extends Error {
@@ -135,22 +136,25 @@ export async function ownerReview(
   return post(`/drafts/${encodeURIComponent(id)}/review`, { role: "owner", approve, message, signature, note }, false);
 }
 
-/** Change a framed card's text as the moderator. The card is redrawn and needs both approvals again. */
-export async function moderatorEdit(id: string, edit: TextEdit, by: string): Promise<DraftDetail> {
-  await requireCapability("edit_text");
-  return post(`/drafts/${encodeURIComponent(id)}/text`, { ...edit, role: "moderator", by }, true);
-}
-
-/** The message the owner signs for exactly this edit. */
+/** The message the owner signs for exactly this edit (text and/or style). */
 export async function ownerEditChallenge(id: string, edit: TextEdit): Promise<Challenge> {
   await requireCapability("edit_text");
   return post(`/drafts/${encodeURIComponent(id)}/challenge`, { action: "edit", edit }, false);
 }
 
+/** The owner's change: argus-mint redraws (bakes) the card, which then needs both approvals again. */
 export async function ownerEdit(id: string, edit: TextEdit, message: string, signature: string): Promise<DraftDetail> {
   await requireCapability("edit_text");
-  return post(`/drafts/${encodeURIComponent(id)}/text`, { ...edit, role: "owner", message, signature }, false);
+  return post(`/drafts/${encodeURIComponent(id)}/edit`, { ...edit, message, signature }, false);
 }
+
+/** Where Pillow puts each line of `texts` in this frame: what the SVG preview draws. */
+export const frameLayout = (id: string, version: number, texts: Record<string, string>): Promise<FrameLayout> =>
+  post(`/frames/${encodeURIComponent(id)}/${version}/layout`, { texts }, false);
+
+/** A font the frame names, by the path the frame gives it. */
+export const frameFont = (id: string, version: number, font: string): string =>
+  imageUrl(`/frames/${encodeURIComponent(id)}/${version}/fonts/${font.split("/").map(encodeURIComponent).join("/")}`);
 
 export async function publishDraft(id: string, price = 0): Promise<DraftDetail> {
   await requireCapability("publish");

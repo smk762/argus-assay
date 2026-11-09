@@ -13,9 +13,14 @@ Assay is where people do that reviewing. **The server is the product:** assay sh
 - **Review queue.** Drafts waiting for the moderator, and every other status.
 - **A draft.**
   - **The image:** the card image under review, its unframed render, and the bio with every attempt the model made.
-  - **Moderator:** approve or reject with the moderator token.
+  - **Moderator:** approve or reject with the moderator token. That's all a moderator does.
   - **Owner:** approve or reject by signing argus-mint's challenge with the card's wallet.
   - **Publish:** pin and sign once both have approved.
+  - **Customise (the owner):**
+    - Change the name, bio and display text.
+    - Restyle the card: tint the border, and give each text slot a colour, an effect (shadow, outline or glow) and a background, all with a colour wheel. Any colours: black on black is allowed.
+    - A live SVG preview uses argus-mint's own text layout, fonts and tint maths.
+    - One wallet signature bakes the result, which both reviewers then approve again.
 - **New draft.** From approved files only, every variable from its fixed list, no free-text prompt.
 - **Catalogue.** Templates, frames and bio templates, with hashes and status.
   - Render sample cards from drafts.

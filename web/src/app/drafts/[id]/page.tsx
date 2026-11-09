@@ -5,7 +5,7 @@ import { useParams } from "next/navigation";
 import { useState } from "react";
 
 import { DraftBadge, Hash, INPUT, PageTitle, useLoad } from "@/components/bits";
-import { EditPanel } from "@/components/EditPanel";
+import { CardEditor } from "@/components/CardEditor";
 import { useMint } from "@/components/MintProvider";
 import { Button, Card, Collapsible, Kv, Notice, SectionTitle, Spinner } from "@/components/ui";
 import { draftImage, getDraft, getFrames, moderatorReview, ownerChallenge, ownerReview, publishDraft } from "@/lib/api";
@@ -180,14 +180,29 @@ export default function DraftPage() {
   const frames = useLoad(() => getFrames());
   const [updated, setUpdated] = useState<DraftDetail | null>(null);
   const [showArt, setShowArt] = useState(false);
+  const [editing, setEditing] = useState(false);
+  const { health } = useMint();
   const d = updated ?? data;
   if (error) return <Notice tone="error">{error}</Notice>;
   if (!d) return <Spinner />;
   const draft = d.draft;
   const framed = Boolean(draft.frame);
+  const frameInfo = frames.data?.find((f) => f.frame.id === draft.frame?.id && f.frame.version === draft.frame?.version);
   return (
     <>
       <PageTitle aside={<DraftBadge status={d.status} />}>{draft.name}</PageTitle>
+      {editing && frameInfo ? (
+        <CardEditor
+          key={draft.image_sha256}
+          d={d}
+          frame={frameInfo}
+          onDone={(next) => {
+            setUpdated(next);
+            setShowArt(false);
+          }}
+          onClose={() => setEditing(false)}
+        />
+      ) : null}
       <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
         <div className="space-y-2">
           <img
@@ -218,12 +233,19 @@ export default function DraftPage() {
           <ModeratorPanel d={d} onDone={setUpdated} />
           <OwnerPanel d={d} onDone={setUpdated} />
           <PublishPanel d={d} onDone={setUpdated} />
-          <EditPanel
-            key={draft.image_sha256}
-            d={d}
-            frame={frames.data?.find((f) => f.frame.id === draft.frame?.id && f.frame.version === draft.frame?.version)}
-            onDone={setUpdated}
-          />
+          {draft.frame && d.status !== "published" && health?.capabilities.edit_text && !editing ? (
+            <Card>
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <div>
+                  <SectionTitle>Owner</SectionTitle>
+                  <p className="text-small text-text-secondary">The owner can change the text and colours, then sign to bake a new image.</p>
+                </div>
+                <Button onClick={() => setEditing(true)} disabled={!frameInfo}>
+                  Customise card
+                </Button>
+              </div>
+            </Card>
+          ) : null}
           {draft.reviews?.length ? (
             <Card>
               <SectionTitle className="mb-2">Reviews</SectionTitle>

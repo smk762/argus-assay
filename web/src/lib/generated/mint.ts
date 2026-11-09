@@ -1,4 +1,4 @@
-// Generated from smk762/argus-mint@dev-uncommitted schema/mint-wire.schema.json.
+// Generated from smk762/argus-mint@89aab115363f4a89b4c1476737e668eaf5f43848 schema/mint-wire.schema.json.
 // Do not edit: change schema/pins.json and run `npm run wire:pull`.
 
 export interface MintWire {
@@ -10,6 +10,7 @@ export interface MintWire {
   BioTemplate?: BioTemplate;
   Capabilities?: Capabilities;
   CardDraft?: CardDraft;
+  CardStyle?: CardStyle;
   CatalogueDecision?: CatalogueDecision;
   CatalogueEntry?: CatalogueEntry;
   Challenge?: Challenge;
@@ -22,9 +23,12 @@ export interface MintWire {
   EditTextRequest?: EditTextRequest;
   Frame?: Frame;
   FrameInfo?: FrameInfo;
+  FrameLayout?: FrameLayout;
   FramePreviewRequest?: FramePreviewRequest;
   FrameRef?: FrameRef;
   Health?: Health;
+  LayoutRequest?: LayoutRequest;
+  LineLayout?: LineLayout;
   LoraRef?: LoraRef;
   PublishRequest?: PublishRequest;
   PublishResult?: PublishResult;
@@ -38,10 +42,14 @@ export interface MintWire {
   SampleJobList?: SampleJobList;
   SampleRequest?: SampleRequest;
   Sampling?: Sampling;
+  SlotBackground?: SlotBackground;
+  SlotLayout?: SlotLayout;
+  SlotStyle?: SlotStyle;
   Template?: Template;
   TemplateInfo?: TemplateInfo;
   TextEdit?: TextEdit;
   TextSlot?: TextSlot;
+  Tint?: Tint;
 }
 /**
  * Existing art to preview a frame on: a draft's render, or a sample's.
@@ -140,6 +148,7 @@ export interface CardDraft {
   renderer: string;
   request: RenderRequest;
   reviews?: Review[];
+  style?: CardStyle | null;
   texts?: {
     [k: string]: string;
   };
@@ -211,6 +220,40 @@ export interface Review {
   role: "moderator" | "owner";
 }
 /**
+ * The owner's styling of a framed card: any colours, so be it if that's black on black.
+ */
+export interface CardStyle {
+  slots?: {
+    [k: string]: SlotStyle;
+  };
+  tint?: Tint | null;
+}
+/**
+ * How one text slot is drawn. Unset fields keep the frame's own choices.
+ */
+export interface SlotStyle {
+  background?: SlotBackground | null;
+  colour?: string | null;
+  effect?: "none" | "shadow" | "outline" | "glow";
+  effect_colour?: string;
+}
+/**
+ * A filled, rounded box behind a text slot.
+ */
+export interface SlotBackground {
+  colour: string;
+  opacity?: number;
+  padding?: number;
+  radius?: number;
+}
+/**
+ * Recolour the frame overlay: every pixel moves toward ``colour`` at its own brightness.
+ */
+export interface Tint {
+  colour: string;
+  strength?: number;
+}
+/**
  * POST /{templates,frames,bios}/{id}/{version}/review (moderator token).
  */
 export interface CatalogueDecision {
@@ -241,11 +284,13 @@ export interface ChallengeRequest {
   edit?: TextEdit | null;
 }
 /**
- * A change to the card's text. ``None`` leaves a field as it is; an empty slot text clears it.
+ * The owner's change to the card: text and style. ``None`` leaves a field as it is; an empty
+ * slot text clears it; ``style`` replaces the whole style (an empty one clears it).
  */
 export interface TextEdit {
   bio?: string | null;
   name?: string | null;
+  style?: CardStyle | null;
   texts?: {
     [k: string]: string;
   } | null;
@@ -262,6 +307,7 @@ export interface CreateDraft {
   frame?: Ref | null;
   name: string;
   seed: number;
+  style?: CardStyle | null;
   template: Ref;
   texts?: {
     [k: string]: string;
@@ -318,15 +364,16 @@ export interface DraftSummary {
   to: string;
 }
 /**
- * POST /drafts/{id}/text: the moderator by token and ``by``; the owner with a signed edit challenge.
+ * POST /drafts/{id}/edit: only the owner edits, with the signed challenge for exactly this edit.
+ *
+ * The moderator approves or rejects; they don't change the card.
  */
 export interface EditTextRequest {
   bio?: string | null;
-  by?: string | null;
-  message?: string | null;
+  message: string;
   name?: string | null;
-  role: "moderator" | "owner";
-  signature?: string | null;
+  signature: string;
+  style?: CardStyle | null;
   texts?: {
     [k: string]: string;
   } | null;
@@ -340,6 +387,7 @@ export interface Frame {
   id: string;
   overlay: string;
   status: "draft" | "approved" | "retired";
+  style_locked?: boolean;
   texts?: {
     [k: string]: TextSlot;
   };
@@ -380,6 +428,28 @@ export interface FrameInfo {
   height: number;
   width: number;
 }
+export interface FrameLayout {
+  height: number;
+  slots: {
+    [k: string]: SlotLayout;
+  };
+  width: number;
+}
+export interface SlotLayout {
+  ascent: number;
+  descent: number;
+  effects: {
+    [k: string]: number;
+  };
+  font: string | null;
+  lines: LineLayout[];
+  size: number;
+}
+export interface LineLayout {
+  text: string;
+  x: number;
+  y: number;
+}
 /**
  * POST /frames/{id}/{version}/preview: a frame (any status) on existing art; returns a PNG.
  */
@@ -387,6 +457,7 @@ export interface FramePreviewRequest {
   art: ArtSource;
   bio?: string | null;
   name?: string;
+  style?: CardStyle | null;
   texts?: {
     [k: string]: string;
   };
@@ -406,6 +477,14 @@ export interface Health {
   siwe_domain: string | null;
   version: string;
   wire_version?: string;
+}
+/**
+ * POST /frames/{id}/{version}/layout: where these texts go, for a browser preview.
+ */
+export interface LayoutRequest {
+  texts: {
+    [k: string]: string;
+  };
 }
 export interface PublishRequest {
   deadline?: number | null;
@@ -462,6 +541,7 @@ export interface SampleRequest {
   frame?: Ref | null;
   name?: string;
   seed?: number;
+  style?: CardStyle | null;
   template: Ref;
   texts?: {
     [k: string]: string;

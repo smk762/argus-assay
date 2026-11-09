@@ -9,7 +9,8 @@ The review UI for argus-mint. Human-facing usage is in [README.md](README.md); t
 3. **No free-text prompts.** Template variables are dropdowns from the template's lists. The card name and display text go to argus-mint as data; it never sends them to a model.
 4. **The moderator token stays in the tab** (`lib/token.ts`, sessionStorage). Never put it in the bundle, localStorage or a URL.
 5. **The owner proves it with their wallet.** Assay relays argus-mint's EIP-4361 challenge to `personal_sign` (`lib/wallet.ts`) and posts the signature back. argus-mint checks it; the browser doesn't.
-6. **Show the record.** Attempts (render and bio), reviews with their notes, and hashes are all shown. A status always has a mark and a word as well as a colour.
+6. **Only the owner changes a card** (text and style, via a signed edit). The moderator approves or rejects. The SVG preview is a preview: the PNG argus-mint bakes is what gets reviewed. Keep `lib/style.tintMatrix` equal to `argus_mint.frames.tint_matrix` (style.test.ts pins the numbers).
+7. **Show the record.** Attempts (render and bio), reviews with their notes, and hashes are all shown. A status always has a mark and a word as well as a colour.
 
 ## Layout
 

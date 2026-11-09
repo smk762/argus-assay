@@ -28,6 +28,45 @@ for (const item of read("drafts.json").items) {
   drafts.set(item.id, read(`drafts/${item.id}.json`));
   images.set(item.id, { image: png(`drafts/${item.id}/image.png`), art: png(`drafts/${item.id}/art.png`) });
 }
+// Recorded layouts (Pillow's, from argus-mint), reused when a slot's text matches exactly.
+const recordedLayouts = new Map(); // `${slot}\u0000${text}` -> slot layout
+for (const id of drafts.keys()) {
+  const f = join(root, "drafts", id, "layout.json");
+  if (!existsSync(f)) continue;
+  for (const [slot, l] of Object.entries(JSON.parse(readFileSync(f, "utf8")).slots)) {
+    recordedLayouts.set(`${slot}\u0000${l.lines.map((x) => x.text).join(" ")}`, l);
+  }
+}
+
+// Without Pillow, a new text gets an approximate layout: average glyph width ~0.5em.
+function approxLayout(box, text) {
+  const size = box.size ?? 48;
+  const perLine = Math.max(1, Math.floor(box.width / (size * 0.5)));
+  const words = text.split(/\s+/);
+  const lines = [];
+  let cur = "";
+  for (const w of words) {
+    if (box.wrap && cur && (cur + " " + w).length > perLine) (lines.push(cur), (cur = w));
+    else cur = cur ? `${cur} ${w}` : w;
+  }
+  if (cur) lines.push(cur);
+  const ascent = Math.round(size * 0.8), descent = Math.round(size * 0.25);
+  const lineH = Math.round((ascent + descent) * (box.line_spacing ?? 1.15));
+  const blockH = lineH * (lines.length - 1) + ascent + descent;
+  let y = box.valign === "top" ? box.y : box.y + Math.floor((box.height - blockH) / 2);
+  return {
+    font: box.font ?? null, size, ascent, descent,
+    effects: { shadow: Math.max(1, Math.round(size * 0.06)), outline: Math.max(1, Math.round(size * 0.05)), glow: Math.max(2, Math.round(size * 0.18)) },
+    lines: lines.map((t) => {
+      const w = t.length * size * 0.5;
+      const x = box.align === "left" ? box.x : box.align === "right" ? box.x + box.width - w : box.x + (box.width - w) / 2;
+      const out = { text: t, x: Math.round(x), y };
+      y += lineH;
+      return out;
+    }),
+  };
+}
+
 const samples = new Map();
 const sampleImages = new Map(); // `${id}/${n}/${which}` -> bytes
 for (const job of read("samples.json").items) {
@@ -89,6 +128,11 @@ createServer(async (req, res) => {
       if (url.pathname === "/health") return send(res, 200, health);
       if (p.length === 1 && catalogue[p[0]]) return send(res, 200, catalogue[p[0]][0]);
       if (p[0] === "frames" && p[3] === "overlay") return send(res, 200, png(`frames/${p[1]}/${p[2]}/overlay.png`), "image/png");
+      if (p[0] === "frames" && p[3] === "fonts") {
+        const rel = p.slice(4).map(decodeURIComponent).join("/");
+        const file = join(root, "frames", p[1], p[2], "fonts", rel);
+        return rel.includes("..") || !existsSync(file) ? fail(res, 404, "no such font") : send(res, 200, readFileSync(file), "font/ttf");
+      }
       if (url.pathname === "/drafts") {
         const status = url.searchParams.get("status");
         const items = [...drafts.values()].filter((d) => !status || d.status === status).map(summary).reverse();
@@ -131,9 +175,20 @@ createServer(async (req, res) => {
       const problem = review(d, b.role, b.approve, b.role === "owner" ? d.draft.to : b.by, b.note ?? "");
       return problem ? fail(res, 409, problem) : send(res, 200, d);
     }
-    if (p[0] === "drafts" && p[2] === "text") {
-      // Text edits: the mock can't redraw the card, so the image stays the same; the record changes
-      // as argus-mint's would (new image hash, both approvals needed again, the edit recorded).
+    if (p[0] === "frames" && p[3] === "layout") {
+      const entry = frames.find((e) => e.frame.id === p[1] && e.frame.version === Number(p[2]));
+      if (!entry) return fail(res, 404, "no frame");
+      const slots = {};
+      for (const [slot, text] of Object.entries(b.texts ?? {})) {
+        const box = entry.frame.texts?.[slot];
+        if (!box) return fail(res, 422, `no text slot ${slot}`);
+        if (text) slots[slot] = recordedLayouts.get(`${slot}\u0000${text.split(/\s+/).join(" ")}`) ?? approxLayout(box, text);
+      }
+      return send(res, 200, { width: entry.width, height: entry.height, slots });
+    }
+    if (p[0] === "drafts" && p[2] === "edit") {
+      // The owner's text and style edits. The mock can't redraw the card, so the image stays the same;
+      // the record changes as argus-mint's would (new image hash, both approvals again, the edit recorded).
       const d = drafts.get(p[1]);
       if (!d) return fail(res, 404, "no draft");
       if (d.status === "published") return fail(res, 409, "a published card can't be edited");
@@ -150,10 +205,16 @@ createServer(async (req, res) => {
         else delete d.draft.texts[slot];
         fields.push(`texts.${slot}`);
       }
+      if (b.style !== undefined && b.style !== null && JSON.stringify(b.style) !== JSON.stringify(d.draft.style ?? {})) {
+        const plain = !b.style.tint && !Object.keys(b.style.slots ?? {}).length;
+        d.draft.style = plain ? null : b.style;
+        fields.push("style");
+      }
       if (!fields.length) return fail(res, 409, "nothing changed");
+      // The mock can't bake: the image stays, the record changes as argus-mint's would.
       d.draft.image_sha256 = randomBytes(32).toString("hex");
-      const by = b.role === "owner" ? d.draft.to : b.by;
-      d.draft.edits = [...(d.draft.edits ?? []), { role: b.role, by, at: now(), fields, image_sha256: d.draft.image_sha256 }];
+      const by = d.draft.to; // only the owner edits
+      d.draft.edits = [...(d.draft.edits ?? []), { role: "owner", by, at: now(), fields, image_sha256: d.draft.image_sha256 }];
       Object.assign(d, { status: "pending", awaiting: ["moderator", "owner"] });
       return send(res, 200, d);
     }

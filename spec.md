@@ -20,6 +20,16 @@ The standalone review UI for [argus-mint](https://github.com/smk762/argus-mint),
      - argus-mint issues a Sign-In with Ethereum challenge naming the draft, the decision and the image hash. The wallet signs it and assay relays it.
      - The wallet must be the card's `to`.
    - **Publish:** for an approved draft, pin and sign; then show the CIDs, content hash and voucher.
+   - **Customise (owner only):** text fields plus style controls.
+     - **Border:** a tint and its strength.
+     - **Each text slot:** text colour, an effect (none, shadow, outline or glow) with its colour, and a background (colour, opacity, corner radius, padding).
+     - **Colour:** one colour wheel (hue around, saturation outward, a brightness slider, a hex field) sets whichever colour is selected. Any colour is allowed.
+     - **Preview:** the card drawn as SVG.
+       - The art goes in the window.
+       - The overlay goes through an sRGB `feColorMatrix` with `lib/style.tintMatrix`, the same numbers as argus-mint's `frames.tint_matrix`.
+       - Text goes where `POST /frames/…/layout` says, in the frame's fonts.
+     - **Confirm:** signing with the card's wallet sends one edit, and argus-mint bakes the PNG. That PNG is what the moderator and the owner then review.
+     - **The moderator never edits.**
    - **How it was made:** the template, frame, seed, render attempts, bio and bio attempts, display texts, and reviews.
 3. **New draft** (`/new`).
    - Approved templates, frames and bio templates only.

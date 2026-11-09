@@ -24,6 +24,8 @@ export type {
   Template,
   TemplateInfo,
   TextEdit,
+  FrameLayout,
+  SlotLayout,
   AutoCheck,
   Edit,
   TextSlot,

@@ -18,6 +18,7 @@ import type {
   TemplateInfo,
   TextEdit,
   FrameLayout,
+  LibraryListing,
 } from "./types";
 
 export class ApiError extends Error {
@@ -97,6 +98,10 @@ export const frameOverlay = (id: string, version: number): string =>
   imageUrl(`/frames/${encodeURIComponent(id)}/${version}/overlay`);
 
 export const getTemplates = (): Promise<TemplateInfo[]> => getJson("/templates");
+export const getLibrary = (): Promise<LibraryListing> => getJson("/library");
+/** A library entry's image: the PNG, or with `thumb` a JPEG preview that wide. */
+export const libraryImage = (id: string, thumb = 0): string =>
+  imageUrl(`/library/${encodeURIComponent(id)}/image${thumb ? `?thumb=${thumb}` : ""}`);
 export const getFrames = (): Promise<FrameInfo[]> => getJson("/frames");
 export const getBios = (): Promise<BioInfo[]> => getJson("/bios");
 

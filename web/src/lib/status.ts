@@ -74,3 +74,14 @@ export function diffEdit(
   if (Object.keys(texts).length) edit.texts = texts;
   return Object.keys(edit).length ? edit : null;
 }
+
+/** "sdxl/juggernautXL_ragnarokBy/juggernautXL_ragnarokBy.safetensors" -> "juggernautXL_ragnarokBy". */
+export function checkpointName(model: string): string {
+  const file = model.split("/").pop() ?? model;
+  return file.replace(/\.(safetensors|ckpt|pt)$/i, "");
+}
+
+/** The checkpoints a template allows: its default first, then its reviewed alternatives. */
+export function allowedModels(t: { model: string; models?: string[] }): string[] {
+  return [t.model, ...(t.models ?? []).filter((m) => m !== t.model)];
+}

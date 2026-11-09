@@ -33,4 +33,4 @@ fixture/              recorded responses from argus-mint's scripts/api_fixture.p
   2. Run `make fixture` if responses changed shape.
   3. While argus-mint has no release with the server, the pin is a commit; move it to the release tag once there is one.
 - **Ports:** argus-mint is on 8108 (the mock too), assay on 3108.
-- **Branches:** `main` for now; `dev` + release PRs once it has releases, as in the rest of the suite.
+- **Branches:** `dev` is the default and takes feature PRs; `main` gets `dev` → `main` release PRs (same as argus-mint).

@@ -74,3 +74,19 @@ export function diffEdit(
   if (Object.keys(texts).length) edit.texts = texts;
   return Object.keys(edit).length ? edit : null;
 }
+
+/** "sdxl/juggernautXL_ragnarokBy/juggernautXL_ragnarokBy.safetensors" -> "juggernautXL_ragnarokBy". */
+export function checkpointName(model: string): string {
+  const file = model.split("/").pop() ?? model;
+  return file.replace(/\.(safetensors|ckpt|pt)$/i, "");
+}
+
+/** Where a new draft's art can come from on this server: a render needs darkroom, the library has to be served. */
+export function draftSources(health: Health | null): { render: boolean; library: boolean } {
+  return { render: Boolean(health?.backends.darkroom), library: Boolean(health?.capabilities.library) };
+}
+
+/** The checkpoints a template allows: its default first, then its reviewed alternatives. */
+export function allowedModels(t: { model: string; models?: string[] }): string[] {
+  return [t.model, ...(t.models ?? []).filter((m) => m !== t.model)];
+}

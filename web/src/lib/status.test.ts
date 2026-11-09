@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { awaitingText, diffEdit, isAutoReview, canPublish, catalogueAction, moderatorCanReview, ownerCanReview, shortHash, wireCompatible } from "./status";
+import { allowedModels, awaitingText, checkpointName, diffEdit, draftSources, isAutoReview, canPublish, catalogueAction, moderatorCanReview, ownerCanReview, shortHash, wireCompatible } from "./status";
 import type { Health } from "./types";
 
 const health = (publish: boolean) => ({ capabilities: { publish } }) as unknown as Health;
@@ -53,5 +53,19 @@ describe("text edits", () => {
   it("recognises the platform's review", () => {
     expect(isAutoReview("auto: platform checks")).toBe(true);
     expect(isAutoReview("moderator-1")).toBe(false);
+  });
+});
+
+describe("checkpoints", () => {
+  it("names them briefly and keeps the default first", () => {
+    expect(checkpointName("sdxl/juggernautXL_ragnarokBy/juggernautXL_ragnarokBy.safetensors")).toBe("juggernautXL_ragnarokBy");
+    expect(allowedModels({ model: "b", models: ["a", "b", "c"] })).toEqual(["b", "a", "c"]);
+    expect(allowedModels({ model: "b" })).toEqual(["b"]);
+  });
+  it("offers a render only with darkroom, and the library only where it is served", () => {
+    const at = (darkroom: boolean, library?: boolean) => ({ backends: { darkroom }, capabilities: { library } }) as unknown as Health;
+    expect(draftSources(at(true))).toEqual({ render: true, library: false });
+    expect(draftSources(at(false, true))).toEqual({ render: false, library: true });
+    expect(draftSources(null)).toEqual({ render: false, library: false });
   });
 });

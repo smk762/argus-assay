@@ -1,4 +1,4 @@
-// Generated from smk762/argus-mint@89aab115363f4a89b4c1476737e668eaf5f43848 schema/mint-wire.schema.json.
+// Generated from smk762/argus-mint@e19b1636fbe1fd5c9895b7d6c37d8153d71a72e5 schema/mint-wire.schema.json.
 // Do not edit: change schema/pins.json and run `npm run wire:pull`.
 
 export interface MintWire {
@@ -28,6 +28,8 @@ export interface MintWire {
   FrameRef?: FrameRef;
   Health?: Health;
   LayoutRequest?: LayoutRequest;
+  LibraryItem?: LibraryItem;
+  LibraryListing?: LibraryListing;
   LineLayout?: LineLayout;
   LoraRef?: LoraRef;
   PublishRequest?: PublishRequest;
@@ -118,6 +120,7 @@ export interface Capabilities {
   auto_moderate?: boolean;
   create_drafts: boolean;
   edit_text?: boolean;
+  library?: boolean;
   moderate: boolean;
   owner_review: boolean;
   publish: boolean;
@@ -144,6 +147,7 @@ export interface CardDraft {
   format?: 1;
   frame?: FrameRef | null;
   image_sha256: string;
+  library?: string | null;
   name: string;
   renderer: string;
   request: RenderRequest;
@@ -297,6 +301,9 @@ export interface TextEdit {
 }
 /**
  * POST /drafts. The template, frame and bio are named by id and version, never by path.
+ *
+ * Either render (``variables``, ``seed``, optionally ``model``), or take a pre-rendered
+ * ``library`` entry, whose variables, seed and checkpoint then apply.
  */
 export interface CreateDraft {
   asset?: string | null;
@@ -305,15 +312,17 @@ export interface CreateDraft {
   description?: string;
   external_url?: string | null;
   frame?: Ref | null;
+  library?: string | null;
+  model?: string | null;
   name: string;
-  seed: number;
+  seed?: number;
   style?: CardStyle | null;
   template: Ref;
   texts?: {
     [k: string]: string;
   };
   to: string;
-  variables: {
+  variables?: {
     [k: string]: string;
   };
 }
@@ -486,6 +495,25 @@ export interface LayoutRequest {
     [k: string]: string;
   };
 }
+export interface LibraryItem {
+  group: number;
+  id: string;
+  model: string;
+  seed: number;
+  sha256: string;
+  variables: {
+    [k: string]: string;
+  };
+}
+/**
+ * GET /library: pre-rendered portraits, for drafts without a GPU (``CreateDraft.library``).
+ */
+export interface LibraryListing {
+  count: number;
+  items: LibraryItem[];
+  models: string[];
+  template: Ref;
+}
 export interface PublishRequest {
   deadline?: number | null;
   price?: number;
@@ -539,6 +567,7 @@ export interface SampleRequest {
   bio?: Ref | null;
   count?: number;
   frame?: Ref | null;
+  model?: string | null;
   name?: string;
   seed?: number;
   style?: CardStyle | null;
@@ -565,6 +594,7 @@ export interface Template {
   loras?: LoraRef[];
   max_attempts?: number;
   model: string;
+  models?: string[];
   negative?: string;
   prompt: string;
   sampling?: Sampling | null;

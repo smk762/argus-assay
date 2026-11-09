@@ -15,6 +15,7 @@ import { Notice, Tip } from "./ui";
 const NAV = [
   { href: "/", label: "Review queue", match: (p: string) => p === "/" || p.startsWith("/drafts") },
   { href: "/new", label: "New draft", match: (p: string) => p === "/new" },
+  { href: "/library", label: "Library", match: (p: string) => p.startsWith("/library") },
   { href: "/catalogue", label: "Catalogue", match: (p: string) => p.startsWith("/catalogue") },
   { href: "/samples", label: "Samples", match: (p: string) => p.startsWith("/samples") },
 ];

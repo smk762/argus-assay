@@ -9,7 +9,7 @@ import { CardEditor } from "@/components/CardEditor";
 import { useMint } from "@/components/MintProvider";
 import { Button, Card, Collapsible, Kv, Notice, SectionTitle, Spinner } from "@/components/ui";
 import { draftImage, getDraft, getFrames, moderatorReview, ownerChallenge, ownerReview, publishDraft } from "@/lib/api";
-import { awaitingText, canPublish, isAutoReview, moderatorCanReview, ownerCanReview, shortAddress } from "@/lib/status";
+import { awaitingText, canPublish, checkpointName, isAutoReview, moderatorCanReview, ownerCanReview, shortAddress } from "@/lib/status";
 import { when } from "@/lib/time";
 import type { DraftDetail } from "@/lib/types";
 import { connectWallet, hasWallet, sameAddress, signMessage } from "@/lib/wallet";
@@ -311,6 +311,10 @@ export default function DraftPage() {
                 </Kv>
               ) : null}
               <Kv label="Seed">{draft.request.seed}</Kv>
+              <Kv label="Checkpoint" title={draft.request.model}>
+                {checkpointName(draft.request.model)}
+              </Kv>
+              {draft.library ? <Kv label="Art">from the library: {draft.library}</Kv> : null}
               <Kv label="Render">
                 {draft.renderer}, {draft.attempts.length} attempt{draft.attempts.length === 1 ? "" : "s"}
               </Kv>

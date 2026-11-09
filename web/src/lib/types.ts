@@ -25,6 +25,8 @@ export type {
   TemplateInfo,
   TextEdit,
   FrameLayout,
+  LibraryItem,
+  LibraryListing,
   SlotLayout,
   AutoCheck,
   Edit,

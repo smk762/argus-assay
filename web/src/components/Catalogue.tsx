@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 import { decide, startSamples } from "@/lib/api";
-import { catalogueAction } from "@/lib/status";
+import { allowedModels, catalogueAction, checkpointName } from "@/lib/status";
 import { displaySlots } from "@/lib/slots";
 import type { BioInfo, CatalogueKind, CatalogueStatus, FrameInfo, TemplateInfo } from "@/lib/types";
 
@@ -110,6 +110,7 @@ export function SampleRunner({
   const [frame, setFrame] = useState(fixed?.frame ?? "");
   const [bio, setBio] = useState(fixed?.bio ?? "");
   const [count, setCount] = useState(4);
+  const [model, setModel] = useState("");
   const [seed, setSeed] = useState(0);
   const [name, setName] = useState("Sample");
   const [vars, setVars] = useState<Record<string, string>>({});
@@ -160,6 +161,16 @@ export function SampleRunner({
       </div>
       {t ? (
         <div className="mt-3 grid gap-3 sm:grid-cols-3">
+          <Field label="Checkpoint">
+            <select className={INPUT} value={model} onChange={(e) => setModel(e.target.value)}>
+              {allowedModels(t).map((m, i) => (
+                <option key={m} value={i === 0 ? "" : m} title={m}>
+                  {checkpointName(m)}
+                  {i === 0 ? " (default)" : ""}
+                </option>
+              ))}
+            </select>
+          </Field>
           {Object.entries(t.variables).map(([name, values]) => (
             <Field key={name} label={name}>
               <select className={INPUT} value={vars[name] ?? ""} onChange={(e) => setVars({ ...vars, [name]: e.target.value })}>
@@ -200,6 +211,7 @@ export function SampleRunner({
                 template: ref(template)!,
                 frame: ref(frame),
                 bio: ref(bio),
+                model: model || null,
                 count,
                 seed,
                 name: name.trim() || "Sample",

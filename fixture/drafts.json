@@ -1,0 +1,78 @@
+{
+  "items": [
+    {
+      "id": "842ef6ab6fac9a3d",
+      "name": "Lantern Keeper",
+      "to": "0x43F478CbB9078Ae49cbE924B38b71421e33B1757",
+      "status": "rejected",
+      "awaiting": [
+        "owner"
+      ],
+      "created_at": "2026-11-09T04:22:52.409662Z",
+      "template": {
+        "id": "example-portrait",
+        "version": 2
+      },
+      "frame": {
+        "id": "card-green",
+        "version": 1
+      },
+      "image_sha256": "5e4384f62eb459cceb7ed4a4ac431a9e1119e3a141dbf4e4b40ce3ef512c224e"
+    },
+    {
+      "id": "6f4c1bca02a49a76",
+      "name": "Azure Stormcaller",
+      "to": "0x43F478CbB9078Ae49cbE924B38b71421e33B1757",
+      "status": "approved",
+      "awaiting": [],
+      "created_at": "2026-11-09T04:22:51.900754Z",
+      "template": {
+        "id": "example-portrait",
+        "version": 2
+      },
+      "frame": {
+        "id": "card-green",
+        "version": 1
+      },
+      "image_sha256": "965c21e43108bea69db550a066d4a0bb7673dfbb267f11079e9a886a8d301960"
+    },
+    {
+      "id": "05bdfcb2e0decb70",
+      "name": "Steel Tinker",
+      "to": "0x43F478CbB9078Ae49cbE924B38b71421e33B1757",
+      "status": "pending",
+      "awaiting": [
+        "moderator",
+        "owner"
+      ],
+      "created_at": "2026-11-09T04:22:51.431778Z",
+      "template": {
+        "id": "example-portrait",
+        "version": 2
+      },
+      "frame": {
+        "id": "card-green",
+        "version": 1
+      },
+      "image_sha256": "b236aaeb85e77c9a64b4b95e24493987930ccbd50a8af0b81b6ee44133be2aa6"
+    },
+    {
+      "id": "45ea47864d5bf95d",
+      "name": "Emerald Wizard",
+      "to": "0x43F478CbB9078Ae49cbE924B38b71421e33B1757",
+      "status": "published",
+      "awaiting": [],
+      "created_at": "2026-11-09T04:22:50.913029Z",
+      "template": {
+        "id": "example-portrait",
+        "version": 2
+      },
+      "frame": {
+        "id": "card-green",
+        "version": 1
+      },
+      "image_sha256": "b3b8bd05d8bbcc00809d2066b3dfff74b3365f2c3320e39313302b7305530a27"
+    }
+  ],
+  "total": 4
+}

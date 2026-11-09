@@ -1,0 +1,225 @@
+{
+  "id": "45ea47864d5bf95d",
+  "status": "published",
+  "awaiting": [],
+  "draft": {
+    "format": 1,
+    "request": {
+      "template_id": "example-portrait",
+      "template_version": 2,
+      "template_hash": "0x1134dcbfc5f6e6b86d7800d853950a53ec79446a654829f27e9897715cb0c2fc",
+      "model": "sdxl/aureanuanceXL_v2/aureanuanceXL_v2.safetensors",
+      "loras": [],
+      "sampling": {
+        "sampler": "euler",
+        "scheduler": "normal",
+        "steps": 25,
+        "cfg": 6.0,
+        "clip_skip": 1
+      },
+      "width": 1152,
+      "height": 896,
+      "prompt": "waist-up portrait of a single female wizard, centered and facing the viewer, wearing emerald heraldry, casting a spell, background: library, painted fantasy illustration, full bleed, detailed face",
+      "negative": "text, letters, words, caption, title, label, logo, watermark, signature, border, frame, card frame, trading card, playing card, game ui, icons, badges, numbers, multiple people, crowd, empty scene, landscape, gore",
+      "variables": {
+        "background": "library",
+        "colour": "emerald",
+        "gender": "female",
+        "pose": "casting a spell",
+        "role": "wizard"
+      },
+      "seed": 8453
+    },
+    "attempts": [
+      {
+        "seed": 8453,
+        "outcome": "ok",
+        "ref": "fixture-0",
+        "detail": ""
+      }
+    ],
+    "renderer": "darkroom",
+    "asset_id": "0x26e9840acf58ba86690e67c03e21cf541cefc52f8c6aee1d8fde5986f89180a2",
+    "to": "0x43F478CbB9078Ae49cbE924B38b71421e33B1757",
+    "name": "Emerald Wizard",
+    "description": "Emerald Wizard mends the hearts of broken engines with patient hands, and every gear purrs a little warmer afterwards.",
+    "external_url": null,
+    "consumer": "argus-mint",
+    "frame": {
+      "id": "card-green",
+      "version": 1,
+      "hash": "0x9e53c3dcba50eb796a40c81b38137a873ed06ea014bf0b4ac381a27ada8f1e48"
+    },
+    "bio": {
+      "ref": {
+        "id": "example-bio",
+        "version": 1,
+        "hash": "0xc2f770235c2f1ba0ec4fef196b7525f148b0033a08259fdd508cf9fdfc22ac82",
+        "model": "mistral-nemo:12b-instruct-2407-q4_K_M"
+      },
+      "text": "Emerald Wizard mends the hearts of broken engines with patient hands, and every gear purrs a little warmer afterwards.",
+      "attempts": [
+        {
+          "outcome": "ok",
+          "detail": "",
+          "text": "{name} mends the hearts of broken engines with patient hands, and every gear purrs a little warmer afterwards."
+        }
+      ]
+    },
+    "texts": {
+      "class": "Wizard · Emerald",
+      "stats": "No. 1"
+    },
+    "art_sha256": "d572b28f3837b5077dd5dc294ed85e109607731c51735ab8837993bc64869c1b",
+    "image_sha256": "b3b8bd05d8bbcc00809d2066b3dfff74b3365f2c3320e39313302b7305530a27",
+    "created_at": "2026-11-09T04:22:50.913029Z",
+    "reviews": [
+      {
+        "role": "moderator",
+        "decision": "approved",
+        "by": "moderator-1",
+        "at": "2026-11-09T04:22:50.923045Z",
+        "image_sha256": "b3b8bd05d8bbcc00809d2066b3dfff74b3365f2c3320e39313302b7305530a27",
+        "note": ""
+      },
+      {
+        "role": "owner",
+        "decision": "approved",
+        "by": "0x43F478CbB9078Ae49cbE924B38b71421e33B1757",
+        "at": "2026-11-09T04:22:50.946799Z",
+        "image_sha256": "b3b8bd05d8bbcc00809d2066b3dfff74b3365f2c3320e39313302b7305530a27",
+        "note": ""
+      }
+    ]
+  },
+  "published": {
+    "signer": "0x70997970C51812dc3A010C7d01b50e0d17dc79C8",
+    "render": {
+      "renderer": "darkroom",
+      "prompt": "waist-up portrait of a single female wizard, centered and facing the viewer, wearing emerald heraldry, casting a spell, background: library, painted fantasy illustration, full bleed, detailed face",
+      "seed": 8453,
+      "attempts": [
+        {
+          "seed": 8453,
+          "outcome": "ok",
+          "ref": "fixture-0",
+          "detail": ""
+        }
+      ],
+      "art_cid": "bafkreigvokzi6obxwudx3vo4ffhnqxqqsydxghcronnlra3zso6gjbu4dm",
+      "image_cid": "bafkreiftxc6qlwf3zqaibhjam2z5773uwm3f6lbtedrzgezqfnzqkuyke4"
+    },
+    "reviews": [
+      {
+        "role": "moderator",
+        "decision": "approved",
+        "by": "moderator-1",
+        "at": "2026-11-09T04:22:50.923045Z",
+        "image_sha256": "b3b8bd05d8bbcc00809d2066b3dfff74b3365f2c3320e39313302b7305530a27",
+        "note": ""
+      },
+      {
+        "role": "owner",
+        "decision": "approved",
+        "by": "0x43F478CbB9078Ae49cbE924B38b71421e33B1757",
+        "at": "2026-11-09T04:22:50.946799Z",
+        "image_sha256": "b3b8bd05d8bbcc00809d2066b3dfff74b3365f2c3320e39313302b7305530a27",
+        "note": ""
+      }
+    ],
+    "metadata": {
+      "name": "Emerald Wizard",
+      "description": "Emerald Wizard mends the hearts of broken engines with patient hands, and every gear purrs a little warmer afterwards.",
+      "image": "ipfs://bafkreiftxc6qlwf3zqaibhjam2z5773uwm3f6lbtedrzgezqfnzqkuyke4",
+      "attributes": [],
+      "provenance": {
+        "template": "example-portrait",
+        "template_version": 2,
+        "template_hash": "0x1134dcbfc5f6e6b86d7800d853950a53ec79446a654829f27e9897715cb0c2fc",
+        "seed": 8453,
+        "attempts": 1,
+        "asset_id": "0x26e9840acf58ba86690e67c03e21cf541cefc52f8c6aee1d8fde5986f89180a2",
+        "consumer": "argus-mint",
+        "frame": {
+          "id": "card-green",
+          "version": 1,
+          "hash": "0x9e53c3dcba50eb796a40c81b38137a873ed06ea014bf0b4ac381a27ada8f1e48"
+        },
+        "art": "ipfs://bafkreigvokzi6obxwudx3vo4ffhnqxqqsydxghcronnlra3zso6gjbu4dm",
+        "bio": {
+          "id": "example-bio",
+          "version": 1,
+          "hash": "0xc2f770235c2f1ba0ec4fef196b7525f148b0033a08259fdd508cf9fdfc22ac82",
+          "model": "mistral-nemo:12b-instruct-2407-q4_K_M"
+        }
+      }
+    },
+    "metadata_cid": "bafkreian5fssm6yx25wyinivnvwvsxbvaltjhnwxcetlvg6bb6isagkzei",
+    "voucher": {
+      "to": "0x43F478CbB9078Ae49cbE924B38b71421e33B1757",
+      "asset_id": "0x26e9840acf58ba86690e67c03e21cf541cefc52f8c6aee1d8fde5986f89180a2",
+      "content_hash": "0xcd5724de874d0e5761851dd2099ae7c2987b182d9cb171317634633ba093a05f",
+      "price": 0,
+      "deadline": 1900000000
+    },
+    "signature": "0x78eb4f5f73da7394380de033a96a54a91dbda3e454ffc04e5742ceed5be12dbf5acfb7fc847754836a3f44d950c9af1a6b5792326313681a2e58483d8d235c171b",
+    "typed_data": {
+      "types": {
+        "EIP712Domain": [
+          {
+            "name": "name",
+            "type": "string"
+          },
+          {
+            "name": "version",
+            "type": "string"
+          },
+          {
+            "name": "chainId",
+            "type": "uint256"
+          },
+          {
+            "name": "verifyingContract",
+            "type": "address"
+          }
+        ],
+        "MintVoucher": [
+          {
+            "name": "to",
+            "type": "address"
+          },
+          {
+            "name": "assetId",
+            "type": "bytes32"
+          },
+          {
+            "name": "contentHash",
+            "type": "bytes32"
+          },
+          {
+            "name": "price",
+            "type": "uint256"
+          },
+          {
+            "name": "deadline",
+            "type": "uint64"
+          }
+        ]
+      },
+      "primaryType": "MintVoucher",
+      "domain": {
+        "name": "argus-mint Card",
+        "version": "1",
+        "chainId": 84532,
+        "verifyingContract": "0xCAa3573b5550870A5e15C47c650b8700D70a8fA7"
+      },
+      "message": {
+        "to": "0x43F478CbB9078Ae49cbE924B38b71421e33B1757",
+        "assetId": "0x26e9840acf58ba86690e67c03e21cf541cefc52f8c6aee1d8fde5986f89180a2",
+        "contentHash": "0xcd5724de874d0e5761851dd2099ae7c2987b182d9cb171317634633ba093a05f",
+        "price": 0,
+        "deadline": 1900000000
+      }
+    }
+  }
+}

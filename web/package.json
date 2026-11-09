@@ -1,0 +1,33 @@
+{
+  "name": "argus-assay",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start -H 0.0.0.0",
+    "lint": "eslint",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "wire:types": "node scripts/wire-types.mjs",
+    "wire:check": "node scripts/wire-types.mjs --check",
+    "wire:pull": "node scripts/wire-types.mjs --pull"
+  },
+  "dependencies": {
+    "next": "16.4.5",
+    "react": "19.2.4",
+    "react-dom": "19.2.4"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "eslint": "^9",
+    "eslint-config-next": "16.4.5",
+    "json-schema-to-typescript": "16.0.0",
+    "tailwindcss": "^4",
+    "typescript": "^5",
+    "vitest": "4.1.11"
+  }
+}

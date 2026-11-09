@@ -30,26 +30,28 @@ The standalone review UI for [argus-mint](https://github.com/smk762/argus-mint),
        - Text goes where `POST /frames/…/layout` says, in the frame's fonts.
      - **Confirm:** signing with the card's wallet sends one edit, and argus-mint bakes the PNG. That PNG is what the moderator and the owner then review.
      - **The moderator never edits.**
-   - **How it was made:** the template, frame, seed, checkpoint, the library entry (when the art came from the library), render attempts, bio and bio attempts, display texts, and reviews.
+   - **How it was made:** the template, frame, seed, checkpoint, LoRAs, the library entry (when the art came from the library), render attempts, bio and bio attempts, display texts, and reviews.
 3. **New draft** (`/new`).
    - Approved templates, frames and bio templates only.
    - Every variable is a dropdown from the template's fixed list. **There is no free-text prompt.**
    - Fields: the name (shown on the card, never sent to a model), the owner's wallet, the asset key and seed, and display text for the frame's own slots (class, stats...).
    - **Art:** *Render now* or *From the library*. The choice is offered only when `/health.capabilities.library` is true.
-     - **Render now:** a checkpoint from the template's own list (`model`, then `models`), sent as `model` (null for the default). Disabled when `/health.backends.darkroom` is false.
+     - **Render now:** disabled when `/health.backends.darkroom` is false.
+       - **Checkpoint:** from the template's own list (`model`, then `models`), grouped by family (the checkpoint's top folder: `sdxl`, `flux`…) when there is more than one. Sent as `model`, and left out for the default.
+       - **LoRAs:** from the template's `lora_options` only: those that pair with the chosen checkpoint, each at one of its reviewed weights, at most `max_loras`. Sent as `loras`, and left out when none is picked. The template's own `loras` are shown as always applied.
      - **From the library:** pick an entry, filtered by checkpoint and by any variable. The entry fixes the variables, seed and checkpoint, so they are shown read-only and only `library: <id>` is sent. `/new?library=<id>` preselects one. argus-mint refuses an entry the chosen template wouldn't render exactly, and its message is shown as it is.
    - The bio template is disabled when `/health.capabilities.write_bios` is false.
 4. **Library** (`/library`). The pre-rendered portraits, when the server has them.
-   - One row per variable combination, one column per checkpoint. A row uses the same variables and seed on every checkpoint.
+   - One row per variable combination, one column per checkpoint, with the columns grouped by family when there is more than one. A row uses the same variables and seed on every checkpoint.
    - A portrait opens full size, with a link to make a card from it.
 5. **Catalogue** (`/catalogue`, `/catalogue/{template|frame|bio}/{id}/{version}`). Every file, every status, with its hash.
-   - **Template:** prompt, negative prompt, variable lists, sampling, size and the number of combinations.
+   - **Template:** prompt, negative prompt, variable lists, size and the number of combinations; the default checkpoint and the others allowed; sampling, and each family's own; the LoRAs always applied, and the LoRA options with their weights, trigger words and checkpoints.
    - **Frame:**
      - The overlay with the art window and text slots drawn on it.
      - The best render size for the window, and a warning when square renders would be cropped.
      - A live preview on any draft's or sample's art, with editable name, bio and slot text.
    - **Bio template:** model, system prompt, prompt and limits.
-   - **Render samples:** cards from any status of template, frame and bio template, on any of the template's checkpoints, run as a background job.
+   - **Render samples:** cards from any status of template, frame and bio template, on any of the template's checkpoints and with any of its LoRA options, run as a background job.
    - **Decision:** approve a draft or retire an approved file. argus-mint writes `status`, `approved_by` and `approved_at` into the file. A retired file keeps its hash.
 6. **Samples** (`/samples`, `/samples/{id}`). The jobs, polled until done. Each sample shows its framed image, variables, bio, and render and bio attempts, with a link to preview its frame on that art. Samples are never pinned, signed or minted.
 

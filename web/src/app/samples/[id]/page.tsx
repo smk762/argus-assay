@@ -8,6 +8,7 @@ import { useEffect, useState } from "react";
 import { PageTitle } from "@/components/bits";
 import { Card, Collapsible, Notice, Spinner } from "@/components/ui";
 import { getSample, sampleImage } from "@/lib/api";
+import { checkpointName, loraText } from "@/lib/status";
 import type { SampleJob } from "@/lib/types";
 
 export default function SampleJobPage() {
@@ -52,6 +53,8 @@ export default function SampleJobPage() {
             .{" "}
           </>
         ) : null}
+        {r.model ? <>On {checkpointName(r.model)}. </> : null}
+        {r.loras?.length ? <>LoRAs: {loraText(r.loras)}. </> : null}
         {r.bio ? (
           <>
             Bios from{" "}

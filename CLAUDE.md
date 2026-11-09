@@ -16,7 +16,7 @@ The review UI for argus-mint. Human-facing usage is in [README.md](README.md); t
 
 ```
 web/src/app/          routes: / (queue), drafts/[id], new, library, catalogue, catalogue/[kind]/[id]/[version], samples, samples/[id]
-web/src/components/   Shell, MintProvider (/health poll + token state), Catalogue (DecisionPanel, SampleRunner), LibraryPicker, bits, ui, icons
+web/src/components/   Shell, MintProvider (/health poll + token state), Catalogue (DecisionPanel, SampleRunner), LibraryPicker, Checkpoints (CheckpointOptions, LoraPicker), bits, ui, icons
 web/src/lib/          api (fetch client + capability gate), config (mintUrl), token, wallet, status, slots, generated/mint.ts
 web/schema/           mint-wire.schema.json + pins.json (argus-mint repo, tag or commit, sha256)
 web/scripts/          wire-types.mjs (same as argus-studio's)

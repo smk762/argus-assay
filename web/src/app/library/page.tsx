@@ -8,7 +8,7 @@ import { INPUT, PageTitle, useLoad } from "@/components/bits";
 import { useMint } from "@/components/MintProvider";
 import { Notice, Spinner } from "@/components/ui";
 import { getLibrary, libraryImage } from "@/lib/api";
-import { checkpointName } from "@/lib/status";
+import { byFamily, checkpointName } from "@/lib/status";
 
 /** The library as a comparison: one row per variable combination, one column per checkpoint, same seed across. */
 export default function LibraryPage() {
@@ -20,6 +20,8 @@ export default function LibraryPage() {
   if (health && !served) return <Notice>This server has no pre-rendered library.</Notice>;
   if (error) return <Notice tone="error">{error}</Notice>;
   if (!data) return <Spinner />;
+  const families = byFamily(data.models);
+  const models = families.flatMap((f) => f.models);
   const groups = Array.from(new Set(data.items.map((i) => i.group))).sort((a, b) => a - b);
   const cell = new Map(data.items.map((i) => [`${i.group}|${i.model}`, i]));
   const roles = Array.from(new Set(data.items.map((i) => i.variables.role).filter(Boolean))).sort();
@@ -28,7 +30,7 @@ export default function LibraryPage() {
     <>
       <PageTitle aside={<span className="text-small text-text-muted">{data.items.length} portraits</span>}>Library</PageTitle>
       <p className="mb-4 max-w-3xl text-small text-text-secondary">
-        Pre-rendered portraits of {data.template.id} v{data.template.version}: {data.count} combinations on {data.models.length} checkpoints. Each row
+        Pre-rendered portraits of {data.template.id} v{data.template.version}: {data.count} combinations on {data.models.length} checkpoints{families.length > 1 ? `, grouped by family (${families.map((f) => f.family || "other").join(", ")})` : ""}. Each row
         uses the same variables and seed on every checkpoint, so the columns compare like for like. Any of them can become a card without a GPU:
         pick one under <Link href="/new" className="underline">New draft</Link>, or open one here.
       </p>
@@ -43,9 +45,19 @@ export default function LibraryPage() {
       <div className="overflow-x-auto">
         <table className="border-separate border-spacing-1 text-caption">
           <thead>
+            {families.length > 1 ? (
+              <tr>
+                <td className="sticky left-0 z-10 bg-base-900" />
+                {families.map((f) => (
+                  <th key={f.family} colSpan={f.models.length} scope="colgroup" className="border-b border-base-600 text-left font-semibold text-text-primary">
+                    {f.family || "other"}
+                  </th>
+                ))}
+              </tr>
+            ) : null}
             <tr>
               <th className="sticky left-0 z-10 bg-base-900 text-left font-medium text-text-secondary">Variables</th>
-              {data.models.map((m) => (
+              {models.map((m) => (
                 <th key={m} className="min-w-36 text-left font-medium text-text-secondary" title={m}>
                   {checkpointName(m)}
                 </th>
@@ -65,7 +77,7 @@ export default function LibraryPage() {
                     ))}
                     <div className="text-text-muted">seed {any.seed}</div>
                   </td>
-                  {data.models.map((m) => {
+                  {models.map((m) => {
                     const it = cell.get(`${g}|${m}`);
                     return (
                       <td key={m} className="align-top">

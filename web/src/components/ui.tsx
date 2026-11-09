@@ -110,7 +110,7 @@ export function Kv({ label, children, title }: { label: string; children: ReactN
   return (
     <div className="flex items-baseline justify-between gap-3 py-1 text-small" title={title}>
       <dt className="shrink-0 text-text-muted">{label}</dt>
-      <dd className="min-w-0 break-words text-right text-text-primary">{children}</dd>
+      <dd className="min-w-0 text-right text-text-primary [overflow-wrap:anywhere]">{children}</dd>
     </div>
   );
 }

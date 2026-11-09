@@ -53,8 +53,12 @@ export function CardPreview({ frame, artUrl, layout, style }: { frame: FrameInfo
           <feColorMatrix type="matrix" values={svgMatrix(style.tint)} />
         </filter>
         {Object.entries(layout?.slots ?? {}).map(([slot, l]) => (
-          <filter key={slot} id={`glow-${uid}-${slot}`} x="-20%" y="-50%" width="140%" height="200%">
-            <feGaussianBlur stdDeviation={l.effects.glow} />
+          // Pillow blurs colour and alpha separately (not premultiplied), so its glow darkens as it fades:
+          // the colour is scaled by the blurred alpha as well. sRGB keeps the numbers as they are.
+          <filter key={slot} id={`glow-${uid}-${slot}`} x="-20%" y="-50%" width="140%" height="200%" colorInterpolationFilters="sRGB">
+            <feGaussianBlur stdDeviation={l.effects.glow} result="blur" />
+            <feColorMatrix in="blur" type="matrix" values="0 0 0 1 0  0 0 0 1 0  0 0 0 1 0  0 0 0 0 1" result="alpha" />
+            <feComposite in="blur" in2="alpha" operator="arithmetic" k1={1} k2={0} k3={0} k4={0} />
           </filter>
         ))}
       </defs>
@@ -86,7 +90,8 @@ export function CardPreview({ frame, artUrl, layout, style }: { frame: FrameInfo
             const effect = s.effect ?? "none";
             const fx = s.effect_colour ?? "#000000";
             const family = l.font ? familyOf(f.id, f.version, l.font) : "sans-serif";
-            const common = { fontFamily: family, fontSize: l.size, style: { whiteSpace: "pre" as const } };
+            // geometricPrecision: unhinted advances, as Pillow lays the line out. Without it Chrome sets a line up to 2% narrower.
+            const common = { fontFamily: family, fontSize: l.size, textRendering: "geometricPrecision" as const, style: { whiteSpace: "pre" as const } };
             return (
               <g key={slot}>
                 {l.lines.map((line, i) => {

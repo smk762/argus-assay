@@ -5,12 +5,13 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useState } from "react";
 
 import { Field, INPUT, PageTitle, useLoad } from "@/components/bits";
+import { CheckpointOptions, LoraPicker } from "@/components/Checkpoints";
 import { LibraryPicker } from "@/components/LibraryPicker";
 import { useMint } from "@/components/MintProvider";
 import { Card, Kv, Notice, SectionTitle, Spinner } from "@/components/ui";
 import { createDraft, getBios, getFrames, getLibrary, getTemplates, libraryImage } from "@/lib/api";
 import { displaySlots } from "@/lib/slots";
-import { allowedModels, checkpointName, draftSources } from "@/lib/status";
+import { allowedModels, checkpointName, draftSources, loraChoices } from "@/lib/status";
 
 type Source = "render" | "library";
 
@@ -48,6 +49,7 @@ function NewDraftForm() {
   const [frame, setFrame] = useState("");
   const [bio, setBio] = useState("");
   const [model, setModel] = useState("");
+  const [loras, setLoras] = useState<Record<string, number>>({});
   const [vars, setVars] = useState<Record<string, string>>({});
   const [texts, setTexts] = useState<Record<string, string>>({});
   const [name, setName] = useState("");
@@ -68,6 +70,7 @@ function NewDraftForm() {
   const f = approvedF.find((x) => key(x.frame.id, x.frame.version) === frame)?.frame;
   const models = t ? allowedModels(t) : [];
   const modelValue = models.slice(1).includes(model) ? model : "";
+  const chosenLoras = t ? loraChoices(loras, t, modelValue || t.model) : [];
   const values: Record<string, string> = Object.fromEntries(Object.entries(t?.variables ?? {}).map(([k, list]) => [k, vars[k] ?? list[0]]));
   const biosOff = !health?.capabilities.write_bios;
   const off = !health?.capabilities.create_drafts
@@ -99,7 +102,10 @@ function NewDraftForm() {
             const d = await createDraft({
               template: ref(tKey)!,
               // A library entry brings its own variables, seed and checkpoint: argus-mint takes them from the entry.
-              ...(entry ? { library: entry.id } : { variables: values, seed, model: modelValue || null }),
+              // The default checkpoint and no LoRAs are left out, so an older argus-mint still takes the request.
+              ...(entry
+                ? { library: entry.id }
+                : { variables: values, seed, ...(modelValue ? { model: modelValue } : {}), ...(chosenLoras.length ? { loras: chosenLoras } : {}) }),
               asset: asset.trim() || `${name.trim().toLowerCase().replace(/\W+/g, "-")}-${entry ? entry.seed : seed}`,
               to: to.trim(),
               name: name.trim(),
@@ -223,12 +229,7 @@ function NewDraftForm() {
             <div className="grid gap-3 sm:grid-cols-3">
               <Field label="Checkpoint">
                 <select className={INPUT} value={modelValue} onChange={(e) => setModel(e.target.value)}>
-                  {models.map((m, i) => (
-                    <option key={m} value={i === 0 ? "" : m} title={m}>
-                      {checkpointName(m)}
-                      {i === 0 ? " (default)" : ""}
-                    </option>
-                  ))}
+                  <CheckpointOptions models={models} defaultModel={t.model} />
                 </select>
               </Field>
               {Object.entries(t.variables).map(([v, list]) => (
@@ -241,6 +242,7 @@ function NewDraftForm() {
                 </Field>
               ))}
             </div>
+            <LoraPicker t={t} model={modelValue || t.model} picked={loras} onChange={setLoras} />
             <p className="mt-3 text-caption text-text-muted">Prompt: {fill(t.prompt, values)}</p>
           </Card>
         ) : null}

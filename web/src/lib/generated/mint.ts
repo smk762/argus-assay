@@ -1,4 +1,4 @@
-// Generated from smk762/argus-mint@e19b1636fbe1fd5c9895b7d6c37d8153d71a72e5 schema/mint-wire.schema.json.
+// Generated from smk762/argus-mint@0962d98fda214210ea48db6f63b248f421d9c2d3 schema/mint-wire.schema.json.
 // Do not edit: change schema/pins.json and run `npm run wire:pull`.
 
 export interface MintWire {
@@ -31,6 +31,8 @@ export interface MintWire {
   LibraryItem?: LibraryItem;
   LibraryListing?: LibraryListing;
   LineLayout?: LineLayout;
+  LoraChoice?: LoraChoice;
+  LoraOption?: LoraOption;
   LoraRef?: LoraRef;
   PublishRequest?: PublishRequest;
   PublishResult?: PublishResult;
@@ -211,6 +213,7 @@ export interface LoraRef {
 export interface Sampling {
   cfg: number;
   clip_skip?: number;
+  guidance?: number | null;
   sampler: string;
   scheduler: string;
   steps: number;
@@ -313,6 +316,7 @@ export interface CreateDraft {
   external_url?: string | null;
   frame?: Ref | null;
   library?: string | null;
+  loras?: LoraChoice[];
   model?: string | null;
   name: string;
   seed?: number;
@@ -329,6 +333,13 @@ export interface CreateDraft {
 export interface Ref {
   id: string;
   version: number;
+}
+/**
+ * A render's pick from the template's ``lora_options``. ``weight`` defaults to the first allowed.
+ */
+export interface LoraChoice {
+  name: string;
+  weight?: number | null;
 }
 export interface DraftDetail {
   awaiting: string[];
@@ -514,6 +525,18 @@ export interface LibraryListing {
   models: string[];
   template: Ref;
 }
+/**
+ * A LoRA a card may choose (reviewed with the template), at one of its allowed weights.
+ *
+ * ``models``: the checkpoints it may pair with (a LoRA belongs to one family); empty means any
+ * the template allows.
+ */
+export interface LoraOption {
+  models?: string[];
+  name: string;
+  trigger_words?: string[];
+  weights?: number[];
+}
 export interface PublishRequest {
   deadline?: number | null;
   price?: number;
@@ -567,6 +590,7 @@ export interface SampleRequest {
   bio?: Ref | null;
   count?: number;
   frame?: Ref | null;
+  loras?: LoraChoice[];
   model?: string | null;
   name?: string;
   seed?: number;
@@ -591,13 +615,18 @@ export interface Template {
   approved_by?: string | null;
   height: number;
   id: string;
+  lora_options?: LoraOption[];
   loras?: LoraRef[];
   max_attempts?: number;
+  max_loras?: number;
   model: string;
   models?: string[];
   negative?: string;
   prompt: string;
   sampling?: Sampling | null;
+  sampling_by_family?: {
+    [k: string]: Sampling;
+  };
   status: "draft" | "approved" | "retired";
   variables: {
     [k: string]: string[];

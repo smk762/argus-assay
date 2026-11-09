@@ -45,7 +45,7 @@ The standalone review UI for [argus-mint](https://github.com/smk762/argus-mint),
    - One row per variable combination, one column per checkpoint, with the columns grouped by family when there is more than one. A row uses the same variables and seed on every checkpoint.
    - A portrait opens full size, with a link to make a card from it.
 5. **Catalogue** (`/catalogue`, `/catalogue/{template|frame|bio}/{id}/{version}`). Every file, every status, with its hash.
-   - **Template:** prompt, negative prompt, variable lists, size and the number of combinations; the default checkpoint and the others allowed; sampling, and each family's own; the LoRAs always applied, and the LoRA options with their weights, trigger words and checkpoints.
+   - **Template:** prompt, negative prompt, variable lists, size and the number of combinations; the default checkpoint and the others allowed; sampling and negative prompt, and each family's own; the LoRAs always applied, and the LoRA options with their weights, trigger words and checkpoints.
    - **Frame:**
      - The overlay with the art window and text slots drawn on it.
      - The best render size for the window, and a warning when square renders would be cropped.

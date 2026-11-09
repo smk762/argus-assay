@@ -1,7 +1,7 @@
 {
   "mint": {
     "repo": "smk762/argus-mint",
-    "tag": "0962d98fda214210ea48db6f63b248f421d9c2d3",
-    "sha256": "ce396f46980a6338ce8474b2609a63504ac8a52db0320d1f89ab53c90439a604"
+    "tag": "v0.2.0",
+    "sha256": "b84dd57aad507db532146d32791cdcf24ae3ba9c032d082272b5028c5a05645f"
   }
 }

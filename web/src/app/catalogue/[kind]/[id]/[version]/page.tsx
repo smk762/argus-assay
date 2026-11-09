@@ -65,6 +65,11 @@ function TemplateView({ info }: { info: TemplateInfo }) {
       <p className="text-small">{t.prompt}</p>
       <SectionTitle className="mb-1 mt-3">Negative</SectionTitle>
       <p className="text-small text-text-secondary">{t.negative || "none"}</p>
+      {Object.entries(t.negative_by_family ?? {}).map(([family, negative]) => (
+        <p key={family} className="mt-1 text-small text-text-secondary">
+          <span className="font-medium text-text-primary">On {family}:</span> {negative || "none"}
+        </p>
+      ))}
       <SectionTitle className="mb-1 mt-3">Variables</SectionTitle>
       <dl className="space-y-1 text-small">
         {Object.entries(t.variables).map(([name, values]) => (

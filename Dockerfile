@@ -3,9 +3,11 @@ WORKDIR /app
 COPY web/package.json web/package-lock.json ./
 RUN npm ci
 COPY web/ .
-# Baked in: the browser calls argus-mint at this URL.
+# Baked in: the browser calls argus-mint at this URL. With ASSAY_MINT_PROXY set, use /mint and
+# assay proxies argus-mint itself (one origin, one port).
 ARG NEXT_PUBLIC_MINT_URL=http://localhost:8108
-ENV NEXT_PUBLIC_MINT_URL=$NEXT_PUBLIC_MINT_URL
+ARG ASSAY_MINT_PROXY=
+ENV NEXT_PUBLIC_MINT_URL=$NEXT_PUBLIC_MINT_URL ASSAY_MINT_PROXY=$ASSAY_MINT_PROXY
 RUN npm run build
 
 FROM node:22-alpine

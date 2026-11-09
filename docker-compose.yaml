@@ -8,6 +8,8 @@ services:
       dockerfile: Dockerfile
       args:
         NEXT_PUBLIC_MINT_URL: ${NEXT_PUBLIC_MINT_URL:-http://localhost:8108}
+        # e.g. http://mock-mint:8108 with NEXT_PUBLIC_MINT_URL=/mint, for LAN access on one port
+        ASSAY_MINT_PROXY: ${ASSAY_MINT_PROXY:-}
     environment:
       - PORT=${PORT:-3108}
     ports:

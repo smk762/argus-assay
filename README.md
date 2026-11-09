@@ -37,6 +37,15 @@ Against a real server, start argus-mint (`argus-mint serve`, or `make serve-up` 
 
 argus-mint must list assay's origin in `ARGUS_MINT_CORS_ORIGINS`; `http://localhost:3108` is in its defaults. Owner review needs `ARGUS_MINT_SIWE_DOMAIN` set to assay's host, e.g. `localhost:3108`. The moderator enters the token (`ARGUS_MINT_MODERATOR_TOKEN`) behind the key icon. It is kept for that browser tab only.
 
+**From another machine on the LAN.** Proxy argus-mint through assay so only one port is open. Build with `NEXT_PUBLIC_MINT_URL=/mint` and `ASSAY_MINT_PROXY=http://127.0.0.1:8108`; both are build-time settings. Then serve on all interfaces:
+
+```bash
+cd web && NEXT_PUBLIC_MINT_URL=/mint ASSAY_MINT_PROXY=http://127.0.0.1:8108 npm run build
+ASSAY_MINT_PROXY=http://127.0.0.1:8108 npx next start -H 0.0.0.0 -p 3108
+```
+
+Add assay's LAN origin (e.g. `http://192.168.1.39:3108`) to `ARGUS_MINT_CORS_ORIGINS`, and set `ARGUS_MINT_SIWE_DOMAIN` to its host (`192.168.1.39:3108`). Some wallets only sign on `localhost` or HTTPS origins.
+
 In docker: `docker compose up` (with `COMPOSE_PROFILES=mock` from `.env.example` for the mock).
 
 ## Develop

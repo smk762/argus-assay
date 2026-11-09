@@ -81,6 +81,11 @@ export function checkpointName(model: string): string {
   return file.replace(/\.(safetensors|ckpt|pt)$/i, "");
 }
 
+/** Where a new draft's art can come from on this server: a render needs darkroom, the library has to be served. */
+export function draftSources(health: Health | null): { render: boolean; library: boolean } {
+  return { render: Boolean(health?.backends.darkroom), library: Boolean(health?.capabilities.library) };
+}
+
 /** The checkpoints a template allows: its default first, then its reviewed alternatives. */
 export function allowedModels(t: { model: string; models?: string[] }): string[] {
   return [t.model, ...(t.models ?? []).filter((m) => m !== t.model)];

@@ -117,6 +117,7 @@ export const getSample = (id: string): Promise<SampleJob> => getJson(`/samples/$
 
 export async function createDraft(body: CreateDraft): Promise<DraftDetail> {
   await requireCapability("create_drafts");
+  if (body.library != null) await requireCapability("library");
   return post("/drafts", body, true);
 }
 

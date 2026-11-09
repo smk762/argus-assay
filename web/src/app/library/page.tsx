@@ -5,15 +5,19 @@ import Link from "next/link";
 import { useState } from "react";
 
 import { INPUT, PageTitle, useLoad } from "@/components/bits";
+import { useMint } from "@/components/MintProvider";
 import { Notice, Spinner } from "@/components/ui";
 import { getLibrary, libraryImage } from "@/lib/api";
 import { checkpointName } from "@/lib/status";
 
 /** The library as a comparison: one row per variable combination, one column per checkpoint, same seed across. */
 export default function LibraryPage() {
-  const { data, error } = useLoad(() => getLibrary());
+  const { health } = useMint();
+  const served = health?.capabilities.library;
+  const { data, error } = useLoad(() => (served ? getLibrary() : Promise.resolve(null)), [served]);
   const [role, setRole] = useState("");
   const [big, setBig] = useState<string | null>(null);
+  if (health && !served) return <Notice>This server has no pre-rendered library.</Notice>;
   if (error) return <Notice tone="error">{error}</Notice>;
   if (!data) return <Spinner />;
   const groups = Array.from(new Set(data.items.map((i) => i.group))).sort((a, b) => a - b);

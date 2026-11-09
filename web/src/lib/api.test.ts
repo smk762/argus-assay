@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import { CapabilityRefused, decide, moderatorReview, readError, resetHealthMemo } from "./api";
+import { CapabilityRefused, createDraft, decide, moderatorReview, readError, resetHealthMemo } from "./api";
 import type { Health } from "./types";
 
 const health = (caps: Partial<Health["capabilities"]>) =>
@@ -17,6 +17,14 @@ describe("writes are gated on /health before they reach the wire", () => {
     vi.stubGlobal("fetch", fetch);
     resetHealthMemo(health({ moderate: false }));
     await expect(moderatorReview("abc", true, "me", "")).rejects.toBeInstanceOf(CapabilityRefused);
+    expect(fetch).not.toHaveBeenCalled();
+  });
+  it("refuses a draft from the library where no library is served", async () => {
+    const fetch = vi.fn();
+    vi.stubGlobal("fetch", fetch);
+    resetHealthMemo(health({ create_drafts: true, library: false }));
+    const draft = { template: { id: "t", version: 1 }, name: "A", to: "0x0", asset: "a", library: "007-x" };
+    await expect(createDraft(draft)).rejects.toBeInstanceOf(CapabilityRefused);
     expect(fetch).not.toHaveBeenCalled();
   });
   it("sends an allowed write with the moderator token", async () => {

@@ -4,6 +4,8 @@
 // clicked through without a GPU, darkroom, IPFS or a wallet:
 //   reviews change a draft's status, catalogue decisions stick, samples "render" after a delay,
 //   creating a draft clones the fixture's pending one, publishing reuses the published result.
+// The pre-rendered library is served when the fixture has one (library.json and library/<id>.jpg,
+// thumbnails of a subset). A draft from it records the entry, but keeps the pending draft's image.
 // It checks no token and no signature, and composites nothing (a frame preview returns a
 // recorded framed image). Its /health says `mock: true`, which offers "Approve as demo owner".
 import { createServer } from "node:http";
@@ -18,7 +20,10 @@ const STEP_MS = Number(process.env.MOCK_STEP_MS ?? 1500);
 const read = (rel) => JSON.parse(readFileSync(join(root, rel), "utf8"));
 const png = (rel) => readFileSync(join(root, rel));
 
+const library = existsSync(join(root, "library.json")) ? read("library.json") : null;
+const libraryEntry = (id) => library?.items.find((i) => i.id === id);
 const health = { ...read("health.json"), mock: true };
+health.capabilities = { ...health.capabilities, library: Boolean(library?.items.length) };
 const templates = read("templates.json");
 const frames = read("frames.json");
 const bios = read("bios.json");
@@ -133,6 +138,12 @@ createServer(async (req, res) => {
         const file = join(root, "frames", p[1], p[2], "fonts", rel);
         return rel.includes("..") || !existsSync(file) ? fail(res, 404, "no such font") : send(res, 200, readFileSync(file), "font/ttf");
       }
+      if (url.pathname === "/library") return library ? send(res, 200, library) : fail(res, 404, "no pre-rendered library is served here");
+      if (p[0] === "library" && p[2] === "image") {
+        // The fixture holds one thumbnail per entry, which stands in for every size.
+        const file = join(root, "library", `${p[1]}.jpg`);
+        return libraryEntry(p[1]) && existsSync(file) ? send(res, 200, readFileSync(file), "image/jpeg") : fail(res, 404, `no library entry ${p[1]}`);
+      }
       if (url.pathname === "/drafts") {
         const status = url.searchParams.get("status");
         const items = [...drafts.values()].filter((d) => !status || d.status === status).map(summary).reverse();
@@ -153,9 +164,16 @@ createServer(async (req, res) => {
     }
     const b = await body(req);
     if (url.pathname === "/drafts") {
+      // A library entry brings its variables, seed and checkpoint, as in argus-mint.
+      const entry = b.library == null ? null : libraryEntry(b.library);
+      if (b.library != null && !library) return fail(res, 503, "no pre-rendered library is served here (ARGUS_MINT_LIBRARY_DIR)");
+      if (b.library != null && !entry) return fail(res, 404, `no library entry ${b.library}`);
+      if (entry && b.model != null && b.model !== entry.model) return fail(res, 422, `library entry ${entry.id} was rendered with ${entry.model}`);
       const base = structuredClone(drafts.get(pendingId));
       const id = id16();
-      Object.assign(base.draft, { name: b.name, to: b.to, texts: b.texts ?? {}, created_at: now(), reviews: [] });
+      Object.assign(base.draft, { name: b.name, to: b.to, texts: b.texts ?? {}, created_at: now(), reviews: [], library: entry?.id ?? null });
+      if (entry) Object.assign(base.draft.request, { model: entry.model, variables: entry.variables, seed: entry.seed });
+      else if (b.model) base.draft.request.model = b.model;
       Object.assign(base, { id, status: "pending", awaiting: ["moderator", "owner"], published: null });
       drafts.set(id, base);
       images.set(id, images.get(pendingId));

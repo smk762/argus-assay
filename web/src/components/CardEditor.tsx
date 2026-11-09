@@ -124,7 +124,7 @@ export function CardEditor({ d, frame, onDone, onClose }: { d: DraftDetail; fram
         <SectionTitle>Customise your card</SectionTitle>
         <span className="text-caption text-text-muted">Live preview. Your colours, your call. Nothing changes until you sign.</span>
       </div>
-      <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
+      <div className="grid grid-cols-[minmax(0,1fr)] gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
         <div className="space-y-2">
           <CardPreview frame={frame} artUrl={draftImage(d.id, "art", draft.art_sha256)} layout={layout} style={normalise(style)} />
           <p className="text-caption text-text-muted">

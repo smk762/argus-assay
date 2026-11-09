@@ -8,6 +8,12 @@ argus-mint turns game art into provenance tokens, and nothing leaves it unreview
 
 Assay is where people do that reviewing. **The server is the product:** assay shows what argus-mint recorded and decides nothing itself.
 
+![The owner customising a card: a live preview beside the text fields, the colour wheel and the effect controls](docs/images/editor.png)
+
+| The review queue | A draft, approved by the moderator and the owner |
+|---|---|
+| ![The review queue, with an approved, a rejected and a pending card](docs/images/queue.png) | ![A draft with its reviews, the owner's edit and its bio](docs/images/draft-reviews.png) |
+
 ## What it shows
 
 - **Review queue.** Drafts waiting for the moderator, and every other status.
@@ -29,6 +35,9 @@ Assay is where people do that reviewing. **The server is the product:** assay sh
   - Render sample cards from drafts.
   - See a frame's art window and text slots drawn on it, and preview it on any art.
   - Approve, or retire, with the decision written into the file.
+
+  ![A frame in the catalogue, with its art window and text slots drawn on the overlay](docs/images/frame-slots.png)
+
 - **Samples.** Sample jobs as they render; never pinned, signed or minted.
 
 The full spec is in [spec.md](spec.md).

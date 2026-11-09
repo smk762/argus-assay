@@ -23,11 +23,13 @@ The standalone review UI for [argus-mint](https://github.com/smk762/argus-mint),
    - **Customise (owner only):** text fields plus style controls.
      - **Border:** a tint and its strength.
      - **Each text slot:** text colour, an effect (none, shadow, outline or glow) with its colour, and a background (colour, opacity, corner radius, padding).
-     - **Colour:** one colour wheel (hue around, saturation outward, a brightness slider, a hex field) sets whichever colour is selected. Any colour is allowed.
+     - **Colour:** one colour wheel (hue around, saturation outward, a brightness slider, a hex field) sets whichever colour is selected. Any colour is allowed. On the wheel, the arrow keys turn the hue and move the saturation (Shift for finer steps).
      - **Preview:** the card drawn as SVG.
        - The art goes in the window.
        - The overlay goes through an sRGB `feColorMatrix` with `lib/style.tintMatrix`, the same numbers as argus-mint's `frames.tint_matrix`.
        - Text goes where `POST /frames/…/layout` says, in the frame's fonts.
+       - Text is set with unhinted advances (`text-rendering: geometricPrecision`), as Pillow lays a line out.
+       - A glow is blurred as Pillow blurs it, colour and alpha separately, so it darkens as it fades.
      - **Confirm:** signing with the card's wallet sends one edit, and argus-mint bakes the PNG. That PNG is what the moderator and the owner then review.
      - **The moderator never edits.**
    - **How it was made:** the template, frame, seed, checkpoint, LoRAs, the library entry (when the art came from the library), render attempts, bio and bio attempts, display texts, and reviews.

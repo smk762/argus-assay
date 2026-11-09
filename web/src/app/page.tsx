@@ -60,7 +60,7 @@ export default function Queue() {
                   <span className="truncate font-medium">{d.name}</span>
                   <DraftBadge status={d.status} />
                 </div>
-                <p className="text-caption text-text-muted">{awaitingText(d.awaiting) || `${d.template.id} v${d.template.version}`}</p>
+                <p className="text-caption text-text-muted">{(d.status === "pending" && awaitingText(d.awaiting)) || `${d.template.id} v${d.template.version}`}</p>
                 <p className="text-caption text-text-muted">
                   for {shortAddress(d.to)} · {when(d.created_at)}
                 </p>

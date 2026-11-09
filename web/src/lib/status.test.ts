@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { allowedModels, awaitingText, checkpointName, diffEdit, draftSources, isAutoReview, canPublish, catalogueAction, moderatorCanReview, ownerCanReview, shortHash, wireCompatible } from "./status";
+import { allowedModels, awaitingText, byFamily, checkpointName, diffEdit, draftSources, isAutoReview, loraChoices, loraOptions, loraText, modelFamily, samplingText, canPublish, catalogueAction, moderatorCanReview, ownerCanReview, shortHash, wireCompatible } from "./status";
 import type { Health } from "./types";
 
 const health = (publish: boolean) => ({ capabilities: { publish } }) as unknown as Health;
@@ -67,5 +67,47 @@ describe("checkpoints", () => {
     expect(draftSources(at(true))).toEqual({ render: true, library: false });
     expect(draftSources(at(false, true))).toEqual({ render: false, library: true });
     expect(draftSources(null)).toEqual({ render: false, library: false });
+  });
+});
+
+describe("families and LoRAs", () => {
+  const sdxl = "sdxl/a/a.safetensors";
+  const flux = "flux/f.safetensors";
+  const t = {
+    max_loras: 2,
+    lora_options: [
+      { name: "sdxl/detail.safetensors", weights: [0.8, 0.5], models: [sdxl] },
+      { name: "flux/glow.safetensors", models: [flux] },
+      { name: "any.safetensors", weights: [1, 0.6] },
+    ],
+  };
+  it("groups checkpoints by their top folder, in the order given", () => {
+    expect(modelFamily(sdxl)).toBe("sdxl");
+    expect(modelFamily("loose.safetensors")).toBe("");
+    expect(byFamily([sdxl, flux, "sdxl/b.safetensors"])).toEqual([
+      { family: "sdxl", models: [sdxl, "sdxl/b.safetensors"] },
+      { family: "flux", models: [flux] },
+    ]);
+  });
+  it("offers only the LoRAs that pair with the checkpoint", () => {
+    expect(loraOptions(t, sdxl).map((o) => o.name)).toEqual(["sdxl/detail.safetensors", "any.safetensors"]);
+    expect(loraOptions(t, flux).map((o) => o.name)).toEqual(["flux/glow.safetensors", "any.safetensors"]);
+    expect(loraOptions({}, sdxl)).toEqual([]);
+  });
+  it("sends only picks argus-mint would accept", () => {
+    const picked = { "sdxl/detail.safetensors": 0.5, "flux/glow.safetensors": 1, "any.safetensors": 0.7 };
+    // The flux LoRA doesn't pair with an SDXL checkpoint, and 0.7 isn't an allowed weight (the first is used).
+    expect(loraChoices(picked, t, sdxl)).toEqual([
+      { name: "sdxl/detail.safetensors", weight: 0.5 },
+      { name: "any.safetensors", weight: 1 },
+    ]);
+    expect(loraChoices(picked, { ...t, max_loras: 1 }, sdxl)).toHaveLength(1);
+    expect(loraChoices(picked, { lora_options: t.lora_options }, flux)).toEqual([{ name: "flux/glow.safetensors", weight: 1 }]);
+    expect(loraChoices({}, t, sdxl)).toEqual([]);
+  });
+  it("writes LoRAs and sampling for the record", () => {
+    expect(loraText([{ name: "sdxl/detail.safetensors", weight: 0.8 }, { name: "any.safetensors" }])).toBe("detail @ 0.8, any @ 1");
+    expect(samplingText({ sampler: "euler", scheduler: "simple", steps: 20, cfg: 1, guidance: 3.5 })).toBe("euler / simple, 20 steps, cfg 1, guidance 3.5");
+    expect(samplingText({ sampler: "dpmpp_2m", scheduler: "karras", steps: 30, cfg: 6, clip_skip: 2 })).toBe("dpmpp_2m / karras, 30 steps, cfg 6, clip skip 2");
   });
 });

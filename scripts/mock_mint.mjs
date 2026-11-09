@@ -173,7 +173,11 @@ createServer(async (req, res) => {
       const id = id16();
       Object.assign(base.draft, { name: b.name, to: b.to, texts: b.texts ?? {}, created_at: now(), reviews: [], library: entry?.id ?? null });
       if (entry) Object.assign(base.draft.request, { model: entry.model, variables: entry.variables, seed: entry.seed });
-      else if (b.model) base.draft.request.model = b.model;
+      else {
+        if (b.model) base.draft.request.model = b.model;
+        // The chosen LoRAs join the template's own, at the weight asked for (the mock checks none of it).
+        if (b.loras?.length) base.draft.request.loras = [...(base.draft.request.loras ?? []), ...b.loras.map((l) => ({ name: l.name, weight: l.weight ?? 1, trigger_words: [] }))];
+      }
       Object.assign(base, { id, status: "pending", awaiting: ["moderator", "owner"], published: null });
       drafts.set(id, base);
       images.set(id, images.get(pendingId));

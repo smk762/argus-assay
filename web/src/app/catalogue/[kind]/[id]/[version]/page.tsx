@@ -9,6 +9,7 @@ import { DecisionPanel, SampleRunner } from "@/components/Catalogue";
 import { CatalogueBadge, Field, Hash, INPUT, PageTitle, useLoad } from "@/components/bits";
 import { Button, Card, Kv, Notice, SectionTitle, Spinner } from "@/components/ui";
 import { frameOverlay, getBios, getDrafts, getFrames, getSamples, getTemplates, previewFrame } from "@/lib/api";
+import { allowedModels, byFamily, checkpointName, loraText, loraWeights, samplingText } from "@/lib/status";
 import { boxStyle, cropFraction, displaySlots, slotSummary, windowAspect } from "@/lib/slots";
 import type { BioInfo, FrameInfo, TemplateInfo } from "@/lib/types";
 
@@ -29,8 +30,34 @@ function TemplateView({ info }: { info: TemplateInfo }) {
         <Kv label="Hash"><Hash value={info.hash} /></Kv>
         <Approval by={t.approved_by} at={t.approved_at} />
         <Kv label="Model">{t.model}</Kv>
+        {byFamily(allowedModels(t).slice(1)).map((g) => (
+          <Kv key={g.family} label={`Also allowed${g.family ? ` (${g.family})` : ""}`}>
+            {g.models.map((m) => (
+              <span key={m} className="block" title={m}>
+                {checkpointName(m)}
+              </span>
+            ))}
+          </Kv>
+        ))}
         <Kv label="Size">{t.width}×{t.height}</Kv>
-        {t.sampling ? <Kv label="Sampling">{`${t.sampling.sampler} / ${t.sampling.scheduler}, ${t.sampling.steps} steps, cfg ${t.sampling.cfg}`}</Kv> : null}
+        {t.sampling ? <Kv label="Sampling">{samplingText(t.sampling)}</Kv> : null}
+        {Object.entries(t.sampling_by_family ?? {}).map(([family, s]) => (
+          <Kv key={family} label={`Sampling (${family})`}>
+            {samplingText(s)}
+          </Kv>
+        ))}
+        {t.loras?.length ? <Kv label="LoRAs, always applied">{loraText(t.loras)}</Kv> : null}
+        {t.lora_options?.length ? (
+          <Kv label={`LoRA options (up to ${t.max_loras ?? 1} per card)`}>
+            {t.lora_options.map((o) => (
+              <span key={o.name} className="block" title={o.name}>
+                {checkpointName(o.name)}: weight {loraWeights(o).join(" or ")}
+                {o.trigger_words?.length ? `, adds “${o.trigger_words.join(", ")}”` : ""}
+                {o.models?.length ? `, with ${o.models.map(checkpointName).join(", ")}` : ", with any checkpoint"}
+              </span>
+            ))}
+          </Kv>
+        ) : null}
         <Kv label="Retries">up to {t.max_attempts ?? 4} on a safety rejection</Kv>
         <Kv label="Combinations">{info.combinations.toLocaleString()}</Kv>
       </dl>

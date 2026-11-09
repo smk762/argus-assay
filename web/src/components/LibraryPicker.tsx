@@ -8,6 +8,7 @@ import { checkpointName } from "@/lib/status";
 import type { LibraryListing } from "@/lib/types";
 
 import { INPUT } from "./bits";
+import { CheckpointOptions } from "./Checkpoints";
 
 /** Pick a pre-rendered portrait: filter by checkpoint and by any variable. */
 export function LibraryPicker({ library, selected, onSelect }: { library: LibraryListing; selected: string | null; onSelect: (id: string) => void }) {
@@ -22,11 +23,7 @@ export function LibraryPicker({ library, selected, onSelect }: { library: Librar
       <div className="grid gap-2 sm:grid-cols-3 lg:grid-cols-6">
         <select className={INPUT} value={model} onChange={(e) => setModel(e.target.value)} aria-label="Checkpoint">
           <option value="">Every checkpoint</option>
-          {library.models.map((m) => (
-            <option key={m} value={m}>
-              {checkpointName(m)}
-            </option>
-          ))}
+          <CheckpointOptions models={library.models} />
         </select>
         {names.map((n) => (
           <select key={n} className={INPUT} value={filters[n] ?? ""} onChange={(e) => setFilters({ ...filters, [n]: e.target.value })} aria-label={n}>

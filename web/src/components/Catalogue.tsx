@@ -4,11 +4,12 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 import { decide, startSamples } from "@/lib/api";
-import { allowedModels, catalogueAction, checkpointName } from "@/lib/status";
+import { allowedModels, catalogueAction, loraChoices } from "@/lib/status";
 import { displaySlots } from "@/lib/slots";
 import type { BioInfo, CatalogueKind, CatalogueStatus, FrameInfo, TemplateInfo } from "@/lib/types";
 
 import { Field, INPUT } from "./bits";
+import { CheckpointOptions, LoraPicker } from "./Checkpoints";
 import { useMint } from "./MintProvider";
 import { Button, Card, Notice, SectionTitle, Spinner } from "./ui";
 
@@ -111,6 +112,7 @@ export function SampleRunner({
   const [bio, setBio] = useState(fixed?.bio ?? "");
   const [count, setCount] = useState(4);
   const [model, setModel] = useState("");
+  const [loras, setLoras] = useState<Record<string, number>>({});
   const [seed, setSeed] = useState(0);
   const [name, setName] = useState("Sample");
   const [vars, setVars] = useState<Record<string, string>>({});
@@ -119,6 +121,9 @@ export function SampleRunner({
   const [error, setError] = useState<string | null>(null);
   const t = templates.find((x) => key(x.template.id, x.template.version) === template)?.template;
   const f = frames.find((x) => key(x.frame.id, x.frame.version) === frame)?.frame;
+  // A checkpoint chosen for another template doesn't carry over to one that doesn't allow it.
+  const modelValue = t && allowedModels(t).slice(1).includes(model) ? model : "";
+  const chosenLoras = t ? loraChoices(loras, t, modelValue || t.model) : [];
   const ref = (k: string) => (k ? { id: k.split("@")[0], version: Number(k.split("@")[1]) } : null);
   const off = !health?.capabilities.sample ? "This server can't render samples (no darkroom, or read-only)." : !hasToken ? "Set the moderator token to render samples." : null;
   return (
@@ -162,13 +167,8 @@ export function SampleRunner({
       {t ? (
         <div className="mt-3 grid gap-3 sm:grid-cols-3">
           <Field label="Checkpoint">
-            <select className={INPUT} value={model} onChange={(e) => setModel(e.target.value)}>
-              {allowedModels(t).map((m, i) => (
-                <option key={m} value={i === 0 ? "" : m} title={m}>
-                  {checkpointName(m)}
-                  {i === 0 ? " (default)" : ""}
-                </option>
-              ))}
+            <select className={INPUT} value={modelValue} onChange={(e) => setModel(e.target.value)}>
+              <CheckpointOptions models={allowedModels(t)} defaultModel={t.model} />
             </select>
           </Field>
           {Object.entries(t.variables).map(([name, values]) => (
@@ -183,6 +183,7 @@ export function SampleRunner({
           ))}
         </div>
       ) : null}
+      {t ? <LoraPicker t={t} model={modelValue || t.model} picked={loras} onChange={setLoras} /> : null}
       <div className="mt-3 grid gap-3 sm:grid-cols-3">
         <Field label="How many">
           <input type="number" min={1} max={12} className={INPUT} value={count} onChange={(e) => setCount(Number(e.target.value))} />
@@ -211,7 +212,9 @@ export function SampleRunner({
                 template: ref(template)!,
                 frame: ref(frame),
                 bio: ref(bio),
-                model: model || null,
+                // The default checkpoint and no LoRAs are left out, so an older argus-mint still takes the request.
+                ...(modelValue ? { model: modelValue } : {}),
+                ...(chosenLoras.length ? { loras: chosenLoras } : {}),
                 count,
                 seed,
                 name: name.trim() || "Sample",

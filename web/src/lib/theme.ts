@@ -16,11 +16,17 @@ export function readTheme(): Theme {
 
 export const serverTheme = (): Theme => "system";
 
-/** Sets `data-theme` on <html> (the layout's boot script does the same before paint) and remembers the choice. */
+/**
+ * Sets `data-theme` on <html> and the color-scheme meta (the layout's boot script does the same
+ * before paint) and remembers the choice. The stylesheet keys off `data-theme`; the meta only sets
+ * the canvas before the stylesheet loads.
+ */
 export function applyTheme(theme: Theme): void {
   const root = document.documentElement;
   if (theme === "system") delete root.dataset.theme;
   else root.dataset.theme = theme;
+  const meta = document.querySelector<HTMLMetaElement>('meta[name="color-scheme"]');
+  if (meta) meta.content = theme === "system" ? "light dark" : theme;
   try {
     if (theme === "system") localStorage.removeItem(THEME_KEY);
     else localStorage.setItem(THEME_KEY, theme);

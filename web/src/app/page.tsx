@@ -51,10 +51,10 @@ export default function Queue() {
       {!data && !error ? <Spinner /> : null}
       {data && items.length === 0 ? <p className="text-small text-text-muted">Nothing here.</p> : null}
       <ul className="grid grid-cols-[repeat(auto-fill,minmax(210px,1fr))] gap-4">
-        {items.map((d) => (
+        {items.map((d, i) => (
           <li key={d.id}>
             <Link href={`/drafts/${d.id}`} className="block overflow-hidden rounded-lg border border-base-600/60 bg-base-800 hover:border-interactive">
-              <img src={draftImage(d.id, "image", d.image_sha256)} alt={`Card image of ${d.name}`} loading="lazy" className="aspect-[5/7] w-full bg-base-900 object-contain" />
+              <img src={draftImage(d.id, "image", d.image_sha256)} alt={`Card image of ${d.name}`} {...(i === 0 ? { fetchPriority: "high" as const } : { loading: "lazy" as const })} className="aspect-[5/7] w-full bg-base-900 object-contain" />
               <div className="space-y-1 p-3">
                 <div className="flex items-center justify-between gap-2">
                   <span className="truncate font-medium">{d.name}</span>

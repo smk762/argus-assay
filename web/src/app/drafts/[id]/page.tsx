@@ -208,6 +208,7 @@ export default function DraftPage() {
           <img
             src={draftImage(d.id, showArt && framed ? "art" : "image", draft.image_sha256)}
             alt={showArt ? "The unframed render" : "The card image under review"}
+            fetchPriority="high"
             className="w-full rounded-lg border border-base-600/60 bg-base-900 object-contain"
           />
           {framed ? (

@@ -49,4 +49,7 @@ fixture/              recorded responses from argus-mint's scripts/api_fixture.p
   - **Theme stays on `data-theme`** (shared with safelight), not the guide's `<meta>`-driven `:has()` selectors. The `color-scheme` meta is kept in step by the boot script and `lib/theme.ts` so the canvas is right before CSS loads.
   - **Images:** the page's main image gets `fetchPriority="high"` and is never lazy; grids lazy-load all but the first.
 - **Ports:** argus-mint is on 8108 (the mock too), assay on 3108.
-- **Branches:** `dev` is the default and takes feature PRs; `main` gets `dev` → `main` release PRs (same as argus-mint).
+
+## Branches
+
+`dev` is the default branch and the base for every PR. Cut feature branches from `origin/dev` and bring them up to date by merging `origin/dev`, never `main`. Never open a PR against `main` or push work to it directly: `main` must never be ahead of `dev`. A release fast-forwards `main` to a `dev` commit that passed CI (`git push origin origin/dev:main`), then tags it. If `main` is protected and needs a PR, merge the release PR, then immediately merge `main` back into `dev` so the merge commit is not left on `main` alone.

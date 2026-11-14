@@ -105,7 +105,7 @@ export default function LibraryPage() {
             <figcaption className="flex flex-wrap items-center justify-between gap-2 text-small text-white">
               <span>{checkpointName(data.items.find((i) => i.id === big)?.model ?? "")}</span>
               <span className="flex gap-3">
-                <Link href={`/new?library=${big}`} className="underline">
+                <Link href={`/new?library=${encodeURIComponent(big)}`} className="underline">
                   Make a card from this
                 </Link>
                 <button type="button" onClick={() => setBig(null)} className="underline" data-autofocus>

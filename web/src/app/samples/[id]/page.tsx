@@ -23,9 +23,13 @@ export default function SampleJobPage() {
         const next = await getSample(id);
         if (!live) return;
         setJob(next);
+        setError(null);
         if (next.status === "queued" || next.status === "running") timer = setTimeout(poll, 2000);
       } catch (e) {
-        if (live) setError(e instanceof Error ? e.message : String(e));
+        if (!live) return;
+        setError(e instanceof Error ? e.message : String(e));
+        // A dropped poll isn't the job failing: keep what's shown and try again.
+        timer = setTimeout(poll, 5000);
       }
     };
     void poll();
@@ -34,8 +38,7 @@ export default function SampleJobPage() {
       clearTimeout(timer);
     };
   }, [id]);
-  if (error) return <Notice tone="error">{error}</Notice>;
-  if (!job) return <Spinner />;
+  if (!job) return error ? <Notice tone="error">{error}</Notice> : <Spinner />;
   const r = job.request;
   const running = job.status === "queued" || job.status === "running";
   return (
@@ -66,6 +69,7 @@ export default function SampleJobPage() {
         ) : null}
         {job.items?.length ?? 0} of {r.count ?? 0} done ({job.status}). Local only: never pinned, signed or minted.
       </p>
+      {error ? <Notice tone="warning" className="mb-4">Couldn&apos;t refresh this job ({error}); retrying.</Notice> : null}
       {job.error ? <Notice tone="error" className="mb-4">{job.error}</Notice> : null}
       <ul className="grid grid-cols-[repeat(auto-fill,minmax(260px,1fr))] gap-4">
         {(job.items ?? []).map((item) => (

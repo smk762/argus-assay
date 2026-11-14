@@ -71,7 +71,7 @@ function NewDraftForm() {
   const models = t ? allowedModels(t) : [];
   const modelValue = models.slice(1).includes(model) ? model : "";
   const chosenLoras = t ? loraChoices(loras, t, modelValue || t.model) : [];
-  const values: Record<string, string> = Object.fromEntries(Object.entries(t?.variables ?? {}).map(([k, list]) => [k, vars[k] ?? list[0]]));
+  const values: Record<string, string> = Object.fromEntries(Object.entries(t?.variables ?? {}).map(([k, list]) => [k, list.includes(vars[k]) ? vars[k] : list[0]]));
   const biosOff = !health?.capabilities.write_bios;
   const off = !health?.capabilities.create_drafts
     ? "This server can't create drafts (it is read-only, or has neither darkroom nor a library)."
@@ -111,7 +111,8 @@ function NewDraftForm() {
               name: name.trim(),
               frame: ref(frame),
               bio: biosOff ? null : ref(bio),
-              texts: Object.fromEntries(Object.entries(texts).filter(([, v]) => v)),
+              // Only the chosen frame's slots: text typed for another frame doesn't carry over.
+              texts: Object.fromEntries(Object.entries(texts).filter(([k, v]) => v && displaySlots(f).includes(k))),
             });
             router.push(`/drafts/${d.id}`);
           } catch (err) {

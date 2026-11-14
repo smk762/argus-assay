@@ -10,18 +10,10 @@ import { useMint } from "@/components/MintProvider";
 import { Button, Card, Collapsible, Kv, Notice, SectionTitle, Spinner } from "@/components/ui";
 import { draftImage, getDraft, getFrames, moderatorReview, ownerChallenge, ownerReview, publishDraft } from "@/lib/api";
 import { awaitingText, canPublish, checkpointName, isAutoReview, loraText, moderatorCanReview, ownerCanReview, shortAddress } from "@/lib/status";
+import { readReviewer, saveReviewer } from "@/lib/reviewer";
 import { when } from "@/lib/time";
 import type { DraftDetail } from "@/lib/types";
 import { connectWallet, hasWallet, sameAddress, signMessage } from "@/lib/wallet";
-
-const REVIEWER_KEY = "assay-reviewer";
-const readReviewer = () => {
-  try {
-    return localStorage.getItem(REVIEWER_KEY) ?? "";
-  } catch {
-    return "";
-  }
-};
 
 function ModeratorPanel({ d, onDone }: { d: DraftDetail; onDone: (d: DraftDetail) => void }) {
   const { health, hasToken } = useMint();
@@ -35,7 +27,7 @@ function ModeratorPanel({ d, onDone }: { d: DraftDetail; onDone: (d: DraftDetail
     setBusy(true);
     setError(null);
     try {
-      localStorage.setItem(REVIEWER_KEY, by);
+      saveReviewer(by.trim());
       onDone(await moderatorReview(d.id, approve, by.trim(), note.trim()));
     } catch (e) {
       setError(e instanceof Error ? e.message : String(e));
@@ -108,7 +100,7 @@ function OwnerPanel({ d, onDone }: { d: DraftDetail; onDone: (d: DraftDetail) =>
           Reject with wallet
         </Button>
         {mock ? (
-          <Button disabled={busy} onClick={() => decide(true, true)}>
+          <Button disabled={!!off || busy} onClick={() => decide(true, true)}>
             Approve as demo owner
           </Button>
         ) : null}

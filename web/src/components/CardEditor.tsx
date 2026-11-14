@@ -43,6 +43,8 @@ export function CardEditor({ d, frame, onDone, onClose }: { d: DraftDetail; fram
   const [layout, setLayout] = useState<FrameLayout | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  // The preview's layout failing is not a bake failure, and clears when a later layout succeeds.
+  const [layoutError, setLayoutError] = useState<string | null>(null);
   const mock = Boolean((health as { mock?: boolean } | null)?.mock);
   const locked = Boolean((f as { style_locked?: boolean }).style_locked);
 
@@ -55,8 +57,12 @@ export function CardEditor({ d, frame, onDone, onClose }: { d: DraftDetail; fram
     let live = true;
     const timer = setTimeout(() => {
       frameLayout(f.id, f.version, JSON.parse(layoutKey) as Record<string, string>).then(
-        (l) => live && setLayout(l),
-        (e: unknown) => live && setError(e instanceof Error ? e.message : String(e)),
+        (l) => {
+          if (!live) return;
+          setLayout(l);
+          setLayoutError(null);
+        },
+        (e: unknown) => live && setLayoutError(e instanceof Error ? e.message : String(e)),
       );
     }, 250);
     return () => {
@@ -273,6 +279,7 @@ export function CardEditor({ d, frame, onDone, onClose }: { d: DraftDetail; fram
           <p className="text-caption text-text-muted">
             Only the card&apos;s owner ({shortAddress(draft.to)}) can sign. A new image needs the moderator and you to approve it again.
           </p>
+          {layoutError ? <Notice tone="warning">Preview layout: {layoutError}</Notice> : null}
           {error ? <Notice tone="error">{error}</Notice> : null}
         </div>
       </div>

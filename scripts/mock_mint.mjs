@@ -98,10 +98,17 @@ function send(res, status, body, type = "application/json") {
 }
 const fail = (res, status, detail) => send(res, status, { detail });
 const body = (req) =>
-  new Promise((resolve) => {
+  new Promise((resolve, reject) => {
     let data = "";
     req.on("data", (c) => (data += c));
-    req.on("end", () => resolve(data ? JSON.parse(data) : {}));
+    // Reject rather than throw in the listener: a bad body is a 500, not a crashed mock.
+    req.on("end", () => {
+      try {
+        resolve(data ? JSON.parse(data) : {});
+      } catch (e) {
+        reject(e);
+      }
+    });
   });
 
 function summary(d) {

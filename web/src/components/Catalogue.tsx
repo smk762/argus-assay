@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 import { decide, startSamples } from "@/lib/api";
+import { readReviewer, saveReviewer } from "@/lib/reviewer";
 import { allowedModels, catalogueAction, loraChoices } from "@/lib/status";
 import { displaySlots } from "@/lib/slots";
 import type { BioInfo, CatalogueKind, CatalogueStatus, FrameInfo, TemplateInfo } from "@/lib/types";
@@ -12,8 +13,6 @@ import { Field, INPUT } from "./bits";
 import { CheckpointOptions, LoraPicker } from "./Checkpoints";
 import { useMint } from "./MintProvider";
 import { Button, Card, Notice, SectionTitle, Spinner } from "./ui";
-
-const REVIEWER_KEY = "assay-reviewer";
 
 /** Approve a draft or retire an approved file. argus-mint writes it into the file. */
 export function DecisionPanel({
@@ -30,13 +29,7 @@ export function DecisionPanel({
   onDone: () => void;
 }) {
   const { health, hasToken } = useMint();
-  const [by, setBy] = useState(() => {
-    try {
-      return localStorage.getItem(REVIEWER_KEY) ?? "";
-    } catch {
-      return "";
-    }
-  });
+  const [by, setBy] = useState(readReviewer);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const action = catalogueAction(status);
@@ -73,7 +66,7 @@ export function DecisionPanel({
             setBusy(true);
             setError(null);
             try {
-              localStorage.setItem(REVIEWER_KEY, by.trim());
+              saveReviewer(by.trim());
               await decide(kind, id, version, action, by.trim());
               onDone();
             } catch (e) {
@@ -173,7 +166,7 @@ export function SampleRunner({
           </Field>
           {Object.entries(t.variables).map(([name, values]) => (
             <Field key={name} label={name}>
-              <select className={INPUT} value={vars[name] ?? ""} onChange={(e) => setVars({ ...vars, [name]: e.target.value })}>
+              <select className={INPUT} value={values.includes(vars[name]) ? vars[name] : ""} onChange={(e) => setVars({ ...vars, [name]: e.target.value })}>
                 <option value="">Any (varies)</option>
                 {values.map((v) => (
                   <option key={v}>{v}</option>
@@ -218,8 +211,9 @@ export function SampleRunner({
                 count,
                 seed,
                 name: name.trim() || "Sample",
-                variables: Object.fromEntries(Object.entries(vars).filter(([, v]) => v)),
-                texts: Object.fromEntries(Object.entries(texts).filter(([, v]) => v)),
+                // Only this template's variables and this frame's slots: picks made for another one don't carry over.
+                variables: Object.fromEntries(Object.entries(vars).filter(([k, v]) => v && t?.variables[k]?.includes(v))),
+                texts: Object.fromEntries(Object.entries(texts).filter(([k, v]) => v && displaySlots(f).includes(k))),
               });
               router.push(`/samples/${job.id}`);
             } catch (e) {

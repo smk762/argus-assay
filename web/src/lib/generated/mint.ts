@@ -1,4 +1,4 @@
-// Generated from smk762/argus-mint@0962d98fda214210ea48db6f63b248f421d9c2d3 schema/mint-wire.schema.json.
+// Generated from smk762/argus-mint@v0.2.0 schema/mint-wire.schema.json.
 // Do not edit: change schema/pins.json and run `npm run wire:pull`.
 
 export interface MintWire {
@@ -622,6 +622,9 @@ export interface Template {
   model: string;
   models?: string[];
   negative?: string;
+  negative_by_family?: {
+    [k: string]: string;
+  };
   prompt: string;
   sampling?: Sampling | null;
   sampling_by_family?: {

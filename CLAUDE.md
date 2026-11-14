@@ -42,7 +42,7 @@ fixture/              recorded responses from argus-mint's scripts/api_fixture.p
 - **Wire bumps:**
   1. Change the pin in `web/schema/pins.json`, then run `npm run wire:pull` and fix what typecheck reports.
   2. Run `make fixture` if responses changed shape.
-  3. While argus-mint has no release with the server, the pin is a commit; move it to the release tag once there is one.
+  3. The pin is an argus-mint release tag (`v0.2.0` or later). Pin a commit only to build against wire work argus-mint hasn't released, and move back to a tag at its next release.
 - **Web platform:** the [Modern Web Guidance](https://developer.chrome.com/docs/modern-web-guidance) skill is the reference for HTML/CSS/client JS (install it locally as a Claude Code plugin, or `npx modern-web-guidance@latest install`; its files aren't committed). House exceptions:
   - **Overlays are `components/Modal.tsx`**, a native `<dialog>` opened with `showModal()`. Don't hand-roll `role="dialog"` overlays, focus traps or Esc handlers.
   - **The CSP is nonce-based** (`src/proxy.ts`), so every page renders dynamically. An inline `<script>` needs the layout's `nonce`; anything else is refused. Only scripts, objects, `base`, forms and framing are restricted: argus-mint's origin is configurable and images arrive as `blob:` URLs.

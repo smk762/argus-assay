@@ -15,12 +15,14 @@ The standalone review UI for [argus-mint](https://github.com/smk762/argus-mint),
 2. **Draft** (`/drafts/{id}`).
    - **The image:** the card image the reviewers judge (with its sha256), and the unframed render beside it.
    - **Moderator:** approve or reject with a note, sent with the moderator token. Each role decides once, and a rejection closes the draft.
+   - **Auto-moderation:** argus-mint may record the moderator's approval itself (reviewer `auto: platform checks`) when its platform checks pass on the current image. The page says which checks passed, and the review is tagged `auto`. When the checks hold the draft, the page lists why and it waits for a person. Assay only shows `auto_check`; it doesn't act on it.
    - **Owner:**
      - Approve or reject with the wallet the card is minted to.
      - argus-mint issues a Sign-In with Ethereum challenge naming the draft, the decision and the image hash. The wallet signs it and assay relays it.
      - The wallet must be the card's `to`.
    - **Publish:** for an approved draft, pin and sign; then show the CIDs, content hash and voucher.
    - **Customise (owner only):** text fields plus style controls.
+     - **Locked frames:** a frame with `style_locked` hides every style control below; only the text can change.
      - **Border:** a tint and its strength.
      - **Each text slot:** text colour, an effect (none, shadow, outline or glow) with its colour, and a background (colour, opacity, corner radius, padding).
      - **Colour:** one colour wheel (hue around, saturation outward, a brightness slider, a hex field) sets whichever colour is selected. Any colour is allowed. On the wheel, the arrow keys turn the hue and move the saturation (Shift for finer steps).

@@ -31,6 +31,9 @@ Assay is where people do that reviewing. **The server is the product:** assay sh
   - **Render now:** a new image, on the template's default checkpoint or one of its reviewed alternatives, with any of the template's reviewed LoRAs.
   - **From the library:** a pre-rendered portrait, where the server has a library. No GPU needed.
 - **Library.** The pre-rendered portraits as a comparison: one row per variable combination, one column per checkpoint (grouped by family), the same seed across.
+
+  ![The library: one row per variable combination, one column per checkpoint, grouped into SDXL and Flux](docs/images/library.png)
+
 - **Catalogue.** Templates, frames and bio templates, with hashes and status.
   - Render sample cards from drafts.
   - See a frame's art window and text slots drawn on it, and preview it on any art.

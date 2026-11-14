@@ -134,7 +134,7 @@ function FrameView({ info }: { info: FrameInfo }) {
     <div className="grid gap-6 lg:grid-cols-2">
       <div className="space-y-2">
         <div className="relative">
-          <img src={url ?? frameOverlay(f.id, f.version)} alt={url ? "Preview of the frame on the chosen art" : "The frame overlay"} className="w-full rounded-lg border border-base-600/60 bg-[repeating-conic-gradient(#8884_0_25%,transparent_0_50%)] bg-[length:16px_16px]" />
+          <img src={url ?? frameOverlay(f.id, f.version)} alt={url ? "Preview of the frame on the chosen art" : "The frame overlay"} width={info.width} height={info.height} fetchPriority="high" className="w-full rounded-lg border border-base-600/60 bg-[repeating-conic-gradient(#8884_0_25%,transparent_0_50%)] bg-[length:16px_16px]" />
           {boxes && !url ? (
             <>
               <div className="absolute border-2 border-dashed border-accent-tertiary" style={boxStyle(f.window, info.width, info.height)}>

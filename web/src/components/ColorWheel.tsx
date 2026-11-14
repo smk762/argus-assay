@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState, type PointerEvent } from "react";
+import { useRef, useState, type KeyboardEvent, type PointerEvent } from "react";
 
 import { hexToHsv, hsvToHex, isHex } from "@/lib/style";
 
@@ -8,6 +8,7 @@ import { INPUT } from "./bits";
 
 /**
  * Hue around the wheel, saturation out from the centre, brightness on the slider below.
+ * With the keyboard: the arrow keys on the wheel, the slider, or the hex field.
  * Every colour is reachable, black included: the owner's call.
  */
 export function ColorWheel({ value, onChange, size = 180 }: { value: string; onChange: (hex: string) => void; size?: number }) {
@@ -36,6 +37,15 @@ export function ColorWheel({ value, onChange, size = 180 }: { value: string; onC
     const s = Math.min(1, Math.hypot(dx, dy) / (box.width / 2));
     emit({ h, s, v: hsv.v || 1 });
   };
+  // Left and right turn the hue, up and down move the saturation; Shift takes finer steps.
+  const nudge = (e: KeyboardEvent<HTMLDivElement>) => {
+    const fine = e.shiftKey ? 1 : 5;
+    const move: Record<string, [number, number]> = { ArrowRight: [fine, 0], ArrowLeft: [-fine, 0], ArrowUp: [0, fine / 100], ArrowDown: [0, -fine / 100] };
+    const by = move[e.key];
+    if (!by) return;
+    e.preventDefault();
+    emit({ h: (hsv.h + by[0] + 360) % 360, s: Math.max(0, Math.min(1, hsv.s + by[1])), v: hsv.v || 1 });
+  };
   const angle = (hsv.h * Math.PI) / 180;
   const r = (hsv.s * size) / 2;
   return (
@@ -55,6 +65,7 @@ export function ColorWheel({ value, onChange, size = 180 }: { value: string; onC
           height: size,
           background: "radial-gradient(circle closest-side, #fff, transparent), conic-gradient(red, yellow, lime, cyan, blue, magenta, red)",
         }}
+        onKeyDown={nudge}
         onPointerDown={(e) => {
           e.currentTarget.setPointerCapture(e.pointerId);
           pick(e);

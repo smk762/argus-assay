@@ -72,7 +72,7 @@ export default function SampleJobPage() {
           <li key={item.n}>
             <Card className="space-y-2">
               {item.framed || item.art ? (
-                <img src={sampleImage(job.id, item.n, item.framed ? "framed" : "art")} alt={`Sample ${item.n}`} className="w-full rounded-md bg-base-900" />
+                <img src={sampleImage(job.id, item.n, item.framed ? "framed" : "art")} alt={`Sample ${item.n}`} {...(item === job.items?.[0] ? { fetchPriority: "high" as const } : { loading: "lazy" as const })} className="w-full rounded-md bg-base-900" />
               ) : (
                 <div className="flex aspect-square items-center justify-center rounded-md bg-base-900 text-small text-text-muted">no image</div>
               )}

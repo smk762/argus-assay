@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useState } from "react";
 
 import { INPUT, PageTitle, useLoad } from "@/components/bits";
+import { Modal } from "@/components/Modal";
 import { useMint } from "@/components/MintProvider";
 import { Notice, Spinner } from "@/components/ui";
 import { getLibrary, libraryImage } from "@/lib/api";
@@ -97,9 +98,9 @@ export default function LibraryPage() {
           </tbody>
         </table>
       </div>
-      {big ? (
-        <div role="dialog" aria-modal="true" aria-label="Portrait" className="fixed inset-0 z-40 flex items-center justify-center bg-black/80 p-4" onClick={() => setBig(null)}>
-          <figure className="max-h-full max-w-5xl space-y-2" onClick={(e) => e.stopPropagation()}>
+      <Modal open={big !== null} onClose={() => setBig(null)} label="Portrait" lightDismiss className="max-w-5xl backdrop:bg-black/80">
+        {big ? (
+          <figure className="space-y-2">
             <img src={libraryImage(big)} alt="The full portrait" className="max-h-[80vh] rounded-lg" />
             <figcaption className="flex flex-wrap items-center justify-between gap-2 text-small text-white">
               <span>{checkpointName(data.items.find((i) => i.id === big)?.model ?? "")}</span>
@@ -107,14 +108,14 @@ export default function LibraryPage() {
                 <Link href={`/new?library=${big}`} className="underline">
                   Make a card from this
                 </Link>
-                <button type="button" onClick={() => setBig(null)} className="underline">
+                <button type="button" onClick={() => setBig(null)} className="underline" data-autofocus>
                   Close
                 </button>
               </span>
             </figcaption>
           </figure>
-        </div>
-      ) : null}
+        ) : null}
+      </Modal>
     </>
   );
 }

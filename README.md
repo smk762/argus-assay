@@ -8,6 +8,12 @@ argus-mint turns game art into provenance tokens, and nothing leaves it unreview
 
 Assay is where people do that reviewing. **The server is the product:** assay shows what argus-mint recorded and decides nothing itself.
 
+![The owner customising a card: a live preview beside the text fields, the colour wheel and the effect controls](docs/images/editor.png)
+
+| The review queue | A draft, approved by the moderator and the owner |
+|---|---|
+| ![The review queue, with an approved, a rejected and a pending card](docs/images/queue.png) | ![A draft with its reviews, the owner's edit and its bio](docs/images/draft-reviews.png) |
+
 ## What it shows
 
 - **Review queue.** Drafts waiting for the moderator, and every other status.
@@ -29,6 +35,9 @@ Assay is where people do that reviewing. **The server is the product:** assay sh
   - Render sample cards from drafts.
   - See a frame's art window and text slots drawn on it, and preview it on any art.
   - Approve, or retire, with the decision written into the file.
+
+  ![A frame in the catalogue, with its art window and text slots drawn on the overlay](docs/images/frame-slots.png)
+
 - **Samples.** Sample jobs as they render; never pinned, signed or minted.
 
 The full spec is in [spec.md](spec.md).
@@ -52,7 +61,7 @@ cd web && NEXT_PUBLIC_MINT_URL=/mint ASSAY_MINT_PROXY=http://127.0.0.1:8108 npm 
 ASSAY_MINT_PROXY=http://127.0.0.1:8108 npx next start -H 0.0.0.0 -p 3108
 ```
 
-Add assay's LAN origin (e.g. `http://192.168.1.39:3108`) to `ARGUS_MINT_CORS_ORIGINS`, and set `ARGUS_MINT_SIWE_DOMAIN` to its host (`192.168.1.39:3108`). Some wallets only sign on `localhost` or HTTPS origins.
+Add assay's LAN origin (e.g. `http://<LAN_HOST>:3108`; the real host/IP is in the local `.env`) to `ARGUS_MINT_CORS_ORIGINS`, and set `ARGUS_MINT_SIWE_DOMAIN` to its host (`<LAN_HOST>:3108`). Some wallets only sign on `localhost` or HTTPS origins.
 
 In docker: `docker compose up` (with `COMPOSE_PROFILES=mock` from `.env.example` for the mock).
 

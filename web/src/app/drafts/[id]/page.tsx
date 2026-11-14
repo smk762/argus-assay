@@ -203,11 +203,12 @@ export default function DraftPage() {
           onClose={() => setEditing(false)}
         />
       ) : null}
-      <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
+      <div className="grid grid-cols-[minmax(0,1fr)] gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
         <div className="space-y-2">
           <img
             src={draftImage(d.id, showArt && framed ? "art" : "image", draft.image_sha256)}
             alt={showArt ? "The unframed render" : "The card image under review"}
+            fetchPriority="high"
             className="w-full rounded-lg border border-base-600/60 bg-base-900 object-contain"
           />
           {framed ? (

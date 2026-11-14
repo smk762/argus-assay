@@ -1,0 +1,35 @@
+# Assay. The fixture mock is the `mock` profile (`COMPOSE_PROFILES=mock` in .env), so the UI
+# runs without argus-mint, a GPU or a wallet. Against a live server, omit that profile and set
+# NEXT_PUBLIC_MINT_URL to it (argus-mint: `make serve-up`, its compose profile `server`).
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        NEXT_PUBLIC_MINT_URL: ${NEXT_PUBLIC_MINT_URL:-http://localhost:8108}
+        # e.g. http://mock-mint:8108 with NEXT_PUBLIC_MINT_URL=/mint, for LAN access on one port
+        ASSAY_MINT_PROXY: ${ASSAY_MINT_PROXY:-}
+    environment:
+      - PORT=${PORT:-3108}
+    ports:
+      - "${PORT:-3108}:${PORT:-3108}"
+    depends_on:
+      mock-mint:
+        condition: service_started
+        required: false
+    restart: unless-stopped
+
+  mock-mint:
+    profiles: [mock]
+    image: node:22-alpine
+    working_dir: /repo
+    command: ["node", "scripts/mock_mint.mjs"]
+    volumes:
+      - ./scripts:/repo/scripts:ro
+      - ./fixture:/repo/fixture:ro
+    environment:
+      - MOCK_PORT=8108
+      - MOCK_STEP_MS=${MOCK_STEP_MS-1500}
+    ports:
+      - "127.0.0.1:8108:8108"

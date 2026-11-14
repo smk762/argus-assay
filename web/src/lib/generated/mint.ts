@@ -1,0 +1,645 @@
+// Generated from smk762/argus-mint@v0.2.0 schema/mint-wire.schema.json.
+// Do not edit: change schema/pins.json and run `npm run wire:pull`.
+
+export interface MintWire {
+  ArtSource?: ArtSource;
+  AutoCheck?: AutoCheck;
+  BioInfo?: BioInfo;
+  BioRecord?: BioRecord;
+  BioRef?: BioRef;
+  BioTemplate?: BioTemplate;
+  Capabilities?: Capabilities;
+  CardDraft?: CardDraft;
+  CardStyle?: CardStyle;
+  CatalogueDecision?: CatalogueDecision;
+  CatalogueEntry?: CatalogueEntry;
+  Challenge?: Challenge;
+  ChallengeRequest?: ChallengeRequest;
+  CreateDraft?: CreateDraft;
+  DraftDetail?: DraftDetail;
+  DraftList?: DraftList;
+  DraftSummary?: DraftSummary;
+  Edit?: Edit;
+  EditTextRequest?: EditTextRequest;
+  Frame?: Frame;
+  FrameInfo?: FrameInfo;
+  FrameLayout?: FrameLayout;
+  FramePreviewRequest?: FramePreviewRequest;
+  FrameRef?: FrameRef;
+  Health?: Health;
+  LayoutRequest?: LayoutRequest;
+  LibraryItem?: LibraryItem;
+  LibraryListing?: LibraryListing;
+  LineLayout?: LineLayout;
+  LoraChoice?: LoraChoice;
+  LoraOption?: LoraOption;
+  LoraRef?: LoraRef;
+  PublishRequest?: PublishRequest;
+  PublishResult?: PublishResult;
+  Rect?: Rect;
+  Ref?: Ref;
+  RenderRequest?: RenderRequest;
+  Review?: Review;
+  ReviewRequest?: ReviewRequest;
+  SampleItem?: SampleItem;
+  SampleJob?: SampleJob;
+  SampleJobList?: SampleJobList;
+  SampleRequest?: SampleRequest;
+  Sampling?: Sampling;
+  SlotBackground?: SlotBackground;
+  SlotLayout?: SlotLayout;
+  SlotStyle?: SlotStyle;
+  Template?: Template;
+  TemplateInfo?: TemplateInfo;
+  TextEdit?: TextEdit;
+  TextSlot?: TextSlot;
+  Tint?: Tint;
+}
+/**
+ * Existing art to preview a frame on: a draft's render, or a sample's.
+ */
+export interface ArtSource {
+  draft?: string | null;
+  n?: number | null;
+  sample?: string | null;
+}
+/**
+ * What auto-moderation found for the current image. ``passed`` recorded the moderator's approval.
+ */
+export interface AutoCheck {
+  at: string;
+  checks: string[];
+  held?: string[];
+  image_sha256: string;
+  passed: boolean;
+}
+export interface BioInfo {
+  bio: BioTemplate;
+  file: string;
+  hash: string;
+}
+/**
+ * One version of a bio template, as reviewed and recorded in its YAML file.
+ */
+export interface BioTemplate {
+  approved_at?: string | null;
+  approved_by?: string | null;
+  id: string;
+  max_attempts?: number;
+  max_chars?: number;
+  max_tokens?: number;
+  model: string;
+  prompt: string;
+  status: "draft" | "approved" | "retired";
+  system: string;
+  temperature?: number;
+  version: number;
+}
+/**
+ * The bio written for this card: its template and model, the text, and every attempt.
+ */
+export interface BioRecord {
+  attempts: {
+    [k: string]: unknown;
+  }[];
+  edited?: boolean;
+  ref: BioRef;
+  text: string;
+}
+/**
+ * The reviewed bio template (and model) that wrote the card's bio (see :mod:`argus_mint.bios`).
+ */
+export interface BioRef {
+  hash: string;
+  id: string;
+  model: string;
+  version: number;
+}
+/**
+ * What this server will do. A client disables a control whose capability is false.
+ */
+export interface Capabilities {
+  auto_moderate?: boolean;
+  create_drafts: boolean;
+  edit_text?: boolean;
+  library?: boolean;
+  moderate: boolean;
+  owner_review: boolean;
+  publish: boolean;
+  review_catalogue?: boolean;
+  sample?: boolean;
+  write_bios: boolean;
+}
+/**
+ * Everything needed to publish a card, except the pins and the signature.
+ */
+export interface CardDraft {
+  art_sha256: string;
+  asset_id: string;
+  attempts: {
+    [k: string]: unknown;
+  }[];
+  auto_check?: AutoCheck | null;
+  bio?: BioRecord | null;
+  consumer: string;
+  created_at: string;
+  description?: string;
+  edits?: Edit[];
+  external_url?: string | null;
+  format?: 1;
+  frame?: FrameRef | null;
+  image_sha256: string;
+  library?: string | null;
+  name: string;
+  renderer: string;
+  request: RenderRequest;
+  reviews?: Review[];
+  style?: CardStyle | null;
+  texts?: {
+    [k: string]: string;
+  };
+  to: string;
+}
+/**
+ * A change to the card's text, which redraws the card image on the same art.
+ */
+export interface Edit {
+  at: string;
+  by: string;
+  fields: string[];
+  image_sha256: string;
+  role: "moderator" | "owner";
+}
+/**
+ * The reviewed frame composited onto the render (see :mod:`argus_mint.frames`).
+ */
+export interface FrameRef {
+  hash: string;
+  id: string;
+  version: number;
+}
+/**
+ * Everything a renderer needs, fully determined by template version + values + seed.
+ */
+export interface RenderRequest {
+  height: number;
+  loras: LoraRef[];
+  model: string;
+  negative: string;
+  prompt: string;
+  sampling: Sampling | null;
+  seed: number;
+  template_hash: string;
+  template_id: string;
+  template_version: number;
+  variables: {
+    [k: string]: string;
+  };
+  width: number;
+}
+/**
+ * A LoRA by file name, with its weight and the trigger words the renderer appends.
+ *
+ * A bare string in YAML means ``{name: <string>, weight: 1.0}``.
+ */
+export interface LoraRef {
+  name: string;
+  trigger_words?: string[];
+  weight?: number;
+}
+/**
+ * Sampler settings, fixed by the reviewed template so a render is reproducible.
+ */
+export interface Sampling {
+  cfg: number;
+  clip_skip?: number;
+  guidance?: number | null;
+  sampler: string;
+  scheduler: string;
+  steps: number;
+}
+export interface Review {
+  at: string;
+  by: string;
+  decision: "approved" | "rejected";
+  image_sha256: string;
+  note?: string;
+  role: "moderator" | "owner";
+}
+/**
+ * The owner's styling of a framed card: any colours, so be it if that's black on black.
+ */
+export interface CardStyle {
+  slots?: {
+    [k: string]: SlotStyle;
+  };
+  tint?: Tint | null;
+}
+/**
+ * How one text slot is drawn. Unset fields keep the frame's own choices.
+ */
+export interface SlotStyle {
+  background?: SlotBackground | null;
+  colour?: string | null;
+  effect?: "none" | "shadow" | "outline" | "glow";
+  effect_colour?: string;
+}
+/**
+ * A filled, rounded box behind a text slot.
+ */
+export interface SlotBackground {
+  colour: string;
+  opacity?: number;
+  padding?: number;
+  radius?: number;
+}
+/**
+ * Recolour the frame overlay: every pixel moves toward ``colour`` at its own brightness.
+ */
+export interface Tint {
+  colour: string;
+  strength?: number;
+}
+/**
+ * POST /{templates,frames,bios}/{id}/{version}/review (moderator token).
+ */
+export interface CatalogueDecision {
+  by: string;
+  decision: "approve" | "retire";
+}
+export interface CatalogueEntry {
+  file: string;
+  hash: string;
+  id: string;
+  kind: "template" | "frame" | "bio";
+  status: "draft" | "approved" | "retired";
+  version: number;
+}
+export interface Challenge {
+  expires_at: string;
+  message: string;
+  nonce: string;
+}
+/**
+ * POST /drafts/{id}/challenge: the owner asks for the message to sign.
+ *
+ * ``action: review`` with ``approve``; ``action: edit`` with the exact ``edit`` it will authorise.
+ */
+export interface ChallengeRequest {
+  action?: "review" | "edit";
+  approve?: boolean;
+  edit?: TextEdit | null;
+}
+/**
+ * The owner's change to the card: text and style. ``None`` leaves a field as it is; an empty
+ * slot text clears it; ``style`` replaces the whole style (an empty one clears it).
+ */
+export interface TextEdit {
+  bio?: string | null;
+  name?: string | null;
+  style?: CardStyle | null;
+  texts?: {
+    [k: string]: string;
+  } | null;
+}
+/**
+ * POST /drafts. The template, frame and bio are named by id and version, never by path.
+ *
+ * Either render (``variables``, ``seed``, optionally ``model``), or take a pre-rendered
+ * ``library`` entry, whose variables, seed and checkpoint then apply.
+ */
+export interface CreateDraft {
+  asset?: string | null;
+  asset_id?: string | null;
+  bio?: Ref | null;
+  description?: string;
+  external_url?: string | null;
+  frame?: Ref | null;
+  library?: string | null;
+  loras?: LoraChoice[];
+  model?: string | null;
+  name: string;
+  seed?: number;
+  style?: CardStyle | null;
+  template: Ref;
+  texts?: {
+    [k: string]: string;
+  };
+  to: string;
+  variables?: {
+    [k: string]: string;
+  };
+}
+export interface Ref {
+  id: string;
+  version: number;
+}
+/**
+ * A render's pick from the template's ``lora_options``. ``weight`` defaults to the first allowed.
+ */
+export interface LoraChoice {
+  name: string;
+  weight?: number | null;
+}
+export interface DraftDetail {
+  awaiting: string[];
+  draft: CardDraft;
+  id: string;
+  published?: PublishResult | null;
+  status: "pending" | "approved" | "rejected" | "published";
+}
+export interface PublishResult {
+  metadata: {
+    [k: string]: unknown;
+  };
+  metadata_cid: string;
+  render: {
+    [k: string]: unknown;
+  };
+  reviews: {
+    [k: string]: unknown;
+  }[];
+  signature: string;
+  signer: string;
+  typed_data: {
+    [k: string]: unknown;
+  };
+  voucher: {
+    [k: string]: unknown;
+  };
+}
+export interface DraftList {
+  items: DraftSummary[];
+  total: number;
+}
+export interface DraftSummary {
+  awaiting: string[];
+  created_at: string;
+  frame: Ref | null;
+  id: string;
+  image_sha256: string;
+  name: string;
+  status: "pending" | "approved" | "rejected" | "published";
+  template: Ref;
+  to: string;
+}
+/**
+ * POST /drafts/{id}/edit: only the owner edits, with the signed challenge for exactly this edit.
+ *
+ * The moderator approves or rejects; they don't change the card.
+ */
+export interface EditTextRequest {
+  bio?: string | null;
+  message: string;
+  name?: string | null;
+  signature: string;
+  style?: CardStyle | null;
+  texts?: {
+    [k: string]: string;
+  } | null;
+}
+/**
+ * One version of a frame, as reviewed and recorded in its YAML file.
+ */
+export interface Frame {
+  approved_at?: string | null;
+  approved_by?: string | null;
+  id: string;
+  overlay: string;
+  status: "draft" | "approved" | "retired";
+  style_locked?: boolean;
+  texts?: {
+    [k: string]: TextSlot;
+  };
+  version: number;
+  window: Rect;
+}
+/**
+ * A box for one piece of card text.
+ *
+ * The text is drawn at ``size`` if it fits, else at the largest size down to ``min_size``
+ * that fits; with ``wrap`` it breaks across lines. If it doesn't fit even at ``min_size``,
+ * it is clipped and ends in an ellipsis.
+ */
+export interface TextSlot {
+  align?: "left" | "center" | "right";
+  colour?: string;
+  font?: string | null;
+  height: number;
+  line_spacing?: number;
+  min_size?: number;
+  size?: number;
+  valign?: "top" | "middle";
+  width: number;
+  wrap?: boolean;
+  x: number;
+  y: number;
+}
+export interface Rect {
+  height: number;
+  width: number;
+  x: number;
+  y: number;
+}
+export interface FrameInfo {
+  file: string;
+  frame: Frame;
+  hash: string;
+  height: number;
+  width: number;
+}
+export interface FrameLayout {
+  height: number;
+  slots: {
+    [k: string]: SlotLayout;
+  };
+  width: number;
+}
+export interface SlotLayout {
+  ascent: number;
+  descent: number;
+  effects: {
+    [k: string]: number;
+  };
+  font: string | null;
+  lines: LineLayout[];
+  size: number;
+}
+export interface LineLayout {
+  text: string;
+  x: number;
+  y: number;
+}
+/**
+ * POST /frames/{id}/{version}/preview: a frame (any status) on existing art; returns a PNG.
+ */
+export interface FramePreviewRequest {
+  art: ArtSource;
+  bio?: string | null;
+  name?: string;
+  style?: CardStyle | null;
+  texts?: {
+    [k: string]: string;
+  };
+}
+export interface Health {
+  backends: {
+    [k: string]: boolean;
+  };
+  capabilities: Capabilities;
+  card: string | null;
+  chain_id: number;
+  consumer: string;
+  network: string;
+  read_only: boolean;
+  reviewers: string[];
+  service?: "argus-mint";
+  siwe_domain: string | null;
+  version: string;
+  wire_version?: string;
+}
+/**
+ * POST /frames/{id}/{version}/layout: where these texts go, for a browser preview.
+ */
+export interface LayoutRequest {
+  texts: {
+    [k: string]: string;
+  };
+}
+export interface LibraryItem {
+  group: number;
+  id: string;
+  model: string;
+  seed: number;
+  sha256: string;
+  variables: {
+    [k: string]: string;
+  };
+}
+/**
+ * GET /library: pre-rendered portraits, for drafts without a GPU (``CreateDraft.library``).
+ */
+export interface LibraryListing {
+  count: number;
+  items: LibraryItem[];
+  models: string[];
+  template: Ref;
+}
+/**
+ * A LoRA a card may choose (reviewed with the template), at one of its allowed weights.
+ *
+ * ``models``: the checkpoints it may pair with (a LoRA belongs to one family); empty means any
+ * the template allows.
+ */
+export interface LoraOption {
+  models?: string[];
+  name: string;
+  trigger_words?: string[];
+  weights?: number[];
+}
+export interface PublishRequest {
+  deadline?: number | null;
+  price?: number;
+}
+/**
+ * POST /drafts/{id}/review.
+ *
+ * The moderator sends ``Authorization: Bearer <token>`` and ``by``; the owner sends the
+ * signed challenge (``message`` + ``signature``), and ``by`` is their address.
+ */
+export interface ReviewRequest {
+  approve: boolean;
+  by?: string | null;
+  message?: string | null;
+  note?: string;
+  role: "moderator" | "owner";
+  signature?: string | null;
+}
+export interface SampleItem {
+  art?: boolean;
+  attempts?: {
+    [k: string]: unknown;
+  }[];
+  bio?: string | null;
+  bio_attempts?: {
+    [k: string]: unknown;
+  }[];
+  bio_error?: string | null;
+  error?: string | null;
+  framed?: boolean;
+  n: number;
+  prompt?: string | null;
+  seed?: number | null;
+  variables: {
+    [k: string]: string;
+  };
+}
+export interface SampleJob {
+  created_at: string;
+  error?: string | null;
+  finished_at?: string | null;
+  id: string;
+  items?: SampleItem[];
+  request: SampleRequest;
+  status: "queued" | "running" | "done" | "failed";
+}
+/**
+ * POST /samples: render sample cards of a template (any status) for its reviewer.
+ */
+export interface SampleRequest {
+  bio?: Ref | null;
+  count?: number;
+  frame?: Ref | null;
+  loras?: LoraChoice[];
+  model?: string | null;
+  name?: string;
+  seed?: number;
+  style?: CardStyle | null;
+  template: Ref;
+  texts?: {
+    [k: string]: string;
+  };
+  variables?: {
+    [k: string]: string;
+  };
+}
+export interface SampleJobList {
+  items: SampleJob[];
+  total: number;
+}
+/**
+ * One version of a render template, as reviewed and recorded in its YAML file.
+ */
+export interface Template {
+  approved_at?: string | null;
+  approved_by?: string | null;
+  height: number;
+  id: string;
+  lora_options?: LoraOption[];
+  loras?: LoraRef[];
+  max_attempts?: number;
+  max_loras?: number;
+  model: string;
+  models?: string[];
+  negative?: string;
+  negative_by_family?: {
+    [k: string]: string;
+  };
+  prompt: string;
+  sampling?: Sampling | null;
+  sampling_by_family?: {
+    [k: string]: Sampling;
+  };
+  status: "draft" | "approved" | "retired";
+  variables: {
+    [k: string]: string[];
+  };
+  version: number;
+  width: number;
+}
+export interface TemplateInfo {
+  combinations: number;
+  file: string;
+  hash: string;
+  template: Template;
+}

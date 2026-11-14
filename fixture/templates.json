@@ -1,0 +1,310 @@
+[
+  {
+    "hash": "0x5c36dcb87248112c3c6a1c876cd76718f72063a155cc762147d871da2b8e08e7",
+    "file": "t.yaml",
+    "combinations": 156816,
+    "template": {
+      "id": "example-portrait",
+      "version": 2,
+      "status": "approved",
+      "approved_by": "fixture",
+      "approved_at": "2026-11-09",
+      "model": "sdxl/aureanuanceXL_v2/aureanuanceXL_v2.safetensors",
+      "models": [
+        "sdxl/aureanuanceXL_v2/aureanuanceXL_v2.safetensors",
+        "sdxl/bigLove_xl2/bigLove_xl2.safetensors",
+        "sdxl/cyberrealisticXL_desireV20/cyberrealisticXL_desireV20.safetensors",
+        "sdxl/epicrealismXL_pureFix/epicrealismXL_pureFix.safetensors",
+        "sdxl/eventHorizon_xlV60/eventHorizon_xlV60.safetensors",
+        "sdxl/juggernautXL_ragnarokBy/juggernautXL_ragnarokBy.safetensors",
+        "sdxl/realityBoundxl_soulgripV10/realityBoundxl_soulgripV10.safetensors",
+        "flux/flux1-dev-fp8.safetensors"
+      ],
+      "loras": [],
+      "lora_options": [
+        {
+          "name": "sdxl/sfw/aesthetic/dnd_cover_xl/dnd_cover.safetensors",
+          "weights": [
+            0.8,
+            0.5
+          ],
+          "trigger_words": [],
+          "models": [
+            "sdxl/aureanuanceXL_v2/aureanuanceXL_v2.safetensors",
+            "sdxl/bigLove_xl2/bigLove_xl2.safetensors",
+            "sdxl/cyberrealisticXL_desireV20/cyberrealisticXL_desireV20.safetensors",
+            "sdxl/epicrealismXL_pureFix/epicrealismXL_pureFix.safetensors",
+            "sdxl/eventHorizon_xlV60/eventHorizon_xlV60.safetensors",
+            "sdxl/juggernautXL_ragnarokBy/juggernautXL_ragnarokBy.safetensors",
+            "sdxl/realityBoundxl_soulgripV10/realityBoundxl_soulgripV10.safetensors"
+          ]
+        },
+        {
+          "name": "sdxl/sfw/detail/extremely_detailed_xl/extremely_detailed.safetensors",
+          "weights": [
+            0.6
+          ],
+          "trigger_words": [],
+          "models": [
+            "sdxl/aureanuanceXL_v2/aureanuanceXL_v2.safetensors",
+            "sdxl/bigLove_xl2/bigLove_xl2.safetensors",
+            "sdxl/cyberrealisticXL_desireV20/cyberrealisticXL_desireV20.safetensors",
+            "sdxl/epicrealismXL_pureFix/epicrealismXL_pureFix.safetensors",
+            "sdxl/eventHorizon_xlV60/eventHorizon_xlV60.safetensors",
+            "sdxl/juggernautXL_ragnarokBy/juggernautXL_ragnarokBy.safetensors",
+            "sdxl/realityBoundxl_soulgripV10/realityBoundxl_soulgripV10.safetensors"
+          ]
+        },
+        {
+          "name": "flux1-dev/detailed style v1.5.safetensors",
+          "weights": [
+            0.8
+          ],
+          "trigger_words": [],
+          "models": [
+            "flux/flux1-dev-fp8.safetensors"
+          ]
+        }
+      ],
+      "max_loras": 2,
+      "sampling": {
+        "sampler": "euler",
+        "scheduler": "normal",
+        "steps": 25,
+        "cfg": 6.0,
+        "clip_skip": 1,
+        "guidance": null
+      },
+      "sampling_by_family": {
+        "flux": {
+          "sampler": "euler",
+          "scheduler": "simple",
+          "steps": 20,
+          "cfg": 1.0,
+          "clip_skip": 1,
+          "guidance": 3.5
+        }
+      },
+      "width": 1152,
+      "height": 896,
+      "prompt": "waist-up portrait of a single {gender} {role}, centered and facing the viewer, wearing {colour} heraldry, {pose}, background: {background}, painted fantasy illustration, full bleed, detailed face",
+      "negative": "text, letters, words, caption, title, label, logo, watermark, signature, border, frame, card frame, trading card, playing card, game ui, icons, badges, numbers, multiple people, crowd, empty scene, landscape, gore",
+      "negative_by_family": {
+        "flux": ""
+      },
+      "variables": {
+        "role": [
+          "knight",
+          "ranger",
+          "sailor",
+          "elf",
+          "dark elf",
+          "wraith",
+          "centaur",
+          "cyborg",
+          "dwarf",
+          "human",
+          "orc",
+          "goblin",
+          "giant",
+          "dragon",
+          "wizard",
+          "priest"
+        ],
+        "gender": [
+          "male",
+          "female",
+          "non-binary"
+        ],
+        "colour": [
+          "crimson",
+          "azure",
+          "emerald",
+          "gold",
+          "silver",
+          "bronze",
+          "copper",
+          "iron",
+          "steel",
+          "obsidian",
+          "none"
+        ],
+        "pose": [
+          "standing",
+          "charging",
+          "on guard",
+          "kneeling",
+          "sitting",
+          "sleeping",
+          "dead",
+          "fighting",
+          "casting a spell",
+          "praying",
+          "drinking",
+          "eating",
+          "reading",
+          "writing",
+          "sewing",
+          "knitting",
+          "weaving",
+          "cooking",
+          "cleaning",
+          "gardening",
+          "fishing",
+          "hunting",
+          "gathering",
+          "building",
+          "repairing",
+          "chopping wood",
+          "mining"
+        ],
+        "background": [
+          "cave",
+          "castle",
+          "dungeon",
+          "forest",
+          "garden",
+          "library",
+          "laboratory",
+          "academy",
+          "temple",
+          "workshop",
+          "none"
+        ]
+      },
+      "max_attempts": 4
+    }
+  },
+  {
+    "hash": "0xeaecfccaa1aa9632720faaf393f1e7d2d9fbc6d2b589beaad2324f510595c5bd",
+    "file": "t3.yaml",
+    "combinations": 156816,
+    "template": {
+      "id": "example-portrait",
+      "version": 3,
+      "status": "draft",
+      "approved_by": null,
+      "approved_at": null,
+      "model": "sdxl/aureanuanceXL_v2/aureanuanceXL_v2.safetensors",
+      "models": [
+        "sdxl/aureanuanceXL_v2/aureanuanceXL_v2.safetensors",
+        "sdxl/bigLove_xl2/bigLove_xl2.safetensors",
+        "sdxl/cyberrealisticXL_desireV20/cyberrealisticXL_desireV20.safetensors",
+        "sdxl/epicrealismXL_pureFix/epicrealismXL_pureFix.safetensors",
+        "sdxl/eventHorizon_xlV60/eventHorizon_xlV60.safetensors",
+        "sdxl/juggernautXL_ragnarokBy/juggernautXL_ragnarokBy.safetensors",
+        "sdxl/realityBoundxl_soulgripV10/realityBoundxl_soulgripV10.safetensors",
+        "flux/flux1-dev-fp8.safetensors"
+      ],
+      "loras": [],
+      "lora_options": [],
+      "max_loras": 1,
+      "sampling": {
+        "sampler": "euler",
+        "scheduler": "normal",
+        "steps": 25,
+        "cfg": 6.0,
+        "clip_skip": 1,
+        "guidance": null
+      },
+      "sampling_by_family": {
+        "flux": {
+          "sampler": "euler",
+          "scheduler": "simple",
+          "steps": 20,
+          "cfg": 1.0,
+          "clip_skip": 1,
+          "guidance": 3.5
+        }
+      },
+      "width": 1152,
+      "height": 896,
+      "prompt": "waist-up portrait of a single {gender} {role}, centered and facing the viewer, wearing {colour} heraldry, {pose}, background: {background}, painted fantasy illustration, full bleed, detailed face",
+      "negative": "text, letters, words, caption, title, label, logo, watermark, signature, border, frame, card frame, trading card, playing card, game ui, icons, badges, numbers, multiple people, crowd, empty scene, landscape, gore, blurry",
+      "negative_by_family": {
+        "flux": ""
+      },
+      "variables": {
+        "role": [
+          "knight",
+          "ranger",
+          "sailor",
+          "elf",
+          "dark elf",
+          "wraith",
+          "centaur",
+          "cyborg",
+          "dwarf",
+          "human",
+          "orc",
+          "goblin",
+          "giant",
+          "dragon",
+          "wizard",
+          "priest"
+        ],
+        "gender": [
+          "male",
+          "female",
+          "non-binary"
+        ],
+        "colour": [
+          "crimson",
+          "azure",
+          "emerald",
+          "gold",
+          "silver",
+          "bronze",
+          "copper",
+          "iron",
+          "steel",
+          "obsidian",
+          "none"
+        ],
+        "pose": [
+          "standing",
+          "charging",
+          "on guard",
+          "kneeling",
+          "sitting",
+          "sleeping",
+          "dead",
+          "fighting",
+          "casting a spell",
+          "praying",
+          "drinking",
+          "eating",
+          "reading",
+          "writing",
+          "sewing",
+          "knitting",
+          "weaving",
+          "cooking",
+          "cleaning",
+          "gardening",
+          "fishing",
+          "hunting",
+          "gathering",
+          "building",
+          "repairing",
+          "chopping wood",
+          "mining"
+        ],
+        "background": [
+          "cave",
+          "castle",
+          "dungeon",
+          "forest",
+          "garden",
+          "library",
+          "laboratory",
+          "academy",
+          "temple",
+          "workshop",
+          "none"
+        ]
+      },
+      "max_attempts": 4
+    }
+  }
+]

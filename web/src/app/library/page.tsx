@@ -9,6 +9,7 @@ import { Modal } from "@/components/Modal";
 import { useMint } from "@/components/MintProvider";
 import { Notice, Spinner } from "@/components/ui";
 import { getLibrary, libraryImage } from "@/lib/api";
+import { staticDemo } from "@/lib/demo";
 import { byFamily, checkpointName } from "@/lib/status";
 
 /** The library as a comparison: one row per variable combination, one column per checkpoint, same seed across. */
@@ -32,8 +33,14 @@ export default function LibraryPage() {
       <PageTitle aside={<span className="text-small text-text-muted">{data.items.length} portraits</span>}>Library</PageTitle>
       <p className="mb-4 max-w-3xl text-small text-text-secondary">
         Pre-rendered portraits of {data.template.id} v{data.template.version}: {data.count} combinations on {data.models.length} checkpoints{families.length > 1 ? `, grouped by family (${families.map((f) => f.family || "other").join(", ")})` : ""}. Each row
-        uses the same variables and seed on every checkpoint, so the columns compare like for like. Any of them can become a card without a GPU:
-        pick one under <Link href="/new" className="underline">New draft</Link>, or open one here.
+        uses the same variables and seed on every checkpoint, so the columns compare like for like.{" "}
+        {staticDemo() ? (
+          "Open one to see it larger; with a running argus-mint, any of them can become a card without a GPU."
+        ) : (
+          <>
+            Any of them can become a card without a GPU: pick one under <Link href="/new" className="underline">New draft</Link>, or open one here.
+          </>
+        )}
       </p>
       {roles.length ? (
         <select className={`${INPUT} mb-3 max-w-56`} value={role} onChange={(e) => setRole(e.target.value)} aria-label="Role">
@@ -105,9 +112,11 @@ export default function LibraryPage() {
             <figcaption className="flex flex-wrap items-center justify-between gap-2 text-small text-white">
               <span>{checkpointName(data.items.find((i) => i.id === big)?.model ?? "")}</span>
               <span className="flex gap-3">
-                <Link href={`/new?library=${encodeURIComponent(big)}`} className="underline">
-                  Make a card from this
-                </Link>
+                {staticDemo() ? null : (
+                  <Link href={`/new?library=${encodeURIComponent(big)}`} className="underline">
+                    Make a card from this
+                  </Link>
+                )}
                 <button type="button" onClick={() => setBig(null)} className="underline" data-autofocus>
                   Close
                 </button>

@@ -11,7 +11,7 @@ import { getSample, sampleImage } from "@/lib/api";
 import { checkpointName, loraText } from "@/lib/status";
 import type { SampleJob } from "@/lib/types";
 
-export default function SampleJobPage() {
+export default function SampleView() {
   const { id } = useParams<{ id: string }>();
   const [job, setJob] = useState<SampleJob | null>(null);
   const [error, setError] = useState<string | null>(null);

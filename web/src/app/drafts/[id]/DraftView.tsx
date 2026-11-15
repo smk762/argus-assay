@@ -10,6 +10,8 @@ import { useMint } from "@/components/MintProvider";
 import { Button, Card, Collapsible, Kv, Notice, SectionTitle, Spinner } from "@/components/ui";
 import { draftImage, getDraft, getFrames, moderatorReview, ownerChallenge, ownerReview, publishDraft } from "@/lib/api";
 import { awaitingText, canPublish, checkpointName, isAutoReview, loraText, moderatorCanReview, ownerCanReview, shortAddress } from "@/lib/status";
+import { cardContractUrl } from "@/lib/chain";
+import { staticDemo } from "@/lib/demo";
 import { readReviewer, saveReviewer } from "@/lib/reviewer";
 import { when } from "@/lib/time";
 import type { DraftDetail } from "@/lib/types";
@@ -93,15 +95,25 @@ function OwnerPanel({ d, onDone }: { d: DraftDetail; onDone: (d: DraftDetail) =>
       {off ? <p className="text-small text-text-muted">{off}</p> : null}
       <textarea className={`${INPUT} mb-2`} rows={2} placeholder="Note (optional)" value={note} onChange={(e) => setNote(e.target.value)} disabled={!!off} />
       <div className="flex flex-wrap gap-2">
-        <Button tone="primary" disabled={!!off || busy || (!hasWallet() && !mock)} onClick={() => decide(true)}>
-          Approve with wallet
-        </Button>
-        <Button tone="danger" disabled={!!off || busy || (!hasWallet() && !mock)} onClick={() => decide(false)}>
-          Reject with wallet
-        </Button>
+        {/* The hosted demo never asks a real wallet to sign: the demo owner stands in for it. */}
+        {staticDemo() ? null : (
+          <>
+            <Button tone="primary" disabled={!!off || busy || (!hasWallet() && !mock)} onClick={() => decide(true)}>
+              Approve with wallet
+            </Button>
+            <Button tone="danger" disabled={!!off || busy || (!hasWallet() && !mock)} onClick={() => decide(false)}>
+              Reject with wallet
+            </Button>
+          </>
+        )}
         {mock ? (
-          <Button disabled={!!off || busy} onClick={() => decide(true, true)}>
+          <Button tone={staticDemo() ? "primary" : "neutral"} disabled={!!off || busy} onClick={() => decide(true, true)}>
             Approve as demo owner
+          </Button>
+        ) : null}
+        {mock && staticDemo() ? (
+          <Button tone="danger" disabled={!!off || busy} onClick={() => decide(false, true)}>
+            Reject as demo owner
           </Button>
         ) : null}
         {busy ? <Spinner /> : null}
@@ -118,6 +130,7 @@ function PublishPanel({ d, onDone }: { d: DraftDetail; onDone: (d: DraftDetail) 
   const [error, setError] = useState<string | null>(null);
   if (d.published) {
     const p = d.published;
+    const card = health ? cardContractUrl(health.network, health.card) : null;
     return (
       <Card>
         <SectionTitle className="mb-2">Published</SectionTitle>
@@ -127,6 +140,13 @@ function PublishPanel({ d, onDone }: { d: DraftDetail; onDone: (d: DraftDetail) 
           <Kv label="Signed by">{shortAddress(p.signer)}</Kv>
           <Kv label="Content hash"><Hash value={String(p.voucher.content_hash)} /></Kv>
           <Kv label="Voucher expires">{when(new Date(Number(p.voucher.deadline) * 1000).toISOString())}</Kv>
+          {card ? (
+            <Kv label="Card contract">
+              <a href={card} className="underline decoration-base-600 underline-offset-2 hover:text-text-secondary" title={health?.card ?? ""}>
+                {shortAddress(health?.card ?? "")} on {health?.network === "base" ? "Base" : "Base Sepolia"}
+              </a>
+            </Kv>
+          ) : null}
         </dl>
         <p className="mt-2 text-caption text-text-muted">
           The owner&apos;s wallet sends the voucher to the Card contract (<code>argus-mint submit</code>, or the consumer&apos;s app).
@@ -166,7 +186,7 @@ function PublishPanel({ d, onDone }: { d: DraftDetail; onDone: (d: DraftDetail) 
   );
 }
 
-export default function DraftPage() {
+export default function DraftView() {
   const { id } = useParams<{ id: string }>();
   const { data, error } = useLoad(() => getDraft(id), [id]);
   const frames = useLoad(() => getFrames());

@@ -3,3 +3,9 @@ node_modules
 out
 *.tsbuildinfo
 .env
+
+# Static demo (make pages): the generated tape, the export, and Cloudflare Pages CLI state.
+web/public/data-tape/
+web/out/
+.wrangler/
+web/.wrangler/

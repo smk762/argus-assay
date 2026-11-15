@@ -9,6 +9,7 @@ import { DecisionPanel, SampleRunner } from "@/components/Catalogue";
 import { CatalogueBadge, Field, Hash, INPUT, PageTitle, useLoad } from "@/components/bits";
 import { Button, Card, Kv, Notice, SectionTitle, Spinner } from "@/components/ui";
 import { frameOverlay, getBios, getDrafts, getFrames, getSamples, getTemplates, previewFrame } from "@/lib/api";
+import { staticDemo } from "@/lib/demo";
 import { allowedModels, byFamily, checkpointName, loraText, loraWeights, samplingText } from "@/lib/status";
 import { boxStyle, cropFraction, displaySlots, slotSummary, windowAspect } from "@/lib/slots";
 import type { BioInfo, FrameInfo, TemplateInfo } from "@/lib/types";
@@ -178,6 +179,8 @@ function FrameView({ info }: { info: FrameInfo }) {
             ))}
           </ul>
         </Card>
+        {/* The frame preview is composited by argus-mint (Pillow), so the static demo leaves it out. */}
+        {staticDemo() ? null : (
         <Card>
           <SectionTitle className="mb-2">Preview on art</SectionTitle>
           {arts.length === 0 ? (
@@ -230,6 +233,7 @@ function FrameView({ info }: { info: FrameInfo }) {
             </div>
           )}
         </Card>
+        )}
       </div>
     </div>
   );
@@ -262,19 +266,21 @@ function Detail() {
         {t ? <TemplateView info={t} /> : null}
         {f ? <FrameView info={f} /> : null}
         {b ? <BioView info={b} /> : null}
+        {staticDemo() ? null : (
         <SampleRunner
           templates={templates}
           frames={frames}
           bios={bios}
           fixed={kind === "template" ? { template: k } : kind === "frame" ? { frame: k } : { bio: k }}
         />
+        )}
         <DecisionPanel kind={kind as "template" | "frame" | "bio"} id={id} version={v} status={status} onDone={all.reload} />
       </div>
     </>
   );
 }
 
-export default function CatalogueDetailPage() {
+export default function CatalogueView() {
   return (
     <Suspense fallback={<Spinner />}>
       <Detail />

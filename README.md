@@ -73,10 +73,24 @@ Add assay's LAN origin (e.g. `http://<LAN_HOST>:3108`; the real host/IP is in th
 
 In docker: `docker compose up` (with `COMPOSE_PROFILES=mock` from `.env.example` for the mock).
 
+### Hosted demo (static)
+
+```bash
+make pages     # the fixture as a data tape, exported to web/out/: pure static files, a hash CSP on every page
+```
+
+The static build (`ASSAY_STATIC=1`) needs no argus-mint. The page answers its own calls from the tape (`web/public/data-tape/`, made from `fixture/` by `scripts/make_tape.mjs`) in the browser:
+- Reviews, the owner's card editor, publishing (the recorded result) and catalogue decisions work, in the tab until reload.
+- Making drafts and samples needs a GPU, so it is off.
+
+Today's tape is labelled Sample data. [docs/demo-recording.md](docs/demo-recording.md) says what it is, and what a real recording would need.
+
 ## Develop
 
 ```bash
 make check     # eslint, tsc, wire types match the pin, vitest, next build
+make pages     # the static demo build, with its static check
+make shared-check  # the vendored Dragonhound shared layer (web/vendor/dh) is unedited and current
 make wire      # regenerate the wire types after changing web/schema/pins.json (npm run wire:pull fetches a new pin)
 make fixture   # copy a freshly recorded fixture from ../argus-mint
 ```

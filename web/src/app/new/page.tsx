@@ -10,6 +10,7 @@ import { LibraryPicker } from "@/components/LibraryPicker";
 import { useMint } from "@/components/MintProvider";
 import { Card, Kv, Notice, SectionTitle, Spinner } from "@/components/ui";
 import { createDraft, getBios, getFrames, getLibrary, getTemplates, libraryImage } from "@/lib/api";
+import { OFF, staticDemo } from "@/lib/demo";
 import { displaySlots } from "@/lib/slots";
 import { allowedModels, checkpointName, draftSources, loraChoices } from "@/lib/status";
 
@@ -73,7 +74,9 @@ function NewDraftForm() {
   const chosenLoras = t ? loraChoices(loras, t, modelValue || t.model) : [];
   const values: Record<string, string> = Object.fromEntries(Object.entries(t?.variables ?? {}).map(([k, list]) => [k, list.includes(vars[k]) ? vars[k] : list[0]]));
   const biosOff = !health?.capabilities.write_bios;
-  const off = !health?.capabilities.create_drafts
+  const off = staticDemo()
+    ? OFF.create
+    : !health?.capabilities.create_drafts
     ? "This server can't create drafts (it is read-only, or has neither darkroom nor a library)."
     : !hasToken
       ? "Set the moderator token (key icon) to create drafts."
@@ -269,7 +272,7 @@ function NewDraftForm() {
           ))}
         </Card>
         <div className="flex items-center gap-2">
-          <button type="submit" disabled={!!off || busy || !t} className="rounded-md bg-interactive px-3.5 py-2 text-small font-medium text-white hover:bg-interactive-hover disabled:opacity-50">
+          <button type="submit" disabled={!!off || busy || !t} className="rounded-md bg-interactive px-3.5 py-2 text-small font-medium text-on-accent hover:bg-interactive-hover disabled:opacity-50">
             {source === "library" ? "Create draft" : "Render draft"}
           </button>
           {busy ? (

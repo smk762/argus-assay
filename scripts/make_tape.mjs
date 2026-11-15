@@ -42,7 +42,9 @@ export const ADDRESSES = {
 
 /** Things a public tape must never carry. Hashes (0x + 64 hex) are everywhere, so keys are caught by name. */
 const FORBIDDEN = [
-  [/private[_-]?key|mnemonic|seed[_-]?phrase|secret|api[_-]?key|bearer|authorization|pinata|jwt/i, "a key or token field"],
+  // By field name, so a bio that says "a secret shared" isn't taken for one.
+  [/"[^"]*(?:private[_-]?key|mnemonic|seed[_-]?phrase|secret|api[_-]?key|bearer|authorization|pinata|jwt)[^"]*"\s*:/i, "a key or token field"],
+  [/\bBearer\s+[A-Za-z0-9._~+/-]{8,}/, "a bearer token"],
   [/https?:\/\/[^"\s]*(alchemy|infura|quicknode|ankr|drpc|llamarpc)[^"\s]*/i, "an RPC URL"],
   [/\b(?:192\.168|10\.\d{1,3}|172\.(?:1[6-9]|2\d|3[01]))\.\d{1,3}\.\d{1,3}\b/, "a LAN address"],
   [/\b[a-z0-9-]+\.(?:local|lan|internal|home)\b/i, "an internal hostname"],

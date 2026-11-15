@@ -14,22 +14,22 @@
    },
    "lines": [
     {
-     "text": "Lantern Keeper prays in a whisper so the temple mice",
+     "text": "In gilded halls of knowledge, Library Pick stands, a",
      "x": 108,
      "y": 872
     },
     {
-     "text": "can sleep. Her gold vestments catch the dawn and pass",
+     "text": "golden figure etched against dusty tomes. Eyes",
      "x": 108,
      "y": 928
     },
     {
-     "text": "it on to whoever needs it most. Candles lean her way",
+     "text": "mirroring sunlit parchments, they hold court, their",
      "x": 108,
      "y": 984
     },
     {
-     "text": "whenever she walks by.",
+     "text": "voice a lecturer's gleaming sword.",
      "x": 108,
      "y": 1040
     }
@@ -47,8 +47,8 @@
    },
    "lines": [
     {
-     "text": "Priest \u00b7 Gold",
-     "x": 391,
+     "text": "Knight \u00b7 Gold",
+     "x": 380,
      "y": 772
     }
    ]
@@ -65,8 +65,8 @@
    },
    "lines": [
     {
-     "text": "Lantern Keeper",
-     "x": 330,
+     "text": "Library Pick",
+     "x": 364,
      "y": 80
     }
    ]
@@ -83,8 +83,8 @@
    },
    "lines": [
     {
-     "text": "No. 4",
-     "x": 769,
+     "text": "No. 5",
+     "x": 770,
      "y": 1221
     }
    ]

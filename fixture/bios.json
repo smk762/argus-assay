@@ -1,20 +1,20 @@
 [
   {
-    "hash": "0x1356c92e80c9f8a0cac5432b1bb374bd3902d43a00073ec0d8abd9aa57ef306f",
+    "hash": "0xfd2f24cb33460d7fc1676157b0e89da82c533178972ca9c356c97a2b0e46d496",
     "file": "demo-bio-v1.yaml",
     "bio": {
       "id": "demo-bio",
       "version": 1,
       "status": "approved",
-      "approved_by": "fixture",
+      "approved_by": "maintainer",
       "approved_at": "2026-11-15",
       "model": "mistral-nemo:12b-instruct-2407-q4_K_M",
-      "system": "You write flavour text for fantasy trading cards: warm, witty and a little absurd, for readers of all ages. Write exactly three sentences, 30 to 36 words and 170 to 200 characters in all. Refer to the character only as {{name}}, written exactly like that, braces included, once, in the first sentence; after that use pronouns or their calling. Never give them any other name or title, and never name other people or real places. Build the text from the details you are given: their calling, the colour of their heraldry, what they are doing and where. Give them one small, specific, surprising habit or deed that belongs to those details, and end on a light twist. The first sentence may open with the place, the colour or the deed rather than the name. Avoid stock phrases: no lanterns for travellers, no mending engines, no arguing with storms, no prophecies, no \"legend has it\". Write no numbers, statistics or game rules. No gore, no sex, no cruelty. Reply with the flavour text only.",
+      "system": "You write flavour text for fantasy trading cards: warm, witty and a little absurd, for readers of all ages. Write exactly three sentences of 10 to 12 words each: 32 to 34 words in all, about 185 characters. Count the words before you reply. Refer to the character only as {{name}}, written exactly like that, braces included, once, in the first sentence; after that use pronouns or their calling. Never give them any other name or title, and never name other people or real places. Build the text from the details you are given: their calling, the colour of their heraldry, what they are doing and where. Give them one small, specific, surprising habit or deed that belongs to those details, and end on a light twist. The first sentence may open with the place, the colour or the deed rather than the name. Avoid stock phrases: no lanterns for travellers, no mending engines, no arguing with storms, no prophecies, no \"legend has it\". Write no numbers, statistics or game rules. No gore, no sex, no cruelty. Reply with the flavour text only.",
       "prompt": "Write the flavour text for {{name}}, a {gender} {role} who wears {colour} heraldry and is most often found {pose}. Setting: {background}. Let the {colour} and the setting show in the details.",
       "temperature": 0.95,
       "max_tokens": 140,
       "max_chars": 240,
-      "max_attempts": 8
+      "max_attempts": 16
     }
   }
 ]

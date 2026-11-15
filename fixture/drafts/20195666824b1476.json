@@ -1,5 +1,5 @@
 {
-  "id": "ba7d09124956ab52",
+  "id": "20195666824b1476",
   "status": "published",
   "awaiting": [],
   "draft": {
@@ -7,7 +7,7 @@
     "request": {
       "template_id": "example-portrait",
       "template_version": 2,
-      "template_hash": "0xf1f29889e2e7c3f0b4ea3823559b187aa60c283d19988335d9ec991646ace666",
+      "template_hash": "0x315994bdae766bad953c91da83e897b2edf9046a63a4a4e81aad1c1113c45718",
       "model": "sdxl/aureanuanceXL_v2/aureanuanceXL_v2.safetensors",
       "loras": [],
       "sampling": {
@@ -35,35 +35,39 @@
       {
         "seed": 8453,
         "outcome": "ok",
-        "ref": "stand-in-1",
-        "detail": ""
+        "ref": "b2f0f0968f6c47118109cd107098d96e",
+        "detail": "",
+        "workflow": {
+          "name": "sdxl",
+          "sha256": "02e08f842f7a66e0e1be2ebc506ab8339f3b39df639beb86fc04dc240f3ef38d"
+        }
       }
     ],
     "renderer": "darkroom",
     "asset_id": "0x26e9840acf58ba86690e67c03e21cf541cefc52f8c6aee1d8fde5986f89180a2",
     "to": "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
     "name": "Emerald Wizard",
-    "description": "Emerald Wizard reshelves the library by spell, and the books, flattered, line up by colour. Her emerald sleeves are stuffed with bookmarks. She has never once been shushed, though she keeps trying.",
+    "description": "In the hushed, emerald-lit library, Emerald Wizard weaves spells with an emerald feather. She's got a penchant for whispering to shadows, but today, they're mum.",
     "external_url": null,
     "consumer": "argus-mint",
     "frame": {
       "id": "card-green",
       "version": 1,
-      "hash": "0xd2fec8d933304e7777c57e169e5412a7e64aafe25b9034aa4f871ce58a98154f"
+      "hash": "0xed8933833831ea63e4f8c91eea897814159af3a7b21acfb560c70162366ccf37"
     },
     "bio": {
       "ref": {
         "id": "demo-bio",
         "version": 1,
-        "hash": "0x1356c92e80c9f8a0cac5432b1bb374bd3902d43a00073ec0d8abd9aa57ef306f",
+        "hash": "0xfd2f24cb33460d7fc1676157b0e89da82c533178972ca9c356c97a2b0e46d496",
         "model": "mistral-nemo:12b-instruct-2407-q4_K_M"
       },
-      "text": "Emerald Wizard reshelves the library by spell, and the books, flattered, line up by colour. Her emerald sleeves are stuffed with bookmarks. She has never once been shushed, though she keeps trying.",
+      "text": "In the hushed, emerald-lit library, Emerald Wizard weaves spells with an emerald feather. She's got a penchant for whispering to shadows, but today, they're mum.",
       "attempts": [
         {
           "outcome": "ok",
           "detail": "",
-          "text": "{name} reshelves the library by spell, and the books, flattered, line up by colour. Her emerald sleeves are stuffed with bookmarks. She has never once been shushed, though she keeps trying."
+          "text": "In the hushed, emerald-lit library, {name} weaves spells with an emerald feather. She's got a penchant for whispering to shadows, but today, they're mum."
         }
       ],
       "edited": false
@@ -76,24 +80,24 @@
     "library": null,
     "edits": [],
     "auto_check": null,
-    "art_sha256": "a857ea6e232f097cd42efaf53ff14e892397b2ed30bc7ac5a06c80ad8373e0a7",
-    "image_sha256": "2d10a310c36a9f76111591de9dd0d1fede6849cce2137208a1fffd2b7442c8fd",
-    "created_at": "2026-11-15T09:35:55.838255Z",
+    "art_sha256": "ae1ceb5d9983d8339f30c98a34c06dfc04260e0a2d37ec129decb6c464336f89",
+    "image_sha256": "b43f25f70e849207948a9d715cedaf70c9b62c4bf717fc0882f8e94d0b95535e",
+    "created_at": "2026-11-15T11:16:08.851728Z",
     "reviews": [
       {
         "role": "moderator",
         "decision": "approved",
         "by": "moderator-1",
-        "at": "2026-11-15T09:35:55.878240Z",
-        "image_sha256": "2d10a310c36a9f76111591de9dd0d1fede6849cce2137208a1fffd2b7442c8fd",
+        "at": "2026-11-15T11:16:08.863097Z",
+        "image_sha256": "b43f25f70e849207948a9d715cedaf70c9b62c4bf717fc0882f8e94d0b95535e",
         "note": ""
       },
       {
         "role": "owner",
         "decision": "approved",
         "by": "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
-        "at": "2026-11-15T09:35:55.974073Z",
-        "image_sha256": "2d10a310c36a9f76111591de9dd0d1fede6849cce2137208a1fffd2b7442c8fd",
+        "at": "2026-11-15T11:16:08.894437Z",
+        "image_sha256": "b43f25f70e849207948a9d715cedaf70c9b62c4bf717fc0882f8e94d0b95535e",
         "note": ""
       }
     ]
@@ -108,40 +112,44 @@
         {
           "seed": 8453,
           "outcome": "ok",
-          "ref": "stand-in-1",
-          "detail": ""
+          "ref": "b2f0f0968f6c47118109cd107098d96e",
+          "detail": "",
+          "workflow": {
+            "name": "sdxl",
+            "sha256": "02e08f842f7a66e0e1be2ebc506ab8339f3b39df639beb86fc04dc240f3ef38d"
+          }
         }
       ],
-      "art_cid": "bafkreifik7vg4izpbf6nilx26u77ctujeol3f3jqxr5mlidmqcwyg47au4",
-      "image_cid": "bafkreibnccrrbq3kt53bcfmr32o5bup63zuetthccnzarip77uvxiqwi7u"
+      "art_cid": "bafkreifodtvv3gmd3azz6mgjri2ma3p4aqta4crng7wbfhpmw3cgim3pre",
+      "image_cid": "bafkreifuh4s7oduesidzjcu5ofoo3l3qzg3cys7xc76araxy5fgqxfktly"
     },
     "reviews": [
       {
         "role": "moderator",
         "decision": "approved",
         "by": "moderator-1",
-        "at": "2026-11-15T09:35:55.878240Z",
-        "image_sha256": "2d10a310c36a9f76111591de9dd0d1fede6849cce2137208a1fffd2b7442c8fd",
+        "at": "2026-11-15T11:16:08.863097Z",
+        "image_sha256": "b43f25f70e849207948a9d715cedaf70c9b62c4bf717fc0882f8e94d0b95535e",
         "note": ""
       },
       {
         "role": "owner",
         "decision": "approved",
         "by": "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
-        "at": "2026-11-15T09:35:55.974073Z",
-        "image_sha256": "2d10a310c36a9f76111591de9dd0d1fede6849cce2137208a1fffd2b7442c8fd",
+        "at": "2026-11-15T11:16:08.894437Z",
+        "image_sha256": "b43f25f70e849207948a9d715cedaf70c9b62c4bf717fc0882f8e94d0b95535e",
         "note": ""
       }
     ],
     "metadata": {
       "name": "Emerald Wizard",
-      "description": "Emerald Wizard reshelves the library by spell, and the books, flattered, line up by colour. Her emerald sleeves are stuffed with bookmarks. She has never once been shushed, though she keeps trying.",
-      "image": "ipfs://bafkreibnccrrbq3kt53bcfmr32o5bup63zuetthccnzarip77uvxiqwi7u",
+      "description": "In the hushed, emerald-lit library, Emerald Wizard weaves spells with an emerald feather. She's got a penchant for whispering to shadows, but today, they're mum.",
+      "image": "ipfs://bafkreifuh4s7oduesidzjcu5ofoo3l3qzg3cys7xc76araxy5fgqxfktly",
       "attributes": [],
       "provenance": {
         "template": "example-portrait",
         "template_version": 2,
-        "template_hash": "0xf1f29889e2e7c3f0b4ea3823559b187aa60c283d19988335d9ec991646ace666",
+        "template_hash": "0x315994bdae766bad953c91da83e897b2edf9046a63a4a4e81aad1c1113c45718",
         "seed": 8453,
         "attempts": 1,
         "asset_id": "0x26e9840acf58ba86690e67c03e21cf541cefc52f8c6aee1d8fde5986f89180a2",
@@ -149,13 +157,13 @@
         "frame": {
           "id": "card-green",
           "version": 1,
-          "hash": "0xd2fec8d933304e7777c57e169e5412a7e64aafe25b9034aa4f871ce58a98154f"
+          "hash": "0xed8933833831ea63e4f8c91eea897814159af3a7b21acfb560c70162366ccf37"
         },
-        "art": "ipfs://bafkreifik7vg4izpbf6nilx26u77ctujeol3f3jqxr5mlidmqcwyg47au4",
+        "art": "ipfs://bafkreifodtvv3gmd3azz6mgjri2ma3p4aqta4crng7wbfhpmw3cgim3pre",
         "bio": {
           "id": "demo-bio",
           "version": 1,
-          "hash": "0x1356c92e80c9f8a0cac5432b1bb374bd3902d43a00073ec0d8abd9aa57ef306f",
+          "hash": "0xfd2f24cb33460d7fc1676157b0e89da82c533178972ca9c356c97a2b0e46d496",
           "model": "mistral-nemo:12b-instruct-2407-q4_K_M"
         },
         "variables": {
@@ -168,15 +176,15 @@
         "model": "sdxl/aureanuanceXL_v2/aureanuanceXL_v2.safetensors"
       }
     },
-    "metadata_cid": "bafkreifzjbfer7zif7g4czvzz52tae7foqzdi43pxe6xf3tspa76kcksoa",
+    "metadata_cid": "bafkreiawzjzumvmdzsmu2xjygkdtjzv4zlz3ndzjqtibyqtr3w7plk57wu",
     "voucher": {
       "to": "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
       "asset_id": "0x26e9840acf58ba86690e67c03e21cf541cefc52f8c6aee1d8fde5986f89180a2",
-      "content_hash": "0x1fe8bc6a20573b5d3d2913b4f6ddd29f7e8283829d9213c31ea7a44a274bb3c2",
+      "content_hash": "0xb0f6bb85046d442ff5dd19f642fe2fc88b8bf8bfb7f2060dc675e20bb3a7b196",
       "price": 0,
       "deadline": 1900000000
     },
-    "signature": "0xc5ed4a116b2983b16af8ae6ede154505d6dcaecf0cd2843c6fdf446367b89935396576f9daa9fd11aab390b00600948acf4406e5233221c160c3f24627484b821b",
+    "signature": "0x2d56415eab5d365ed9b56e2e81f432c7c3900c13e27f3dabcb2637272193a40a0654088bc67887f8053b012e24872e28590f4bf3840d5703207a4051305cd7191c",
     "typed_data": {
       "types": {
         "EIP712Domain": [
@@ -230,7 +238,7 @@
       "message": {
         "to": "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
         "assetId": "0x26e9840acf58ba86690e67c03e21cf541cefc52f8c6aee1d8fde5986f89180a2",
-        "contentHash": "0x1fe8bc6a20573b5d3d2913b4f6ddd29f7e8283829d9213c31ea7a44a274bb3c2",
+        "contentHash": "0xb0f6bb85046d442ff5dd19f642fe2fc88b8bf8bfb7f2060dc675e20bb3a7b196",
         "price": 0,
         "deadline": 1900000000
       }

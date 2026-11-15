@@ -14,24 +14,19 @@
    },
    "lines": [
     {
-     "text": "Emerald Wizard reshelves the library by spell, and the",
+     "text": "In the clanking heart of the workshop, Steel Tinker, a",
      "x": 108,
      "y": 872
     },
     {
-     "text": "books, flattered, line up by colour. Her emerald sleeves",
+     "text": "silvered marvel, tames unruly gears. Their steel-plated",
      "x": 108,
      "y": 928
     },
     {
-     "text": "are stuffed with bookmarks. She has never once been",
+     "text": "hands dance like sparks, weaving order from chaos.",
      "x": 108,
      "y": 984
-    },
-    {
-     "text": "shushed, though she keeps trying.",
-     "x": 108,
-     "y": 1040
     }
    ]
   },
@@ -47,8 +42,8 @@
    },
    "lines": [
     {
-     "text": "Wizard \u00b7 Emerald",
-     "x": 352,
+     "text": "Cyborg \u00b7 Steel",
+     "x": 379,
      "y": 772
     }
    ]
@@ -65,8 +60,8 @@
    },
    "lines": [
     {
-     "text": "Emerald Wizard",
-     "x": 319,
+     "text": "Steel Tinker",
+     "x": 365,
      "y": 80
     }
    ]
@@ -83,8 +78,8 @@
    },
    "lines": [
     {
-     "text": "No. 1",
-     "x": 771,
+     "text": "No. 2",
+     "x": 770,
      "y": 1221
     }
    ]

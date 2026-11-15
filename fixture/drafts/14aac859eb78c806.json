@@ -1,0 +1,127 @@
+{
+  "id": "14aac859eb78c806",
+  "status": "pending",
+  "awaiting": [
+    "moderator",
+    "owner"
+  ],
+  "draft": {
+    "format": 1,
+    "request": {
+      "template_id": "example-portrait",
+      "template_version": 2,
+      "template_hash": "0x315994bdae766bad953c91da83e897b2edf9046a63a4a4e81aad1c1113c45718",
+      "model": "sdxl/aureanuanceXL_v2/aureanuanceXL_v2.safetensors",
+      "loras": [],
+      "sampling": {
+        "sampler": "euler",
+        "scheduler": "normal",
+        "steps": 25,
+        "cfg": 6.0,
+        "clip_skip": 1,
+        "guidance": null
+      },
+      "width": 1152,
+      "height": 896,
+      "prompt": "waist-up portrait of a single non-binary cyborg, centered and facing the viewer, wearing steel heraldry, repairing, background: workshop, painted fantasy illustration, full bleed, detailed face",
+      "negative": "text, letters, words, caption, title, label, logo, watermark, signature, border, frame, card frame, trading card, playing card, game ui, icons, badges, numbers, multiple people, crowd, empty scene, landscape, gore",
+      "variables": {
+        "background": "workshop",
+        "colour": "steel",
+        "gender": "non-binary",
+        "pose": "repairing",
+        "role": "cyborg"
+      },
+      "seed": 8454
+    },
+    "attempts": [
+      {
+        "seed": 8454,
+        "outcome": "ok",
+        "ref": "85a19b6facad4f61bb07445b299e85e7",
+        "detail": "",
+        "workflow": {
+          "name": "sdxl",
+          "sha256": "02e08f842f7a66e0e1be2ebc506ab8339f3b39df639beb86fc04dc240f3ef38d"
+        }
+      }
+    ],
+    "renderer": "darkroom",
+    "asset_id": "0x309a65fb4c95d87a9b67c21ca029d0e120baab30d9931785d1408f9886cc71e2",
+    "to": "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
+    "name": "Steel Tinker",
+    "description": "In the clanking heart of the workshop, Steel Tinker, a silvered marvel, tames unruly gears. Their steel-plated hands dance like sparks, weaving order from chaos.",
+    "external_url": null,
+    "consumer": "argus-mint",
+    "frame": {
+      "id": "card-green",
+      "version": 1,
+      "hash": "0xed8933833831ea63e4f8c91eea897814159af3a7b21acfb560c70162366ccf37"
+    },
+    "bio": {
+      "ref": {
+        "id": "demo-bio",
+        "version": 1,
+        "hash": "0xfd2f24cb33460d7fc1676157b0e89da82c533178972ca9c356c97a2b0e46d496",
+        "model": "mistral-nemo:12b-instruct-2407-q4_K_M"
+      },
+      "text": "In the clanking heart of the workshop, Steel Tinker, a silvered marvel, tames unruly gears. Their steel-plated hands dance like sparks, weaving order from chaos.",
+      "attempts": [
+        {
+          "outcome": "rejected",
+          "detail": "demo fit: 246 characters; the bio box wants 160 to 210",
+          "text": "In the clanking heart of the Steel Sanctuary, {name} tinkers, their silver circuitry flickering like candlelight. Tools dance in their mechanical fingers, waltzing with the workshop's hum. Every bolt's a whisper, every gear a secret shared."
+        },
+        {
+          "outcome": "rejected",
+          "detail": "demo fit: 147 characters; the bio box wants 160 to 210",
+          "text": "In a workshop, {name} dances with sparks, steel against steel. Their mechanical hum echoes like a lullaby, as they coax life into worn gears."
+        },
+        {
+          "outcome": "rejected",
+          "detail": "demo fit: 151 characters; the bio box wants 160 to 210",
+          "text": "In the echoing expanse of their workshop, {name} dons a crown of cogs and sparks, their steel heraldry gleaming like wet metal in the half-light."
+        },
+        {
+          "outcome": "rejected",
+          "detail": "demo fit: 236 characters; the bio box wants 160 to 210",
+          "text": "In the cluttered heart of {name}'s domain, sparks dance like silver rain. Their steel-crafted hands, a symphony of click and whirr, coax life back into a once-broken bot. A quirk: {name} hums tunes only a machine could love."
+        },
+        {
+          "outcome": "rejected",
+          "detail": "demo fit: 246 characters; the bio box wants 160 to 210",
+          "text": "In {name}'s steel-fortressed workshop, sparks fly like tiny meteors. Their oily fingers dance, coaxing life into dead gears. Once, {name} hummed a tune, only to have their mechanical heart join in, echoing the rhythm through the room."
+        },
+        {
+          "outcome": "rejected",
+          "detail": "demo fit: 222 characters; the bio box wants 160 to 210",
+          "text": "In a workshop echoing like a metal symphony, {name} dances with sparks, wielding wrenches as nimbly as a duelist. Their steel-plated fingers, a chorus of clicks and whirs, weave through cogs and gears with precision."
+        },
+        {
+          "outcome": "rejected",
+          "detail": "demo fit: 231 characters; the bio box wants 160 to 210",
+          "text": "In the clanking heart of the workshop, {name} tinkers, silver heraldry gleaming. Wires dance like sparks under their touch. When not mending gears, they hum lullabies to their tools. Suddenly, a bolt of steel sprouts a daisy."
+        },
+        {
+          "outcome": "ok",
+          "detail": "",
+          "text": "In the clanking heart of the workshop, {name}, a silvered marvel, tames unruly gears. Their steel-plated hands dance like sparks, weaving order from chaos."
+        }
+      ],
+      "edited": false
+    },
+    "texts": {
+      "class": "Cyborg · Steel",
+      "stats": "No. 2"
+    },
+    "style": null,
+    "library": null,
+    "edits": [],
+    "auto_check": null,
+    "art_sha256": "92325a84b1f6a0745c9ece8b7eb4d4ee9646190bb8a0bd1cad1e8de7c306affc",
+    "image_sha256": "cb5be06c59af922fb8d252629938d30b5d5352c039eabd9b92de77c75bf2c565",
+    "created_at": "2026-11-15T11:17:24.555590Z",
+    "reviews": []
+  },
+  "published": null
+}

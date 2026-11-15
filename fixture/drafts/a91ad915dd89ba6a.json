@@ -1,5 +1,5 @@
 {
-  "id": "c2cdb984a5c08e56",
+  "id": "a91ad915dd89ba6a",
   "status": "approved",
   "awaiting": [],
   "draft": {
@@ -7,7 +7,7 @@
     "request": {
       "template_id": "example-portrait",
       "template_version": 2,
-      "template_hash": "0xf1f29889e2e7c3f0b4ea3823559b187aa60c283d19988335d9ec991646ace666",
+      "template_hash": "0x315994bdae766bad953c91da83e897b2edf9046a63a4a4e81aad1c1113c45718",
       "model": "sdxl/aureanuanceXL_v2/aureanuanceXL_v2.safetensors",
       "loras": [],
       "sampling": {
@@ -35,35 +35,39 @@
       {
         "seed": 8455,
         "outcome": "ok",
-        "ref": "stand-in-3",
-        "detail": ""
+        "ref": "954ade3b5da247c4b9af1d112c8c8375",
+        "detail": "",
+        "workflow": {
+          "name": "sdxl",
+          "sha256": "02e08f842f7a66e0e1be2ebc506ab8339f3b39df639beb86fc04dc240f3ef38d"
+        }
       }
     ],
     "renderer": "darkroom",
     "asset_id": "0x89964876bb9e20b0262233b1c023a63554302b2f1653191a12c0e63e3fdc0608",
     "to": "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
     "name": "Azure Stormcaller",
-    "description": "Drizzle for gardens, snow for birthdays: Azure Stormcaller calls down weather on request. In the temple his azure robes crackle faintly, and the bell ringers give him a wide, polite berth.",
+    "description": "In azure halls, Azure Stormcaller weaves sigils, temple air humming. His fingers dance, tracing runes of light. As he chants, azurite mosaics glow, like starlight kissing marble.",
     "external_url": null,
     "consumer": "argus-mint",
     "frame": {
       "id": "card-green",
       "version": 1,
-      "hash": "0xd2fec8d933304e7777c57e169e5412a7e64aafe25b9034aa4f871ce58a98154f"
+      "hash": "0xed8933833831ea63e4f8c91eea897814159af3a7b21acfb560c70162366ccf37"
     },
     "bio": {
       "ref": {
         "id": "demo-bio",
         "version": 1,
-        "hash": "0x1356c92e80c9f8a0cac5432b1bb374bd3902d43a00073ec0d8abd9aa57ef306f",
+        "hash": "0xfd2f24cb33460d7fc1676157b0e89da82c533178972ca9c356c97a2b0e46d496",
         "model": "mistral-nemo:12b-instruct-2407-q4_K_M"
       },
-      "text": "Drizzle for gardens, snow for birthdays: Azure Stormcaller calls down weather on request. In the temple his azure robes crackle faintly, and the bell ringers give him a wide, polite berth.",
+      "text": "In azure halls, Azure Stormcaller weaves sigils, temple air humming. His fingers dance, tracing runes of light. As he chants, azurite mosaics glow, like starlight kissing marble.",
       "attempts": [
         {
           "outcome": "ok",
           "detail": "",
-          "text": "Drizzle for gardens, snow for birthdays: {name} calls down weather on request. In the temple his azure robes crackle faintly, and the bell ringers give him a wide, polite berth."
+          "text": "In azure halls, {name} weaves sigils, temple air humming. His fingers dance, tracing runes of light. As he chants, azurite mosaics glow, like starlight kissing marble."
         }
       ],
       "edited": false
@@ -76,24 +80,24 @@
     "library": null,
     "edits": [],
     "auto_check": null,
-    "art_sha256": "3a892ef1a2f1db3f29d9c0258ab4a09973c9705d82235373aa12c60101a250a2",
-    "image_sha256": "fa91f1ee4ad99f0a40db9f36141b024b1517251e59d70ec9f24e37c004d5a354",
-    "created_at": "2026-11-15T09:35:57.614441Z",
+    "art_sha256": "08c3ea679bf5910ef90a75123268ea33e8140839283d6ca161795146a80b1838",
+    "image_sha256": "ee20312d1278c2f9e81669a77ea425b56dbf766227b59f4b8e6517e2ca7b518c",
+    "created_at": "2026-11-15T11:17:54.983432Z",
     "reviews": [
       {
         "role": "moderator",
         "decision": "approved",
         "by": "moderator-1",
-        "at": "2026-11-15T09:35:57.629412Z",
-        "image_sha256": "fa91f1ee4ad99f0a40db9f36141b024b1517251e59d70ec9f24e37c004d5a354",
+        "at": "2026-11-15T11:17:54.993244Z",
+        "image_sha256": "ee20312d1278c2f9e81669a77ea425b56dbf766227b59f4b8e6517e2ca7b518c",
         "note": ""
       },
       {
         "role": "owner",
         "decision": "approved",
         "by": "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
-        "at": "2026-11-15T09:35:57.680413Z",
-        "image_sha256": "fa91f1ee4ad99f0a40db9f36141b024b1517251e59d70ec9f24e37c004d5a354",
+        "at": "2026-11-15T11:17:55.028548Z",
+        "image_sha256": "ee20312d1278c2f9e81669a77ea425b56dbf766227b59f4b8e6517e2ca7b518c",
         "note": ""
       }
     ]

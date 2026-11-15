@@ -16,9 +16,9 @@ const mint = () => new DemoMint(tape(), { now: () => new Date(Date.UTC(2026, 10,
 const draftIn = (m: DemoMint, status: string) => (m.get("/drafts").body as DraftList).items.find((d) => d.status === status)!;
 
 describe("the tape", () => {
-  it("is made from the fixture as sample data, with every draft's images", () => {
+  it("is made from the recorded fixture, with every draft's images", () => {
     const t = tape();
-    expect(t.provenance.kind).toBe("sample");
+    expect(t.provenance.kind).toBe("recorded");
     expect(t.drafts.map((d) => d.status).sort()).toEqual(["approved", "pending", "pending", "published", "rejected"]);
     for (const d of t.drafts) expect(t.files).toContain(`drafts/${d.id}/image.png`);
   });
@@ -27,6 +27,8 @@ describe("the tape", () => {
     expect(checkPublic('"to": "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC"', "x")).toEqual([]);
     expect(checkPublic('"to": "0x1111111111111111111111111111111111111111"', "x")[0]).toMatch(/not on the allowlist/);
     expect(checkPublic('"pinata_jwt": "x"', "x")[0]).toMatch(/key or token/);
+    expect(checkPublic('"header": "Bearer abcdef123456"', "x")[0]).toMatch(/bearer token/);
+    expect(checkPublic('"text": "every gear a secret shared"', "x")).toEqual([]);
     expect(checkPublic('"url": "http://192.168.1.20:8108"', "x")[0]).toMatch(/LAN address/);
     // A 32-byte hash is not an address.
     expect(checkPublic(`"hash": "0x${"ab".repeat(32)}"`, "x")).toEqual([]);

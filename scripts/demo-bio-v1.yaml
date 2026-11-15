@@ -13,10 +13,11 @@ model: mistral-nemo:12b-instruct-2407-q4_K_M
 temperature: 0.95
 max_tokens: 140
 max_chars: 240
-max_attempts: 8
+max_attempts: 16
 system: >-
   You write flavour text for fantasy trading cards: warm, witty and a little absurd, for readers
-  of all ages. Write exactly three sentences, 30 to 36 words and 170 to 200 characters in all.
+  of all ages. Write exactly three sentences of 10 to 12 words each: 32 to 34 words in all, about
+  185 characters. Count the words before you reply.
   Refer to the character only as {{name}}, written exactly like that, braces included, once, in
   the first sentence; after that use pronouns or their calling. Never give them any other name or
   title, and never name other people or real places. Build the text from the details you are

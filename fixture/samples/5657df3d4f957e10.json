@@ -1,0 +1,116 @@
+{
+  "id": "5657df3d4f957e10",
+  "status": "done",
+  "created_at": "2026-11-15T11:18:43.244538Z",
+  "finished_at": "2026-11-15T11:19:52.859738Z",
+  "error": null,
+  "request": {
+    "template": {
+      "id": "example-portrait",
+      "version": 3
+    },
+    "frame": {
+      "id": "card-green",
+      "version": 1
+    },
+    "bio": {
+      "id": "demo-bio",
+      "version": 1
+    },
+    "model": null,
+    "loras": [],
+    "count": 2,
+    "variables": {},
+    "seed": 3,
+    "name": "Sample",
+    "texts": {
+      "class": "Sample class",
+      "stats": "No. 0"
+    },
+    "style": null
+  },
+  "items": [
+    {
+      "n": 1,
+      "variables": {
+        "background": "garden",
+        "colour": "silver",
+        "gender": "male",
+        "pose": "drinking",
+        "role": "giant"
+      },
+      "prompt": "waist-up portrait of a single male giant, centered and facing the viewer, wearing silver heraldry, drinking, background: garden, painted fantasy illustration, full bleed, detailed face",
+      "seed": 4,
+      "attempts": [
+        {
+          "seed": 4,
+          "outcome": "ok",
+          "ref": "618f847890c142c9b403c16a04bfee33",
+          "detail": "",
+          "workflow": {
+            "name": "sdxl",
+            "sha256": "02e08f842f7a66e0e1be2ebc506ab8339f3b39df639beb86fc04dc240f3ef38d"
+          }
+        }
+      ],
+      "bio": "In a garden of moonlit blossoms, Sample guzzles starlight, insisting it's just another drink. His silver-bedecked form gleams like dewdrops on petals, making the night glow brighter.",
+      "bio_attempts": [
+        {
+          "outcome": "ok",
+          "detail": "",
+          "text": "In a garden of moonlit blossoms, {name} guzzles starlight, insisting it's just another drink. His silver-bedecked form gleams like dewdrops on petals, making the night glow brighter."
+        }
+      ],
+      "error": null,
+      "bio_error": null,
+      "art": true,
+      "framed": true
+    },
+    {
+      "n": 2,
+      "variables": {
+        "background": "none",
+        "colour": "obsidian",
+        "gender": "non-binary",
+        "pose": "weaving",
+        "role": "dragon"
+      },
+      "prompt": "waist-up portrait of a single non-binary dragon, centered and facing the viewer, wearing obsidian heraldry, weaving, background: none, painted fantasy illustration, full bleed, detailed face",
+      "seed": 5,
+      "attempts": [
+        {
+          "seed": 5,
+          "outcome": "ok",
+          "ref": "a681681ab8814f2badb3f9b0f5dfb84c",
+          "detail": "",
+          "workflow": {
+            "name": "sdxl",
+            "sha256": "02e08f842f7a66e0e1be2ebc506ab8339f3b39df639beb86fc04dc240f3ef38d"
+          }
+        }
+      ],
+      "bio": "In obsidian caverns, Sample weaves tales, black scales clicking like loom shuttles. Their whispers echo through coal-hearted caves, igniting thoughts into existence.",
+      "bio_attempts": [
+        {
+          "outcome": "rejected",
+          "detail": "demo fit: 224 characters; the bio box wants 160 to 210",
+          "text": "{name}, obsidian scales glistening, weaves a mountain from smoke and shadow. Their claws, like daggers, slice through the void, leaving trails of stardust. In this realm of obsidian, they knit constellations into their silk."
+        },
+        {
+          "outcome": "unusable",
+          "detail": "stray braces or empty",
+          "text": "{name}, obsidian scales glinting in starlight, weaves dreams from shadow. Their claws dance, creating silk from smoke. After each tapestry, {they} eat the moon's reflection."
+        },
+        {
+          "outcome": "ok",
+          "detail": "",
+          "text": "In obsidian caverns, {name} weaves tales, black scales clicking like loom shuttles. Their whispers echo through coal-hearted caves, igniting thoughts into existence."
+        }
+      ],
+      "error": null,
+      "bio_error": null,
+      "art": true,
+      "framed": true
+    }
+  ]
+}

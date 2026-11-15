@@ -1,5 +1,5 @@
 {
-  "id": "188a511b8cc2ea30",
+  "id": "d8bae42487ff9b97",
   "status": "pending",
   "awaiting": [
     "moderator",
@@ -10,7 +10,7 @@
     "request": {
       "template_id": "example-portrait",
       "template_version": 2,
-      "template_hash": "0xf1f29889e2e7c3f0b4ea3823559b187aa60c283d19988335d9ec991646ace666",
+      "template_hash": "0x315994bdae766bad953c91da83e897b2edf9046a63a4a4e81aad1c1113c45718",
       "model": "flux/flux1-dev-fp8.safetensors",
       "loras": [],
       "sampling": {
@@ -50,27 +50,27 @@
     "asset_id": "0x4e7c4b1ae555535666b339bbef3ecfd778991593efc8590c56c77501872e8ea5",
     "to": "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
     "name": "Library Pick",
-    "description": "At the academy gate stands Library Pick, polishing gold armour between lessons. Every winter the students borrow the shield as a sled. The knight pretends not to notice, and waxes it.",
+    "description": "In gilded halls of knowledge, Library Pick stands, a golden figure etched against dusty tomes. Eyes mirroring sunlit parchments, they hold court, their voice a lecturer's gleaming sword.",
     "external_url": null,
     "consumer": "argus-mint",
     "frame": {
       "id": "card-green",
       "version": 1,
-      "hash": "0xd2fec8d933304e7777c57e169e5412a7e64aafe25b9034aa4f871ce58a98154f"
+      "hash": "0xed8933833831ea63e4f8c91eea897814159af3a7b21acfb560c70162366ccf37"
     },
     "bio": {
       "ref": {
         "id": "demo-bio",
         "version": 1,
-        "hash": "0x1356c92e80c9f8a0cac5432b1bb374bd3902d43a00073ec0d8abd9aa57ef306f",
+        "hash": "0xfd2f24cb33460d7fc1676157b0e89da82c533178972ca9c356c97a2b0e46d496",
         "model": "mistral-nemo:12b-instruct-2407-q4_K_M"
       },
-      "text": "At the academy gate stands Library Pick, polishing gold armour between lessons. Every winter the students borrow the shield as a sled. The knight pretends not to notice, and waxes it.",
+      "text": "In gilded halls of knowledge, Library Pick stands, a golden figure etched against dusty tomes. Eyes mirroring sunlit parchments, they hold court, their voice a lecturer's gleaming sword.",
       "attempts": [
         {
           "outcome": "ok",
           "detail": "",
-          "text": "At the academy gate stands {name}, polishing gold armour between lessons. Every winter the students borrow the shield as a sled. The knight pretends not to notice, and waxes it."
+          "text": "In gilded halls of knowledge, {name} stands, a golden figure etched against dusty tomes. Eyes mirroring sunlit parchments, they hold court, their voice a lecturer's gleaming sword."
         }
       ],
       "edited": false
@@ -84,8 +84,8 @@
     "edits": [],
     "auto_check": null,
     "art_sha256": "1c5b846f1f62dfab6fe36879b09e148e96a87fc5a6c92b7bb0478d560287ddd4",
-    "image_sha256": "0c6c5c8f95f092907de3bb4de7f2ff55d486f95185016a68cf3af421aa918a7a",
-    "created_at": "2026-11-15T09:35:59.030332Z",
+    "image_sha256": "00de6981c700c9730ac798bf0add38c8acf1d0dd6724bb4ddd63cf5ebfc95dc3",
+    "created_at": "2026-11-15T11:18:42.979566Z",
     "reviews": []
   },
   "published": null

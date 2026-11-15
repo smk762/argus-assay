@@ -4,6 +4,16 @@ The hosted demo (`make pages`, for assay.dragonhound.dev) replays a **data tape*
 
 `fixture/` is recorded by `scripts/record_demo.py`: argus-mint's real server (`argus-mint serve`, in-process), walked through every review state. With stand-in backends it makes the **Sample data** tape; with the GPU host's darkroom and Ollama it makes a **Recorded** one. `fixture/provenance.json` tells `make tape` which. This page says what each is, and how to record. Every render, pin and on-chain step needs the maintainer's approval first.
 
+## The current tape: recorded 2026-11-15
+
+`make record` with the maintainer's approval, on argus-mint 0.2.1.dev (commit `465d8ad`, wire 1.7):
+
+- **Renders:** argus-darkroom on the GPU host, under its SFW `default` policy. Template v2's default checkpoint `sdxl/aureanuanceXL_v2`, 1152x896, 25 steps: four drafts and the two-card sample job (template v3), every one passed on its first attempt. The library card is the portrait library's existing Flux dev image, as before.
+- **Bios:** Ollama on a separate host, `mistral-nemo:12b-instruct-2407-q4_K_M`, screened by darkroom's text check. 16 written for 7 kept: the rest missed the length range (each draft shows its attempts and why). They run 161 to 209 characters, 3 or 4 lines.
+- **Pins, voucher, wallets:** as in the sample below (local CIDs, public test keys). Nothing was pinned or minted.
+- **GPU time:** about 9 minutes over three runs (4.5 for the one that finished). The first stopped when one card's bio missed the range 8 times (the prompt now asks for words, not characters, and allows 16 tries). The second hit an out-of-memory error on the GPU host straight after a scheduled job; the script now waits out :50 to :05, waits while darkroom is busy, and retries a render that ran out of memory.
+- **Art against the card:** generated, not curated. Most cards match their class and colour; the Steel Tinker reads as a mechanic rather than a cyborg, the Emerald Wizard shows two figures in red and green, and the sample cards (a giant and a dragon in the prompt) came out as people. The rejected card's moderator note is the script's fixed one.
+
 ## What the sample tape is
 
 `make sample-fixture` (no GPU, no network):
@@ -64,7 +74,7 @@ It checks that darkroom answers and Ollama has the bio model (no GPU work), reco
 What `--real` does:
 
 ### 1. Bios (cheap)
-- Ollama's `/api/chat` on the GPU host, with the bio template's model, `mistral-nemo:12b-instruct-2407-q4_K_M` (Mistral NeMo, Apache 2.0). About 8 GB of VRAM.
+- Ollama's `/api/chat` (it may be on another host than darkroom), with the bio template's model, `mistral-nemo:12b-instruct-2407-q4_K_M` (Mistral NeMo, Apache 2.0). About 8 GB of VRAM.
 - Seven bios (five drafts, two sample cards). With rewrites for length or repeats, expect 15 to 25 calls of a few seconds each.
 - darkroom's text check screens every try.
 

@@ -200,7 +200,7 @@ class StandInWriter:
 
 
 class OllamaWriter:
-    """A bio writer over Ollama's native ``POST /api/chat``."""
+    """A bio writer over Ollama's native ``POST /api/chat``. ``unload`` frees the model's VRAM."""
 
     calls = 0
 
@@ -222,6 +222,39 @@ class OllamaWriter:
             return r.json()["message"]["content"]
         except (httpx.HTTPError, ValueError, KeyError, TypeError) as e:
             raise BioError(f"Ollama failed: {e}") from e
+
+    def unload(self, model: str) -> None:
+        """Ask Ollama to drop ``model`` now (keep_alive 0), so the GPU is free when the run ends."""
+        try:
+            self.client.post(f"{self.base_url}/api/chat", json={"model": model, "messages": [], "keep_alive": 0})
+        except httpx.HTTPError as e:
+            print(f"couldn't unload {model}: {e}", file=sys.stderr)
+
+
+GATE = {"darkroom": ""}  # darkroom's URL in a real run: the gate waits for it to be idle
+OOM = ("out of memory", "would exceed allowed memory")
+
+
+def gpu_window(real: bool) -> None:
+    """Start no GPU work from :50 to :05 (a scheduled job has the GPU then, and needs a few minutes to
+    release it), nor while darkroom is busy with someone else's job."""
+    if not real:
+        return
+    while True:
+        now = datetime.now(UTC)
+        if now.minute >= 50 or now.minute < 5:
+            wait = ((65 - now.minute) % 60) * 60 - now.second
+            print(f"{now:%H:%M} UTC: pausing {wait} s for the scheduled :50-:05 GPU job", file=sys.stderr)
+            time.sleep(wait)
+            continue
+        try:
+            busy = httpx.get(f"{GATE['darkroom'].rstrip('/')}/health", timeout=10).json().get("generating", False)
+        except (httpx.HTTPError, ValueError):
+            busy = True
+        if not busy:
+            return
+        print(f"{now:%H:%M} UTC: darkroom is generating; waiting 30 s", file=sys.stderr)
+        time.sleep(30)
 
 
 def landscape(data: bytes) -> bytes:
@@ -369,6 +402,7 @@ def main(a: argparse.Namespace) -> None:
         default = t.model if t.model in {e.model for e in entries} else entries[0].model
 
         if a.real:
+            GATE["darkroom"] = a.darkroom
             darkroom, writer = DarkroomClient(a.darkroom), OllamaWriter(a.ollama)
         else:
             darkroom = StandInDarkroom([landscape(images[e.id]) for e in entries if e.model == default])
@@ -377,7 +411,15 @@ def main(a: argparse.Namespace) -> None:
 
         class Backend:  # renders go to darkroom; argus-mint's text check goes through the fit guard
             def generate(self, req):
-                return darkroom.generate(req)
+                # A ComfyUI out-of-memory error is the GPU's state, not the request's: wait and render it again.
+                for n in range(6):
+                    gpu_window(a.real)
+                    r = darkroom.generate(req)
+                    if not (a.real and r.outcome == "error" and any(m in r.detail.lower() for m in OOM)) or n == 5:
+                        return r
+                    print(f"  out of GPU memory; retrying in 60 s ({n + 1}/5)", file=sys.stderr)
+                    time.sleep(60)
+                return r
 
             def check_text(self, text):
                 return guard.check_text(text)
@@ -404,6 +446,7 @@ def main(a: argparse.Namespace) -> None:
             return r.json()
 
         for i, (name, values, texts, fate) in enumerate(CARDS):
+            gpu_window(a.real)
             guard.name = name
             print(f"draft {name} ({fate})", file=sys.stderr)
             draft_id = post(
@@ -429,6 +472,7 @@ def main(a: argparse.Namespace) -> None:
 
         # A card from the library, on another checkpoint: no render; its variables and seed come with it.
         pick = next((e for e in reversed(entries) if e.model != default), entries[-1])
+        gpu_window(a.real)
         guard.name = LIBRARY_NAME
         print(f"draft {LIBRARY_NAME} (library {pick.id}, pending)", file=sys.stderr)
         post(
@@ -440,13 +484,14 @@ def main(a: argparse.Namespace) -> None:
             },
         )  # fmt: skip
 
+        gpu_window(a.real)
         guard.name = SAMPLE["name"]
         print(f"sample job: {SAMPLE['count']} cards of template v{t.version + 1}", file=sys.stderr)
         job_id = post(
             "/samples",
             {"template": {"id": t.id, "version": t.version + 1}, "frame": {"id": "card-green", "version": 1}, "bio": BIO_ID, **SAMPLE},
         )["id"]  # fmt: skip
-        deadline = time.monotonic() + (1800 if a.real else 30)
+        deadline = time.monotonic() + (5400 if a.real else 30)
         while (job := c.get(f"/samples/{job_id}").json())["status"] not in ("done", "failed"):
             if time.monotonic() > deadline:
                 sys.exit(f"sample job {job_id} didn't finish")
@@ -561,4 +606,9 @@ if __name__ == "__main__":
     ap.add_argument("--fixture", type=Path, default=ROOT / "fixture", help="the fixture whose library to keep")
     ap.add_argument("--library", type=Path, help="a built argus-mint library with the full images")
     ap.add_argument("--out", type=Path, default=ROOT / "fixture", help="where to write (default fixture/)")
-    main(ap.parse_args())
+    args = ap.parse_args()
+    try:
+        main(args)
+    finally:  # done or failed, the bio model leaves the GPU at once
+        if args.real and args.ollama:
+            OllamaWriter(args.ollama).unload(yaml.safe_load((HERE / "demo-bio-v1.yaml").read_text())["model"])

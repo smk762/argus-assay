@@ -1,13 +1,13 @@
 [
   {
-    "hash": "0xf1f29889e2e7c3f0b4ea3823559b187aa60c283d19988335d9ec991646ace666",
+    "hash": "0x315994bdae766bad953c91da83e897b2edf9046a63a4a4e81aad1c1113c45718",
     "file": "t.yaml",
     "combinations": 156816,
     "template": {
       "id": "example-portrait",
       "version": 2,
       "status": "approved",
-      "approved_by": "fixture",
+      "approved_by": "maintainer",
       "approved_at": "2026-11-15",
       "model": "sdxl/aureanuanceXL_v2/aureanuanceXL_v2.safetensors",
       "models": [

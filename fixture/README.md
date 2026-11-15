@@ -1,10 +1,10 @@
-# The demo's fixture (sample)
+# The demo's fixture (recorded)
 
 Recorded responses of argus-mint's real server, `argus-mint serve`, for argus-assay's static demo
 (`make pages`) and demo mode (`make mock`). Made by `scripts/record_demo.py`; see
 docs/demo-recording.md.
 
-argus-mint's real server with stand-in backends: art from the portrait library, hand-written bios, local (non-IPFS) CIDs, a public test-key owner and Base Sepolia's chain id. Nothing was pinned or minted.
+Recorded from argus-mint with real backends: renders and text checks by argus-darkroom, bios by Ollama. Pins are local (non-IPFS) CIDs; the voucher is signed with a public test key for Base Sepolia's demo Card contract. Nothing was pinned or minted.
 
 - One draft per state: pending (one rendered, one from the portrait library), approved, rejected,
   published (with its `publish.json` result: pins, metadata, signed voucher). One sample job.

@@ -14,22 +14,22 @@
    },
    "lines": [
     {
-     "text": "At the academy gate stands Library Pick, polishing",
+     "text": "In gilded halls, Lantern Keeper prays, her golden",
      "x": 108,
      "y": 872
     },
     {
-     "text": "gold armour between lessons. Every winter the students",
+     "text": "heraldry glinting like sunbeams piercing through",
      "x": 108,
      "y": 928
     },
     {
-     "text": "borrow the shield as a sled. The knight pretends not to",
+     "text": "stained glass. Kneeling before the altar, she whispers",
      "x": 108,
      "y": 984
     },
     {
-     "text": "notice, and waxes it.",
+     "text": "hymns, her fingers dancing like sparks on prayer beads.",
      "x": 108,
      "y": 1040
     }
@@ -47,8 +47,8 @@
    },
    "lines": [
     {
-     "text": "Knight \u00b7 Gold",
-     "x": 380,
+     "text": "Priest \u00b7 Gold",
+     "x": 391,
      "y": 772
     }
    ]
@@ -65,8 +65,8 @@
    },
    "lines": [
     {
-     "text": "Library Pick",
-     "x": 364,
+     "text": "Lantern Keeper",
+     "x": 330,
      "y": 80
     }
    ]
@@ -83,8 +83,8 @@
    },
    "lines": [
     {
-     "text": "No. 5",
-     "x": 770,
+     "text": "No. 4",
+     "x": 769,
      "y": 1221
     }
    ]

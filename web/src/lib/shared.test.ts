@@ -23,14 +23,15 @@ const rendered = (current?: string) =>
 describe("dh-strip", () => {
   it("renders the shared source's markup, with the default label", () => {
     expect(rendered("cull")).toBe(squash(stripHtml({ current: "cull", label: strip.defaultLabel })));
-    expect(rendered()).toBe(squash(stripHtml({ label: strip.defaultLabel })));
+    expect(rendered()).toBe(squash(stripHtml({ current: "assay", label: strip.defaultLabel })));
     expect(strip.labelMore).toBe(strip.labelSuffixes.recorded);
   });
 
-  it("says this is assay on the nav; 1.2.4 has no Assay link to mark yet", () => {
+  it("says this is assay on the nav and marks only the Assay link (dh-shared 1.2.5)", () => {
     const html = renderToStaticMarkup(createElement(DemoStrip));
     expect(html).toContain('<nav class="dh-strip" aria-label="Dragonhound Labs demos" data-dh-site="assay">');
-    expect(html).not.toContain('aria-current="page"');
+    expect(html.match(/aria-current="page"/g)).toHaveLength(1);
+    expect(html).toContain('<a href="https://assay.dragonhound.dev/" data-dh-site="assay" aria-current="page">Assay</a>');
   });
 
   it("links the family in the same tab", () => {

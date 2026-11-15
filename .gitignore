@@ -9,3 +9,7 @@ web/public/data-tape/
 web/out/
 .wrangler/
 web/.wrangler/
+
+# make record-dry's output.
+.record-dry/
+.record-dry-tape/

@@ -73,7 +73,7 @@ The standalone review UI for [argus-mint](https://github.com/smk762/argus-mint),
 
 ## Demo mode
 
-`scripts/mock_mint.mjs` serves `fixture/` (recorded by argus-mint's `scripts/api_fixture.py`) as an argus-mint on :8108, with state in memory:
+`scripts/mock_mint.mjs` serves `fixture/` (recorded by `scripts/record_demo.py`, a copy of argus-mint's `scripts/api_fixture.py`) as an argus-mint on :8108, with state in memory:
 - reviews, catalogue decisions and publishing stick until it restarts
 - samples "render" one every `MOCK_STEP_MS`
 - the library is served when the fixture has one (`library.json` and `library/<id>.jpg` thumbnails); a draft from it records the entry, but keeps the fixture's image

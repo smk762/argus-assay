@@ -1,6 +1,6 @@
 [
   {
-    "hash": "0xce228a909cac0cb1ebd113b574a63379bb3e839a5ec413eb39d2597d3913b903",
+    "hash": "0xd2fec8d933304e7777c57e169e5412a7e64aafe25b9034aa4f871ce58a98154f",
     "file": "card-green-v1.yaml",
     "width": 969,
     "height": 1352,
@@ -9,7 +9,7 @@
       "version": 1,
       "status": "approved",
       "approved_by": "fixture",
-      "approved_at": "2026-11-09",
+      "approved_at": "2026-11-15",
       "overlay": "card-green-v1.png",
       "window": {
         "x": 81,

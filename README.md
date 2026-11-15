@@ -83,7 +83,7 @@ The static build (`ASSAY_STATIC=1`) needs no argus-mint. The page answers its ow
 - Reviews, the owner's card editor, publishing (the recorded result) and catalogue decisions work, in the tab until reload.
 - Making drafts and samples needs a GPU, so it is off.
 
-Today's tape is labelled Sample data. [docs/demo-recording.md](docs/demo-recording.md) says what it is, and what a real recording would need.
+Today's tape is labelled Sample data. `fixture/` is recorded by `scripts/record_demo.py` (argus-mint's real server; stand-in backends for the sample, the GPU host's darkroom and Ollama for `make record`). [docs/demo-recording.md](docs/demo-recording.md) says what each is, how full and how distinct the card bios must be, and how to record.
 
 ## Develop
 
@@ -92,7 +92,9 @@ make check     # eslint, tsc, wire types match the pin, vitest, next build
 make pages     # the static demo build, with its static check
 make shared-check  # the vendored Dragonhound shared layer (web/vendor/dh) is unedited and current
 make wire      # regenerate the wire types after changing web/schema/pins.json (npm run wire:pull fetches a new pin)
-make fixture   # copy a freshly recorded fixture from ../argus-mint
+make sample-fixture  # re-record fixture/ with argus-mint (MINT=...) on stand-ins: no GPU, no network
+make record-dry      # the same run as make record, on stand-ins, into .record-dry/, then the tape checks
+make record          # record on the GPU host (DARKROOM_URL, OLLAMA_URL), then make pages; docs/demo-recording.md
 ```
 
 ## License

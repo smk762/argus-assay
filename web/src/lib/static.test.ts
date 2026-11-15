@@ -4,7 +4,7 @@ import { fileURLToPath } from "node:url";
 
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import { buildTape, checkPublic } from "../../../scripts/make_tape.mjs";
+import { BIO_FIT, buildTape, checkBios, checkPublic } from "../../../scripts/make_tape.mjs";
 import { DemoMint } from "./demoMint";
 import { parseTape, type Tape } from "./tape";
 import type { DraftDetail, DraftList } from "./types";
@@ -24,12 +24,44 @@ describe("the tape", () => {
   });
 
   it("refuses an address that isn't on the allowlist, and secrets by name", () => {
-    expect(checkPublic('"to": "0x84d8530C85fA894c35563fD3b35a9c7695Ca9e60"', "x")).toEqual([]);
+    expect(checkPublic('"to": "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC"', "x")).toEqual([]);
     expect(checkPublic('"to": "0x1111111111111111111111111111111111111111"', "x")[0]).toMatch(/not on the allowlist/);
     expect(checkPublic('"pinata_jwt": "x"', "x")[0]).toMatch(/key or token/);
     expect(checkPublic('"url": "http://192.168.1.20:8108"', "x")[0]).toMatch(/LAN address/);
     // A 32-byte hash is not an address.
     expect(checkPublic(`"hash": "0x${"ab".repeat(32)}"`, "x")).toEqual([]);
+  });
+
+  it("has a distinct bio on every card, filling its box", () => {
+    const t = tape();
+    const bios = [...t.drafts.map((d) => d.draft.bio?.text), ...t.samples.flatMap((j) => (j.items ?? []).map((it) => it.bio))];
+    expect(bios.length).toBe(7);
+    expect(new Set(bios).size).toBe(bios.length);
+    for (const d of t.drafts) {
+      const lines = t.layouts[d.id].slots.bio.lines.length;
+      expect(lines).toBeGreaterThanOrEqual(3);
+      expect(lines).toBeLessThanOrEqual(4);
+    }
+  });
+
+  it("refuses a bio that is too short, too long, shrunk or shared with another card", () => {
+    const slot = { size: 38, height: 318, line_spacing: 1.1 };
+    const at = (n: number, size = 38) => ({ size, ascent: 37, descent: 14, lines: Array.from({ length: n }, () => ({ text: "", x: 0, y: 0 })) });
+    const filler = (n: number) => "Moss Warden " + "tends the quiet garden ".repeat(20).slice(0, n - 12);
+    const ok = { where: "a", name: "Moss Warden", text: filler(185), layout: at(4), slot };
+    expect(checkBios([ok])).toEqual([]);
+    expect(checkBios([{ ...ok, text: filler(120) }])[0]).toMatch(/120 characters/);
+    expect(checkBios([{ ...ok, text: filler(BIO_FIT.max_chars + 1) }])[0]).toMatch(/characters/);
+    expect(checkBios([{ ...ok, layout: at(2) }])[0]).toMatch(/fills 34%/);
+    expect(checkBios([{ ...ok, layout: at(5) }])[0]).toMatch(/fills 86%/);
+    expect(checkBios([{ ...ok, layout: at(6, 30) }])[0]).toMatch(/shrinks to 30 px/);
+    const a = "Moss Warden keeps a lantern lit for travellers who have not yet set out, and hums.";
+    const b = "Ash Piper keeps a lantern lit for travellers who have not yet set out, and naps.";
+    const fit = { ...BIO_FIT, min_chars: 0 };
+    expect(checkBios([{ where: "a", name: "Moss Warden", text: a }, { where: "b", name: "Ash Piper", text: b }], fit)[0]).toMatch(/share "keeps a lantern lit for travellers"/);
+    // Five words in common is allowed, and the names don't count.
+    const c = "Ash Piper keeps a lantern lit for nobody in particular.";
+    expect(checkBios([{ where: "a", name: "Moss Warden", text: a }, { where: "c", name: "Ash Piper", text: c }], fit)).toEqual([]);
   });
 
   it("rejects a tape whose paths climb out of it", () => {

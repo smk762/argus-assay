@@ -3,6 +3,7 @@
 import { createContext, useCallback, useContext, useEffect, useState, useSyncExternalStore, type ReactNode } from "react";
 
 import { getHealth } from "@/lib/api";
+import { staticDemo } from "@/lib/demo";
 import { getToken, onTokenChange } from "@/lib/token";
 import type { Health } from "@/lib/types";
 
@@ -16,7 +17,8 @@ interface MintState {
 
 const MintContext = createContext<MintState | null>(null);
 
-const tokenSnapshot = () => getToken() !== "";
+// The static demo checks no token (lib/demoMint.ts), so the moderator's controls are on without one.
+const tokenSnapshot = () => staticDemo() || getToken() !== "";
 
 /** `/health`, refreshed every 15 s and on demand: what the server can do decides which controls show. */
 export function MintProvider({ children }: { children: ReactNode }) {

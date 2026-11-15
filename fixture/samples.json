@@ -1,10 +1,10 @@
 {
   "items": [
     {
-      "id": "48590f515d9a22dd",
+      "id": "31cb390afa734302",
       "status": "done",
-      "created_at": "2026-11-09T10:08:17.207675Z",
-      "finished_at": "2026-11-09T10:08:18.104804Z",
+      "created_at": "2026-11-15T09:35:59.560477Z",
+      "finished_at": "2026-11-15T09:36:00.802206Z",
       "error": null,
       "request": {
         "template": {
@@ -16,7 +16,7 @@
           "version": 1
         },
         "bio": {
-          "id": "example-bio",
+          "id": "demo-bio",
           "version": 1
         },
         "model": null,
@@ -47,16 +47,16 @@
             {
               "seed": 4,
               "outcome": "ok",
-              "ref": "fixture-0",
+              "ref": "stand-in-5",
               "detail": ""
             }
           ],
-          "bio": "Sample once argued with a thunderstorm for an entire afternoon, and the storm, exhausted, apologised.",
+          "bio": "Sample sips tea from a silver bucket in the garden, minding the snails. Hedges reach the giant's knees and roses the ankles. Bees settle on that wide hat and stay all afternoon.",
           "bio_attempts": [
             {
               "outcome": "ok",
               "detail": "",
-              "text": "{name} once argued with a thunderstorm for an entire afternoon, and the storm, exhausted, apologised."
+              "text": "{name} sips tea from a silver bucket in the garden, minding the snails. Hedges reach the giant's knees and roses the ankles. Bees settle on that wide hat and stay all afternoon."
             }
           ],
           "error": null,
@@ -79,16 +79,16 @@
             {
               "seed": 5,
               "outcome": "ok",
-              "ref": "fixture-0",
+              "ref": "stand-in-6",
               "detail": ""
             }
           ],
-          "bio": "Sample keeps a lantern lit for travellers who have not yet set out, just in case they lose their way.",
+          "bio": "For chilly villages, Sample weaves scarves of obsidian thread, warming each stitch with a breath. The dragon's tail keeps the yarn tidy. Nobody has yet dared to ask for socks.",
           "bio_attempts": [
             {
               "outcome": "ok",
               "detail": "",
-              "text": "{name} keeps a lantern lit for travellers who have not yet set out, just in case they lose their way."
+              "text": "For chilly villages, {name} weaves scarves of obsidian thread, warming each stitch with a breath. The dragon's tail keeps the yarn tidy. Nobody has yet dared to ask for socks."
             }
           ],
           "error": null,

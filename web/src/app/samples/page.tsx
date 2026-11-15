@@ -5,6 +5,7 @@ import Link from "next/link";
 import { PageTitle, useLoad } from "@/components/bits";
 import { Button, Card, Notice, Spinner } from "@/components/ui";
 import { getSamples } from "@/lib/api";
+import { staticDemo } from "@/lib/demo";
 import { when } from "@/lib/time";
 
 const ref = (r: { id: string; version: number } | null | undefined) => (r ? `${r.id} v${r.version}` : null);
@@ -15,8 +16,15 @@ export default function SamplesPage() {
     <>
       <PageTitle aside={<Button small onClick={reload}>Refresh</Button>}>Samples</PageTitle>
       <p className="mb-4 max-w-3xl text-small text-text-secondary">
-        Sample cards rendered to review templates, frames and bio templates. Start one from a{" "}
-        <Link href="/catalogue" className="underline">catalogue</Link> page. They are never pinned, signed or minted.
+        Sample cards rendered to review templates, frames and bio templates.{" "}
+        {staticDemo() ? (
+          "This one was recorded; new samples render on a GPU."
+        ) : (
+          <>
+            Start one from a <Link href="/catalogue" className="underline">catalogue</Link> page.
+          </>
+        )}{" "}
+        They are never pinned, signed or minted.
       </p>
       {error ? <Notice tone="error">{error}</Notice> : null}
       {!data && !error ? <Spinner /> : null}

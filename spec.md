@@ -73,8 +73,13 @@ The standalone review UI for [argus-mint](https://github.com/smk762/argus-mint),
 
 ## Demo mode
 
-`scripts/mock_mint.mjs` serves `fixture/` (recorded by argus-mint's `scripts/api_fixture.py`) as an argus-mint on :8108, with state in memory:
+`scripts/mock_mint.mjs` serves `fixture/` (recorded by `scripts/record_demo.py`, a copy of argus-mint's `scripts/api_fixture.py`) as an argus-mint on :8108, with state in memory:
 - reviews, catalogue decisions and publishing stick until it restarts
 - samples "render" one every `MOCK_STEP_MS`
 - the library is served when the fixture has one (`library.json` and `library/<id>.jpg` thumbnails); a draft from it records the entry, but keeps the fixture's image
 - "Approve as demo owner" stands in for the wallet; the mock checks no signature
+
+**Hosted demo** (`make pages`, static). The same behaviour runs in the browser (`lib/demoMint.ts`) over a tape made from `fixture/` (`scripts/make_tape.mjs`). There is no server and no token, and state lasts until reload.
+- **Off:** drafts and samples can't be made (they need a GPU), and the frame preview is hidden (argus-mint composites it).
+- **No wallet:** the demo owner signs instead, and wallet buttons are hidden.
+- **Label:** the header says Sample data or Recorded, from the tape. [docs/demo-recording.md](docs/demo-recording.md) covers what a real recording needs.

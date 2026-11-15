@@ -10,7 +10,7 @@ PORT ?= 3108
 MOCK_PORT ?= 8108
 MINT ?= ../argus-mint
 
-.PHONY: help install dev mock fixture wire build test lint check clean
+.PHONY: help install dev mock fixture wire build test lint check clean tape pages shared-check sample-fixture record-dry record
 
 help:  ## Show this help
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[36m%-10s\033[0m %s\n", $$1, $$2}'
@@ -41,5 +41,39 @@ lint:  ## eslint + tsc + wire types match the pin
 
 check: lint test build  ## Everything CI runs
 
+# ---- Static demo (assay.dragonhound.dev): the fixture as a data tape, served with no argus-mint.
+
+TAPE_DIR ?= web/public/data-tape
+
+tape:  ## The data tape for the static demo, from fixture/ (refuses unlisted addresses and secrets)
+	$(NODE) scripts/make_tape.mjs --out $(TAPE_DIR)
+
+pages: tape  ## Static export of the demo to web/out/, with a hash CSP on every page and a static check
+	cd web && NEXT_PUBLIC_ASSAY_TAPE_URL=/$(patsubst web/public/%,%,$(TAPE_DIR)) $(NPM) run build:pages
+
+shared-check:  ## The vendored Dragonhound shared layer is unedited and matches the published v1 manifest
+	$(NODE) web/vendor/dh/sync-shared.mjs --check . --against https://dragonhound.dev/brand/v1/manifest.json --allow-outdated
+
+# ---- Recording the demo's fixture (docs/demo-recording.md). MINT is an argus-mint checkout at the
+# commit the fixture's wire matches (465d8ad, 0.2.1.dev); `uv sync --all-extras` runs there first.
+
+RECORD = uv run --project $(MINT) --all-extras python scripts/record_demo.py
+DRY_OUT ?= .record-dry
+
+sample-fixture:  ## Re-record fixture/ with stand-in backends: library art, the hand-written bios (no GPU, no network)
+	cd $(MINT) && uv sync --all-extras --quiet
+	$(RECORD) --out fixture
+
+record-dry:  ## Dry run of `make record`: the same run on stand-ins into $(DRY_OUT)/, then the tape checks (no GPU)
+	cd $(MINT) && uv sync --all-extras --quiet
+	$(RECORD) --out $(DRY_OUT)
+	$(NODE) scripts/make_tape.mjs --fixture $(DRY_OUT) --out $(DRY_OUT)-tape
+
+record:  ## The real recording on the GPU host (DARKROOM_URL, OLLAMA_URL) into fixture/, then `make pages`
+	@test -n "$(DARKROOM_URL)" -a -n "$(OLLAMA_URL)" || { echo "record: set DARKROOM_URL and OLLAMA_URL (the GPU host's argus-darkroom and Ollama)"; exit 1; }
+	cd $(MINT) && uv sync --all-extras --quiet
+	$(RECORD) --real --darkroom $(DARKROOM_URL) --ollama $(OLLAMA_URL) --out fixture $(if $(LIBRARY),--library $(LIBRARY))
+	$(MAKE) pages
+
 clean:  ## Remove build output
-	rm -rf web/.next
+	rm -rf web/.next web/out $(TAPE_DIR) $(DRY_OUT) $(DRY_OUT)-tape

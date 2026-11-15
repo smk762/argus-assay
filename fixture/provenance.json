@@ -1,0 +1,5 @@
+{
+  "kind": "sample",
+  "source": "argus-assay scripts/record_demo.py",
+  "note": "argus-mint's real server with stand-in backends: art from the portrait library, hand-written bios, local (non-IPFS) CIDs, a public test-key owner and Base Sepolia's chain id. Nothing was pinned or minted."
+}

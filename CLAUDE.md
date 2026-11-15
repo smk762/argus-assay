@@ -27,11 +27,16 @@ Not checked out? Read https://github.com/smk762/argus-cortex/blob/main/SUITE.md
 ```
 web/src/app/          routes: / (queue), drafts/[id], new, library, catalogue, catalogue/[kind]/[id]/[version], samples, samples/[id]
 web/src/components/   Shell, MintProvider (/health poll + token state), Catalogue (DecisionPanel, SampleRunner), LibraryPicker, Checkpoints (CheckpointOptions, LoraPicker), Modal, bits, ui, icons
-web/src/proxy.ts      per-request CSP nonce (Next's Proxy, formerly middleware)
-web/src/lib/          api (fetch client + capability gate), config (mintUrl), token, wallet, status, slots, generated/mint.ts
+web/src/proxy.live.ts per-request CSP nonce (Next's Proxy, formerly middleware); live build only
+web/src/app/**/page.{live,static}.tsx  dynamic routes: on demand (live) or one page per tape id (static demo)
+web/src/lib/          api (fetch client + capability gate), config (mintUrl), token, wallet, status, slots, generated/mint.ts;
+                      demo, tape, demoMint, staticParams (the static demo), chain (explorer links for the Card contract only)
+web/vendor/dh/        Dragonhound shared layer (dh-shared 1.2.4), vendored unedited; `make shared-check`
+web/scripts/          csp.mjs + check-static.mjs (static demo post-build)
 web/schema/           mint-wire.schema.json + pins.json (argus-mint repo, tag or commit, sha256)
 web/scripts/          wire-types.mjs (same as argus-studio's)
 scripts/mock_mint.mjs stand-in argus-mint over fixture/ for demo mode
+scripts/make_tape.mjs fixture/ -> web/public/data-tape/ for the static demo; refuses unlisted addresses and secrets
 fixture/              recorded responses from argus-mint's scripts/api_fixture.py (`make fixture`)
 ```
 
@@ -45,10 +50,11 @@ fixture/              recorded responses from argus-mint's scripts/api_fixture.p
   3. The pin is an argus-mint release tag (`v0.2.0` or later). Pin a commit only to build against wire work argus-mint hasn't released, and move back to a tag at its next release.
 - **Web platform:** the [Modern Web Guidance](https://developer.chrome.com/docs/modern-web-guidance) skill is the reference for HTML/CSS/client JS (install it locally as a Claude Code plugin, or `npx modern-web-guidance@latest install`; its files aren't committed). House exceptions:
   - **Overlays are `components/Modal.tsx`**, a native `<dialog>` opened with `showModal()`. Don't hand-roll `role="dialog"` overlays, focus traps or Esc handlers.
-  - **The CSP is nonce-based** (`src/proxy.ts`), so every page renders dynamically. An inline `<script>` needs the layout's `nonce`; anything else is refused. Only scripts, objects, `base`, forms and framing are restricted: argus-mint's origin is configurable and images arrive as `blob:` URLs.
-  - **Theme stays on `data-theme`** (shared with safelight), not the guide's `<meta>`-driven `:has()` selectors. The `color-scheme` meta is kept in step by the boot script and `lib/theme.ts` so the canvas is right before CSS loads.
+  - **The CSP is nonce-based** (`src/proxy.live.ts`), so every page renders dynamically. The static demo build instead gets a hash-based CSP per page (`web/scripts/csp.mjs`) and no proxy. An inline `<script>` needs the layout's `nonce`; anything else is refused. Only scripts, objects, `base`, forms and framing are restricted: argus-mint's origin is configurable and images arrive as `blob:` URLs.
+  - **Theme is the Dragonhound family's** `public/dh-theme.js` (a copy of `vendor/dh/dh-theme.js`): `data-theme` on `<html>` from the shared `dh-theme` cookie, set before first paint. Colours come from `vendor/dh/dh-tokens.css`, mapped onto the page's names in `globals.css`. Never edit `vendor/dh/`; re-sync it.
   - **Images:** the page's main image gets `fetchPriority="high"` and is never lazy; grids lazy-load all but the first.
 - **Ports:** argus-mint is on 8108 (the mock too), assay on 3108.
+- **Static demo** (`make pages`): `lib/demoMint.ts` mirrors `scripts/mock_mint.mjs` in the browser; change both together. The hosted demo never calls a wallet, and links only the Card contract on a block explorer (`lib/chain.ts`), never a wallet. A new address in the fixture must go on `make_tape.mjs`'s allowlist with its reason.
 
 ## Branches
 

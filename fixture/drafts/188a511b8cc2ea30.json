@@ -1,0 +1,92 @@
+{
+  "id": "188a511b8cc2ea30",
+  "status": "pending",
+  "awaiting": [
+    "moderator",
+    "owner"
+  ],
+  "draft": {
+    "format": 1,
+    "request": {
+      "template_id": "example-portrait",
+      "template_version": 2,
+      "template_hash": "0xf1f29889e2e7c3f0b4ea3823559b187aa60c283d19988335d9ec991646ace666",
+      "model": "flux/flux1-dev-fp8.safetensors",
+      "loras": [],
+      "sampling": {
+        "sampler": "euler",
+        "scheduler": "simple",
+        "steps": 20,
+        "cfg": 1.0,
+        "clip_skip": 1,
+        "guidance": 3.5
+      },
+      "width": 1152,
+      "height": 896,
+      "prompt": "waist-up portrait of a single non-binary knight, centered and facing the viewer, wearing gold heraldry, standing, background: academy, painted fantasy illustration, full bleed, detailed face",
+      "negative": "",
+      "variables": {
+        "background": "academy",
+        "colour": "gold",
+        "gender": "non-binary",
+        "pose": "standing",
+        "role": "knight"
+      },
+      "seed": 8453047
+    },
+    "attempts": [
+      {
+        "seed": 8453047,
+        "outcome": "ok",
+        "ref": "95d795406a3940e3b2b97a8794599245",
+        "detail": "",
+        "workflow": {
+          "name": "flux",
+          "sha256": "6a7e030a4209526fc92bcb4432b7b5c8d3faca59c515736a49e5024ae884fc92"
+        }
+      }
+    ],
+    "renderer": "darkroom",
+    "asset_id": "0x4e7c4b1ae555535666b339bbef3ecfd778991593efc8590c56c77501872e8ea5",
+    "to": "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
+    "name": "Library Pick",
+    "description": "At the academy gate stands Library Pick, polishing gold armour between lessons. Every winter the students borrow the shield as a sled. The knight pretends not to notice, and waxes it.",
+    "external_url": null,
+    "consumer": "argus-mint",
+    "frame": {
+      "id": "card-green",
+      "version": 1,
+      "hash": "0xd2fec8d933304e7777c57e169e5412a7e64aafe25b9034aa4f871ce58a98154f"
+    },
+    "bio": {
+      "ref": {
+        "id": "demo-bio",
+        "version": 1,
+        "hash": "0x1356c92e80c9f8a0cac5432b1bb374bd3902d43a00073ec0d8abd9aa57ef306f",
+        "model": "mistral-nemo:12b-instruct-2407-q4_K_M"
+      },
+      "text": "At the academy gate stands Library Pick, polishing gold armour between lessons. Every winter the students borrow the shield as a sled. The knight pretends not to notice, and waxes it.",
+      "attempts": [
+        {
+          "outcome": "ok",
+          "detail": "",
+          "text": "At the academy gate stands {name}, polishing gold armour between lessons. Every winter the students borrow the shield as a sled. The knight pretends not to notice, and waxes it."
+        }
+      ],
+      "edited": false
+    },
+    "texts": {
+      "class": "Knight · Gold",
+      "stats": "No. 5"
+    },
+    "style": null,
+    "library": "047-flux1-dev-fp8",
+    "edits": [],
+    "auto_check": null,
+    "art_sha256": "1c5b846f1f62dfab6fe36879b09e148e96a87fc5a6c92b7bb0478d560287ddd4",
+    "image_sha256": "0c6c5c8f95f092907de3bb4de7f2ff55d486f95185016a68cf3af421aa918a7a",
+    "created_at": "2026-11-15T09:35:59.030332Z",
+    "reviews": []
+  },
+  "published": null
+}

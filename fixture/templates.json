@@ -1,6 +1,6 @@
 [
   {
-    "hash": "0x5c36dcb87248112c3c6a1c876cd76718f72063a155cc762147d871da2b8e08e7",
+    "hash": "0xf1f29889e2e7c3f0b4ea3823559b187aa60c283d19988335d9ec991646ace666",
     "file": "t.yaml",
     "combinations": 156816,
     "template": {
@@ -8,7 +8,7 @@
       "version": 2,
       "status": "approved",
       "approved_by": "fixture",
-      "approved_at": "2026-11-09",
+      "approved_at": "2026-11-15",
       "model": "sdxl/aureanuanceXL_v2/aureanuanceXL_v2.safetensors",
       "models": [
         "sdxl/aureanuanceXL_v2/aureanuanceXL_v2.safetensors",
@@ -177,7 +177,7 @@
   },
   {
     "hash": "0xeaecfccaa1aa9632720faaf393f1e7d2d9fbc6d2b589beaad2324f510595c5bd",
-    "file": "t3.yaml",
+    "file": "t-next.yaml",
     "combinations": 156816,
     "template": {
       "id": "example-portrait",

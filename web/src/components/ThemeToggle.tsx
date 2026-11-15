@@ -2,23 +2,38 @@
 
 import { useSyncExternalStore } from "react";
 
-import { applyTheme, nextTheme, readTheme, serverTheme, subscribeTheme, type Theme } from "@/lib/theme";
+import { effectiveScheme, serverScheme, subscribeScheme } from "@/lib/theme";
 
-import { MoonIcon, SunIcon, SystemIcon } from "./icons";
-import { IconButton } from "./ui";
+import { ICON_BUTTON, Tip } from "./ui";
 
-const LABEL: Record<Theme, string> = { system: "System theme", light: "Light theme", dark: "Dark theme" };
-const ICON: Record<Theme, () => React.ReactNode> = { system: SystemIcon, light: SunIcon, dark: MoonIcon };
-
-/** Cycles system → light → dark. The layout's boot script applies a saved choice before paint. */
+/**
+ * The family's two-state theme toggle. public/dh-theme.js handles clicks on any
+ * `[data-dh-theme-toggle]`, stores the choice in the shared cookie and keeps
+ * `aria-pressed` (pressed = dark) in step, so React renders it once and leaves
+ * it alone. Both icons are in the markup and globals.css shows the right one
+ * from the first paint.
+ */
 export function ThemeToggle() {
-  const theme = useSyncExternalStore(subscribeTheme, readTheme, serverTheme);
-  const next = nextTheme(theme);
-  const title = `${LABEL[theme]}. Switch to ${LABEL[next].toLowerCase()}.`;
-  const Current = ICON[theme];
+  const dark = useSyncExternalStore(subscribeScheme, effectiveScheme, serverScheme) === "dark";
   return (
-    <IconButton label={title} onClick={() => applyTheme(next)}>
-      <Current />
-    </IconButton>
+    <Tip label={dark ? "Dark theme on" : "Dark theme off"}>
+      <button
+        type="button"
+        data-dh-theme-toggle=""
+        aria-label="Dark theme"
+        // Owned by dh-theme.js, which corrects it before hydration; React never updates it.
+        aria-pressed="false"
+        suppressHydrationWarning
+        className={`${ICON_BUTTON} text-text-secondary hover:bg-base-700 hover:text-text-primary`}
+      >
+        <svg viewBox="0 0 24 24" aria-hidden="true" className="theme-icon-moon h-4.5 w-4.5" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z" />
+        </svg>
+        <svg viewBox="0 0 24 24" aria-hidden="true" className="theme-icon-sun h-4.5 w-4.5" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+          <circle cx="12" cy="12" r="4" />
+          <path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" />
+        </svg>
+      </button>
+    </Tip>
   );
 }

@@ -40,7 +40,7 @@ export default function Queue() {
               role="tab"
               aria-selected={filter === f.key}
               onClick={() => setFilter(f.key)}
-              className={`rounded-md px-2.5 py-1.5 text-small ${filter === f.key ? "bg-interactive text-white" : "bg-base-800 text-text-secondary hover:bg-base-700"}`}
+              className={`rounded-md px-2.5 py-1.5 text-small ${filter === f.key ? "bg-interactive text-on-accent" : "bg-base-800 text-text-secondary hover:bg-base-700"}`}
             >
               {f.label} <span className="opacity-70">{data ? count : ""}</span>
             </button>
@@ -56,10 +56,11 @@ export default function Queue() {
             <Link href={`/drafts/${d.id}`} className="block overflow-hidden rounded-lg border border-base-600/60 bg-base-800 hover:border-interactive">
               <img src={draftImage(d.id, "image", d.image_sha256)} alt={`Card image of ${d.name}`} {...(i === 0 ? { fetchPriority: "high" as const } : { loading: "lazy" as const })} className="aspect-[5/7] w-full bg-base-900 object-contain" />
               <div className="space-y-1 p-3">
-                <div className="flex items-center justify-between gap-2">
-                  <span className="truncate font-medium">{d.name}</span>
-                  <DraftBadge status={d.status} />
-                </div>
+                {/* The name gets the full width: beside a two-line badge it was cut to a few letters. */}
+                <p className="truncate font-medium" title={d.name}>
+                  {d.name}
+                </p>
+                <DraftBadge status={d.status} />
                 <p className="text-caption text-text-muted">{(d.status === "pending" && awaitingText(d.awaiting)) || `${d.template.id} v${d.template.version}`}</p>
                 <p className="text-caption text-text-muted">
                   for {shortAddress(d.to)} · {when(d.created_at)}

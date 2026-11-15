@@ -1,10 +1,10 @@
 {
   "items": [
     {
-      "id": "f5ec44c808f39e7a",
+      "id": "6276a526b0c4d14b",
       "status": "done",
-      "created_at": "2026-11-15T16:14:32.996747Z",
-      "finished_at": "2026-11-15T16:15:05.542749Z",
+      "created_at": "2026-11-15T20:28:57.083215Z",
+      "finished_at": "2026-11-15T20:28:58.250333Z",
       "error": null,
       "request": {
         "template": {
@@ -49,13 +49,13 @@
             {
               "seed": 121,
               "outcome": "safety_rejected",
-              "ref": "90b443627c3f4ed785420742abfe4f14",
+              "ref": "b3b34b1bcdff4a5bb781517e891b6982",
               "detail": "omitted: sfw-exposed"
             },
             {
               "seed": 1152728919,
               "outcome": "ok",
-              "ref": "1871aaabfa53431a844b582b143c5a63",
+              "ref": "68cadb2e1d9442c099d0f83677f2fc56",
               "detail": "",
               "workflow": {
                 "name": "sdxl",
@@ -63,12 +63,12 @@
               }
             }
           ],
-          "bio": "Silver scales shimmering... Sample guards the garden's treasure. Pattering around, they water the petunias with their own breath. When moonlight catches their eyes, the garden glows like a frozen waterfall.",
+          "bio": "Silver scales shimmer in sunlight, Sample guards the garden's treasures. A gentle breeze ruffles their iridescent wings. They hum a tune, coaxing blossoms to bloom.",
           "bio_attempts": [
             {
               "outcome": "ok",
               "detail": "",
-              "text": "Silver scales shimmering... {name} guards the garden's treasure. Pattering around, they water the petunias with their own breath. When moonlight catches their eyes, the garden glows like a frozen waterfall."
+              "text": "Silver scales shimmer in sunlight, {name} guards the garden's treasures. A gentle breeze ruffles their iridescent wings. They hum a tune, coaxing blossoms to bloom."
             }
           ],
           "error": null,
@@ -91,7 +91,7 @@
             {
               "seed": 122,
               "outcome": "ok",
-              "ref": "22658d8f3ce94a41ab9b79d81f7d9be3",
+              "ref": "acec145a332c4f7f9ad5bbb805dd6182",
               "detail": "",
               "workflow": {
                 "name": "sdxl",
@@ -99,12 +99,12 @@
               }
             }
           ],
-          "bio": "Steel-grey banners ripple... Sample squats, granite eyes scanning parchment. Moss-kissed stone fingers trace symbols, delicate as a spider's web. Between pages, they gently polish a pebble, their pet.",
+          "bio": "Stone shards crackle, moss rustles. Sample thumbs through tome, grey stone fingers careful. Temples echo with turning pages. Once, they sculpted silence into song.",
           "bio_attempts": [
             {
               "outcome": "ok",
               "detail": "",
-              "text": "Steel-grey banners ripple... {name} squats, granite eyes scanning parchment. Moss-kissed stone fingers trace symbols, delicate as a spider's web. Between pages, they gently polish a pebble, their pet."
+              "text": "Stone shards crackle, moss rustles. {name} thumbs through tome, grey stone fingers careful. Temples echo with turning pages. Once, they sculpted silence into song."
             }
           ],
           "error": null,

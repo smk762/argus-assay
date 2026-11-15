@@ -1,0 +1,102 @@
+{
+  "id": "b18b54310e87e0de",
+  "status": "rejected",
+  "awaiting": [
+    "owner"
+  ],
+  "draft": {
+    "format": 1,
+    "request": {
+      "template_id": "demo-cast",
+      "template_version": 1,
+      "template_hash": "0x781f2f17e65402cef5c46a2b7767947951a8eced410d01aa104927bd7283d8f1",
+      "model": "sdxl/aureanuanceXL_v2/aureanuanceXL_v2.safetensors",
+      "loras": [],
+      "sampling": {
+        "sampler": "euler",
+        "scheduler": "normal",
+        "steps": 25,
+        "cfg": 6.0,
+        "clip_skip": 1,
+        "guidance": null
+      },
+      "width": 1152,
+      "height": 896,
+      "prompt": "waist-up portrait of one (male:1.4) (grey-haired and lined in their sixties:1.3) broad-shouldered sky-pirate captain, the only subject in the picture, centered and facing the viewer, clothing and colour scheme teal, charting a map, background: airship deck, painted fantasy and science-fiction illustration, full bleed, detailed",
+      "negative": "text, letters, words, caption, title, label, logo, watermark, signature, border, frame, card frame, trading card, playing card, game ui, icons, badges, numbers, two people, second person, multiple people, crowd, companion, child, teenager, empty scene, landscape, gore, blood, weapon pointed at viewer, cross, crucifix, halo, religious symbol, nudity",
+      "variables": {
+        "age": "grey-haired and lined in their sixties",
+        "background": "airship deck",
+        "build": "broad-shouldered",
+        "colour": "teal",
+        "gender": "male",
+        "pose": "charting a map",
+        "role": "sky-pirate captain"
+      },
+      "seed": 8511
+    },
+    "attempts": [
+      {
+        "seed": 8511,
+        "outcome": "ok",
+        "ref": "70f2150981e54807a6fbf43f3495cf1b",
+        "detail": "",
+        "workflow": {
+          "name": "sdxl",
+          "sha256": "02e08f842f7a66e0e1be2ebc506ab8339f3b39df639beb86fc04dc240f3ef38d"
+        }
+      }
+    ],
+    "renderer": "darkroom",
+    "asset_id": "0xac1d1d40fd927c95e968bd7ad203b36626b1cb18c277d854313270bbc87bc35a",
+    "to": "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
+    "name": "Sky Captain",
+    "description": "Brass telescope extended, Sky Captain scans teal-tinted skies. He marks the map with an ink-stained quill, each X a stolen treasure's secret. At the helm, he hums like a storm's approach.",
+    "external_url": null,
+    "consumer": "argus-mint",
+    "frame": {
+      "id": "card-green",
+      "version": 1,
+      "hash": "0xed8933833831ea63e4f8c91eea897814159af3a7b21acfb560c70162366ccf37"
+    },
+    "bio": {
+      "ref": {
+        "id": "demo-bio",
+        "version": 1,
+        "hash": "0xfee903b50f7131012c3fef6bb3c89daff4fc67e9ad3a1584fe44693f0774e861",
+        "model": "mistral-nemo:12b-instruct-2407-q4_K_M"
+      },
+      "text": "Brass telescope extended, Sky Captain scans teal-tinted skies. He marks the map with an ink-stained quill, each X a stolen treasure's secret. At the helm, he hums like a storm's approach.",
+      "attempts": [
+        {
+          "outcome": "ok",
+          "detail": "",
+          "text": "Brass telescope extended, {name} scans teal-tinted skies. He marks the map with an ink-stained quill, each X a stolen treasure's secret. At the helm, he hums like a storm's approach."
+        }
+      ],
+      "edited": false
+    },
+    "texts": {
+      "class": "Captain · Teal",
+      "stats": "No. 16"
+    },
+    "style": null,
+    "library": null,
+    "edits": [],
+    "auto_check": null,
+    "art_sha256": "0fd522e16e98504bbe0c2521ae27b73da27701e960e2f7a1f2b4750bef86864c",
+    "image_sha256": "7268e1ac6682d56a33e8279ae438a8c867e5bc2698fc651c43df23b5f0938ebb",
+    "created_at": "2026-11-15T20:28:53.588705Z",
+    "reviews": [
+      {
+        "role": "moderator",
+        "decision": "rejected",
+        "by": "moderator-1",
+        "at": "2026-11-15T20:28:53.606814Z",
+        "image_sha256": "7268e1ac6682d56a33e8279ae438a8c867e5bc2698fc651c43df23b5f0938ebb",
+        "note": "Reads as an office clerk, not a sky-pirate: business suit and tie in a wood-panelled cabin, no teal and no airship deck."
+      }
+    ]
+  },
+  "published": null
+}

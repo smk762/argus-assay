@@ -6,11 +6,13 @@ docs/demo-recording.md.
 
 Recorded from argus-mint with real backends: renders and text checks by argus-darkroom, bios by Ollama. Pins are local (non-IPFS) CIDs; the voucher is signed with a public test key for Base Sepolia's demo Card contract. Nothing was pinned or minted.
 
-- One draft per state: pending (one rendered, one from the portrait library), approved, rejected,
+- At least five drafts in every state, so each of the queue's filters has a page of cards: pending
+  (one from the portrait library), approved, rejected (each with the moderator's note on its render),
   published (with its `publish.json` result: pins, metadata, signed voucher). One sample job, of a
   giant and a dragon.
-- The drafts' render template is scripts/demo-portrait-v1.yaml; the library card's is argus-mint's
-  example-portrait v2. Both, the card-green frame and the bio template (scripts/demo-bio-v1.yaml)
+- The first four drafts render from scripts/demo-portrait-v1.yaml, the rest (people, robots,
+  creatures and living objects) from scripts/demo-cast-v1.yaml; the library card's template is
+  argus-mint's example-portrait v2. All three, the card-green frame and the bio template (scripts/demo-bio-v1.yaml)
   are marked approved for the recording. demo-portrait v2 (v1 with one more negative term) and the
   placeholder example-plain frame await catalogue review; the sample job renders v2.
 - Every bio fills 50 to 80% of the card's bio box; no two share a run of 6 words, an opening or a

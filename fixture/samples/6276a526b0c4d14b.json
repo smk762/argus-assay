@@ -1,0 +1,114 @@
+{
+  "id": "6276a526b0c4d14b",
+  "status": "done",
+  "created_at": "2026-11-15T20:28:57.083215Z",
+  "finished_at": "2026-11-15T20:28:58.250333Z",
+  "error": null,
+  "request": {
+    "template": {
+      "id": "demo-portrait",
+      "version": 2
+    },
+    "frame": {
+      "id": "card-green",
+      "version": 1
+    },
+    "bio": {
+      "id": "demo-bio",
+      "version": 1
+    },
+    "model": null,
+    "loras": [],
+    "count": 2,
+    "variables": {
+      "gender": "non-binary"
+    },
+    "seed": 120,
+    "name": "Sample",
+    "texts": {
+      "class": "Sample class",
+      "stats": "No. 0"
+    },
+    "style": null
+  },
+  "items": [
+    {
+      "n": 1,
+      "variables": {
+        "background": "garden",
+        "colour": "silver",
+        "gender": "non-binary",
+        "pose": "guarding a hoard",
+        "role": "dragon, a scaled non-human reptilian beast with horns and folded wings, no human features"
+      },
+      "prompt": "waist-up portrait of one non-binary dragon, a scaled non-human reptilian beast with horns and folded wings, no human features, alone in the picture, centered and facing the viewer, clothing and colour scheme silver, guarding a hoard, background: garden, painted fantasy illustration, full bleed, detailed",
+      "seed": 1152728919,
+      "attempts": [
+        {
+          "seed": 121,
+          "outcome": "safety_rejected",
+          "ref": "b3b34b1bcdff4a5bb781517e891b6982",
+          "detail": "omitted: sfw-exposed"
+        },
+        {
+          "seed": 1152728919,
+          "outcome": "ok",
+          "ref": "68cadb2e1d9442c099d0f83677f2fc56",
+          "detail": "",
+          "workflow": {
+            "name": "sdxl",
+            "sha256": "02e08f842f7a66e0e1be2ebc506ab8339f3b39df639beb86fc04dc240f3ef38d"
+          }
+        }
+      ],
+      "bio": "Silver scales shimmer in sunlight, Sample guards the garden's treasures. A gentle breeze ruffles their iridescent wings. They hum a tune, coaxing blossoms to bloom.",
+      "bio_attempts": [
+        {
+          "outcome": "ok",
+          "detail": "",
+          "text": "Silver scales shimmer in sunlight, {name} guards the garden's treasures. A gentle breeze ruffles their iridescent wings. They hum a tune, coaxing blossoms to bloom."
+        }
+      ],
+      "error": null,
+      "bio_error": null,
+      "art": true,
+      "framed": true
+    },
+    {
+      "n": 2,
+      "variables": {
+        "background": "temple",
+        "colour": "steel grey",
+        "gender": "non-binary",
+        "pose": "reading",
+        "role": "stone giant, a huge troll-like creature whose skin is cracked grey rock, boulder shoulders, moss growing on its stony hide, not a human"
+      },
+      "prompt": "waist-up portrait of one non-binary stone giant, a huge troll-like creature whose skin is cracked grey rock, boulder shoulders, moss growing on its stony hide, not a human, alone in the picture, centered and facing the viewer, clothing and colour scheme steel grey, reading, background: temple, painted fantasy illustration, full bleed, detailed",
+      "seed": 122,
+      "attempts": [
+        {
+          "seed": 122,
+          "outcome": "ok",
+          "ref": "acec145a332c4f7f9ad5bbb805dd6182",
+          "detail": "",
+          "workflow": {
+            "name": "sdxl",
+            "sha256": "02e08f842f7a66e0e1be2ebc506ab8339f3b39df639beb86fc04dc240f3ef38d"
+          }
+        }
+      ],
+      "bio": "Stone shards crackle, moss rustles. Sample thumbs through tome, grey stone fingers careful. Temples echo with turning pages. Once, they sculpted silence into song.",
+      "bio_attempts": [
+        {
+          "outcome": "ok",
+          "detail": "",
+          "text": "Stone shards crackle, moss rustles. {name} thumbs through tome, grey stone fingers careful. Temples echo with turning pages. Once, they sculpted silence into song."
+        }
+      ],
+      "error": null,
+      "bio_error": null,
+      "art": true,
+      "framed": true
+    }
+  ]
+}

@@ -1,5 +1,125 @@
 [
   {
+    "hash": "0x781f2f17e65402cef5c46a2b7767947951a8eced410d01aa104927bd7283d8f1",
+    "file": "cast.yaml",
+    "combinations": 3669120,
+    "template": {
+      "id": "demo-cast",
+      "version": 1,
+      "status": "approved",
+      "approved_by": "maintainer",
+      "approved_at": "2026-11-15",
+      "model": "sdxl/aureanuanceXL_v2/aureanuanceXL_v2.safetensors",
+      "models": [
+        "sdxl/aureanuanceXL_v2/aureanuanceXL_v2.safetensors"
+      ],
+      "loras": [],
+      "lora_options": [],
+      "max_loras": 1,
+      "sampling": {
+        "sampler": "euler",
+        "scheduler": "normal",
+        "steps": 25,
+        "cfg": 6.0,
+        "clip_skip": 1,
+        "guidance": null
+      },
+      "sampling_by_family": {},
+      "width": 1152,
+      "height": 896,
+      "prompt": "waist-up portrait of one ({gender}:1.4) ({age}:1.3) {build} {role}, the only subject in the picture, centered and facing the viewer, clothing and colour scheme {colour}, {pose}, background: {background}, painted fantasy and science-fiction illustration, full bleed, detailed",
+      "negative": "text, letters, words, caption, title, label, logo, watermark, signature, border, frame, card frame, trading card, playing card, game ui, icons, badges, numbers, two people, second person, multiple people, crowd, companion, child, teenager, empty scene, landscape, gore, blood, weapon pointed at viewer, cross, crucifix, halo, religious symbol, nudity",
+      "negative_by_family": {},
+      "variables": {
+        "role": [
+          "blacksmith",
+          "astronomer",
+          "starship pilot in a flight suit",
+          "bard",
+          "sky-pirate captain",
+          "alchemist",
+          "botanist",
+          "starship medic",
+          "city guard in a plain helmet",
+          "clockwork automaton, a brass robot with a round glass face and riveted limbs, no human skin",
+          "salvage robot, a boxy six-legged machine with one large camera eye, no human features",
+          "owlfolk, a person-sized owl creature with feathers and a beak, wearing a scholar's coat",
+          "salamander, a fire lizard creature with glowing scales and four legs, no human features",
+          "mushroom sprite, a small walking toadstool creature with a wide cap and a tiny face, not a human",
+          "animated porcelain teapot with a friendly painted face, a living object, no human",
+          "living spellbook with two round eyes on its leather cover, a magical object, no human"
+        ],
+        "gender": [
+          "male",
+          "female",
+          "non-binary"
+        ],
+        "age": [
+          "in their thirties with clearly adult features",
+          "middle-aged with lines around the eyes",
+          "grey-haired and lined in their sixties",
+          "elderly with white hair and a wrinkled face",
+          "ageless"
+        ],
+        "build": [
+          "slender",
+          "wiry",
+          "stocky",
+          "broad-shouldered",
+          "heavyset",
+          "tall and lanky",
+          "compact"
+        ],
+        "colour": [
+          "crimson red",
+          "amber orange",
+          "gold",
+          "moss green",
+          "teal",
+          "azure blue",
+          "violet purple",
+          "rose pink",
+          "ivory white",
+          "copper",
+          "steel grey",
+          "obsidian black"
+        ],
+        "pose": [
+          "standing",
+          "forging",
+          "stargazing",
+          "piloting",
+          "playing a lute",
+          "charting a map",
+          "brewing a potion",
+          "gardening",
+          "keeping watch",
+          "pouring tea",
+          "repairing a brass mechanism",
+          "reading",
+          "guarding a hoard",
+          "floating above a desk"
+        ],
+        "background": [
+          "workshop",
+          "observatory",
+          "starship bridge",
+          "harbour",
+          "airship deck",
+          "alchemy lab",
+          "greenhouse",
+          "space station",
+          "market",
+          "kitchen",
+          "library",
+          "mountain cave",
+          "forest"
+        ]
+      },
+      "max_attempts": 4
+    }
+  },
+  {
     "hash": "0xd659b69292f4422d56ee789cbff7d585bd39f6a4527ff2c2ac5b5d0cd245573c",
     "file": "demo.yaml",
     "combinations": 5184,

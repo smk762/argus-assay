@@ -87,7 +87,7 @@ CARDS = [  # name, template, variables, seed, display text, what happens to it
 ]  # fmt: skip
 ROLE = {r.split(",")[0].split(" in ")[0]: r for r in yaml.safe_load((HERE / "demo-cast-v1.yaml").read_text())["variables"]["role"]}
 CAST_CARDS = [  # name, role (its first words), gender, age, build, colour, pose, background, class, fate
-    ("Crimson Smith", "blacksmith", "male", "middle-aged with lines around the eyes", "heavyset", "crimson red", "forging", "workshop", "Smith · Crimson", "rejected"),
+    ("Crimson Smith", "blacksmith", "male", "grey-haired and lined in their sixties", "heavyset", "crimson red", "forging", "workshop", "Smith · Crimson", "rejected"),
     ("Brass Butler", "clockwork automaton", "non-binary", "ageless", "compact", "copper", "pouring tea", "kitchen", "Automaton · Copper", "published"),
     ("Violet Stargazer", "astronomer", "female", "elderly with white hair and a wrinkled face", "slender", "violet purple", "stargazing", "observatory", "Astronomer · Violet", "published"),
     ("Teapot Oracle", "animated porcelain teapot with a friendly painted face", "non-binary", "ageless", "compact", "ivory white", "pouring tea", "market", "Object · Ivory", "published"),
@@ -105,7 +105,7 @@ CAST_CARDS = [  # name, role (its first words), gender, age, build, colour, pose
 ]  # fmt: skip
 # Each card's render seed: 8501 up in list order, except the re-rolls picked by eye (and Gate Warden, which kept
 # its seed when a card before it was dropped).
-CAST_SEED = {"Gate Warden": 8516, "Copper Alchemist": 8574, "Crimson Smith": 8522, "Teapot Oracle": 8532, "Owl Scholar": 8542, "Ivory Medic": 8591}
+CAST_SEED = {"Gate Warden": 8516, "Copper Alchemist": 8574, "Crimson Smith": 8535, "Teapot Oracle": 8532, "Owl Scholar": 8542, "Ivory Medic": 8591}
 for n, (name, role, gender, age, build, colour, pose, background, klass, fate) in enumerate(CAST_CARDS):
     CARDS.append((name, CAST, {"role": ROLE[role], "gender": gender, "age": age, "build": build, "colour": colour, "pose": pose,
                                "background": background}, CAST_SEED.get(name, 8501 + n), {"class": klass, "stats": f"No. {n + 6}"}, fate))  # fmt: skip

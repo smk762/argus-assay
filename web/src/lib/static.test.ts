@@ -38,7 +38,7 @@ describe("the tape", () => {
   it("has a distinct bio on every card, filling its box", () => {
     const t = tape();
     const bios = [...t.drafts.map((d) => d.draft.bio?.text), ...t.samples.flatMap((j) => (j.items ?? []).map((it) => it.bio))];
-    expect(bios.length).toBe(7);
+    expect(bios.length).toBe(t.drafts.length + t.samples.reduce((n, j) => n + (j.items ?? []).length, 0));
     expect(new Set(bios).size).toBe(bios.length);
     for (const d of t.drafts) {
       const lines = t.layouts[d.id].slots.bio.lines.length;
@@ -101,6 +101,7 @@ describe("the in-browser argus-mint", () => {
 
   it("walks a pending draft through both reviews to published", () => {
     const m = mint();
+    const published = (m.get("/drafts?status=published").body as DraftList).items.length;
     const id = draftIn(m, "pending").id;
     let d = m.post(`/drafts/${id}/review`, { role: "moderator", approve: true, by: "mod", note: "" }).body as DraftDetail;
     expect(d.awaiting).toEqual(["owner"]);
@@ -111,7 +112,7 @@ describe("the in-browser argus-mint", () => {
     d = m.post(`/drafts/${id}/publish`, {}).body as DraftDetail;
     expect(d.status).toBe("published");
     expect((d.published?.metadata as { name: string }).name).toBe(d.draft.name);
-    expect((m.get("/drafts?status=published").body as DraftList).items).toHaveLength(2);
+    expect((m.get("/drafts?status=published").body as DraftList).items).toHaveLength(published + 1);
   });
 
   it("answers with copies, so the page never holds the state", () => {
@@ -173,7 +174,7 @@ describe("the client's static branch", () => {
     vi.stubGlobal("fetch", fetch);
     const api = await import("./api");
     const list = await api.getDrafts();
-    expect(list.items).toHaveLength(5);
+    expect(list.items).toHaveLength(t.drafts.length);
     const id = list.items[0].id;
     await api.moderatorReview(id, true, "me", "");
     expect(fetch).toHaveBeenCalledTimes(1);

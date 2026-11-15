@@ -31,7 +31,7 @@ web/src/proxy.live.ts per-request CSP nonce (Next's Proxy, formerly middleware);
 web/src/app/**/page.{live,static}.tsx  dynamic routes: on demand (live) or one page per tape id (static demo)
 web/src/lib/          api (fetch client + capability gate), config (mintUrl), token, wallet, status, slots, generated/mint.ts;
                       demo, tape, demoMint, staticParams (the static demo), chain (explorer links for the Card contract only)
-web/vendor/dh/        Dragonhound shared layer (dh-shared 1.2.4), vendored unedited; `make shared-check`
+web/vendor/dh/        Dragonhound shared layer (dh-shared 1.2.5), vendored unedited; `make shared-check`
 web/scripts/          csp.mjs + check-static.mjs (static demo post-build)
 web/schema/           mint-wire.schema.json + pins.json (argus-mint repo, tag or commit, sha256)
 web/scripts/          wire-types.mjs (same as argus-studio's)

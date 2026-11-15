@@ -14,22 +14,22 @@
    },
    "lines": [
     {
-     "text": "Golden dawn breaks, Library Pick stands, a sentinel in",
+     "text": "Azure waters ripple, Azure Stormcaller submerged,",
      "x": 108,
      "y": 872
     },
     {
-     "text": "shimmering gold. They polish their sword, not with",
+     "text": "robes billowing like underwater blossoms. Her voice",
      "x": 108,
      "y": 928
     },
     {
-     "text": "cloth, but with sunbeams. At lecture's end, they turn",
+     "text": "echoes, a quiet thunder, as she weaves spells into",
      "x": 108,
      "y": 984
     },
     {
-     "text": "into a human chalkboard.",
+     "text": "existence.",
      "x": 108,
      "y": 1040
     }
@@ -47,8 +47,8 @@
    },
    "lines": [
     {
-     "text": "Knight \u00b7 Gold",
-     "x": 380,
+     "text": "Wizard \u00b7 Azure",
+     "x": 373,
      "y": 772
     }
    ]
@@ -65,8 +65,8 @@
    },
    "lines": [
     {
-     "text": "Library Pick",
-     "x": 364,
+     "text": "Azure Stormcaller",
+     "x": 290,
      "y": 80
     }
    ]
@@ -83,7 +83,7 @@
    },
    "lines": [
     {
-     "text": "No. 5",
+     "text": "No. 3",
      "x": 770,
      "y": 1221
     }

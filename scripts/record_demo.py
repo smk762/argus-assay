@@ -521,23 +521,32 @@ def main(a: argparse.Namespace) -> None:
         guard = FitGuard(darkroom, work / "frames" / "card-green-v1.yaml")
 
         refused: list[str] = []  # darkroom records of renders its image check refused (to purge one by one)
+        missing: list[str] = []  # --no-render: renders the cache didn't have
 
         class Backend:  # renders go to darkroom; argus-mint's text check goes through the fit guard
             def generate(self, req):
-                # --cache: a render already made for this exact request is reused (same record), so a re-roll
-                # of one card renders that card alone.
+                # --cache: a render already made for this exact request is reused (same record and outcome,
+                # a refusal included), so a re-roll of one card renders that card alone.
                 key = hashlib.sha256(json.dumps(req.model_dump(mode="json"), sort_keys=True).encode()).hexdigest()[:24]
                 hit = a.cache / f"{key}.json" if a.cache and a.real else None
                 if hit and hit.is_file():
                     meta = json.loads(hit.read_text())
-                    print(f"  render from the cache ({meta['ref']})", file=sys.stderr)
+                    print(f"  render from the cache ({meta['ref']}, {meta.get('outcome', 'ok')})", file=sys.stderr)
+                    if meta.get("outcome") == "safety_rejected":
+                        return GenResult.safety_rejected(meta["detail"], ref=meta["ref"])
                     return GenResult.ok(hit.with_suffix(".png").read_bytes(), ref=meta["ref"], workflow=meta["workflow"])
+                if a.no_render:  # bios only: a render not in the cache stops the run (after the bios that need none)
+                    missing.append(f"seed {req.seed}: {req.prompt[:80]}")
+                    return GenResult.error("--no-render: this render is not in the cache")
                 # A ComfyUI out-of-memory error is the GPU's state, not the request's: wait and render it again.
                 for n in range(6):
                     gpu_window(a.real)
                     r = darkroom.generate(req)
                     if r.outcome == "safety_rejected" and r.ref:
                         refused.append(r.ref)
+                        if hit:
+                            hit.parent.mkdir(parents=True, exist_ok=True)
+                            hit.write_text(json.dumps({"ref": r.ref, "outcome": r.outcome, "detail": r.detail}))
                     if r.outcome == "ok" and hit:
                         hit.parent.mkdir(parents=True, exist_ok=True)
                         hit.with_suffix(".png").write_bytes(r.image)
@@ -624,6 +633,8 @@ def main(a: argparse.Namespace) -> None:
             if time.monotonic() > deadline:
                 sys.exit(f"sample job {job_id} didn't finish")
             time.sleep(0.05 if not a.real else 2)
+        if missing:
+            sys.exit("--no-render: not in the cache, so not rendered:\n  " + "\n  ".join(missing))
         for item in job["items"]:
             if item.get("error") or item.get("bio_error"):
                 sys.exit(f"sample item {item['n']}: {item.get('error') or item.get('bio_error')}")
@@ -739,6 +750,7 @@ if __name__ == "__main__":
     ap.add_argument("--library", type=Path, help="a built argus-mint library with the full images")
     ap.add_argument("--out", type=Path, default=ROOT / "fixture", help="where to write (default fixture/)")
     ap.add_argument("--cache", type=Path, help="keep renders here and reuse one made for the same request (re-rolls)")
+    ap.add_argument("--no-render", action="store_true", help="with --cache: make no render; stop if one isn't cached")
     ap.add_argument("--seed", action="append", default=[], metavar="NAME=SEED", help="re-roll one card with a new seed")
     ap.add_argument("--reject-note-file", type=Path, help="wait for the rejected card's moderator note in this file")
     args = ap.parse_args()

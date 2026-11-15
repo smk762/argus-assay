@@ -1,5 +1,5 @@
 {
-  "id": "2920acd17a3cb193",
+  "id": "56b52936dade5c17",
   "status": "published",
   "awaiting": [],
   "draft": {
@@ -47,7 +47,7 @@
     "asset_id": "0x26e9840acf58ba86690e67c03e21cf541cefc52f8c6aee1d8fde5986f89180a2",
     "to": "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
     "name": "Emerald Wizard",
-    "description": "Emerald robes whispering secrets, Emerald Wizard sifts through tomes, her fingers dancing like autumn leaves. In the hush, she hums, matching the library's breath.",
+    "description": "Emerald robes rustle... Emerald Wizard weaves a spell. Ink-stained fingers trace arcane sigils in the air. She hums in a minor key, like a creaking library shelf.",
     "external_url": null,
     "consumer": "argus-mint",
     "frame": {
@@ -59,30 +59,55 @@
       "ref": {
         "id": "demo-bio",
         "version": 1,
-        "hash": "0xde18a0f71fe53bcbf9fb27292352245b1869d72e562fb95f1f217f28a46eca2d",
+        "hash": "0x32a1cf6ecbb1227a79560e12888d10066514466a0a9dd00b066adef0516e0fb9",
         "model": "mistral-nemo:12b-instruct-2407-q4_K_M"
       },
-      "text": "Emerald robes whispering secrets, Emerald Wizard sifts through tomes, her fingers dancing like autumn leaves. In the hush, she hums, matching the library's breath.",
+      "text": "Emerald robes rustle... Emerald Wizard weaves a spell. Ink-stained fingers trace arcane sigils in the air. She hums in a minor key, like a creaking library shelf.",
       "attempts": [
         {
           "outcome": "rejected",
           "detail": "demo fit: 129 characters; the bio box wants 160 to 210",
-          "text": "In emerald hush, {name} weaves whispers. Her green-lit fingers trace sigils in air. She hums like old book pages turning."
+          "text": "Emerald robes billow, {name} whispers to tomes. She summons vines to turn pages. In hushed echoes, she hears books argue."
         },
         {
           "outcome": "rejected",
-          "detail": "demo fit: opens with \"in\"; vary the opening",
-          "text": "In hushed emerald vaults, {name} weaves spells, her fingers dancing like vine tendrils. Her robes, deep as forest glens, rustle secrets as she floats between towering tomes."
+          "detail": "demo fit: says \"them\" of a female character",
+          "text": "Brass quills scratch, {name} whispers. Emerald robes rustle, ink pots shiver. She summons secrets, binding them in spellwork, each page turned a silent spell."
         },
         {
           "outcome": "rejected",
-          "detail": "demo fit: 246 characters; the bio box wants 160 to 210",
-          "text": "In hush of library's emerald gloam, {name} weaves her spells, robes rustling like leaves in autumn's first whisper. Her fingers dance, tracing runes that glow as if lit by moonlit dewdrops, leaving trails like a snail's trail of stardust."
+          "detail": "demo fit: uses the stock word \"dance\"",
+          "text": "Emerald sparks ignite... {name}, in robes of verdant hue, weaves spells amidst tomes. Her fingers dance like rain on parchment. As she chants, emerald ink bleeds from quills she's never touched."
+        },
+        {
+          "outcome": "rejected",
+          "detail": "demo fit: 215 characters; the bio box wants 160 to 210",
+          "text": "Emerald robes rustle... {name} weaves a spell. She's a whisper in the library's green gloom. Her habit? Feeding silent words to ancient tomes. When she sneezes, emerald sparks rain, rebinding forgotten lore."
+        },
+        {
+          "outcome": "rejected",
+          "detail": "demo fit: uses the stock word \"dancing\"",
+          "text": "Lush parchment whispers... {name} weaves emerald enchantments, her fingers dancing like willows in wind. She hums in ancient tongue, a tune only tomes understand."
+        },
+        {
+          "outcome": "rejected",
+          "detail": "demo fit: 213 characters; the bio box wants 160 to 210",
+          "text": "Emerald robes whisper... {name} weaves sigils, fingers dancing like raindrops. She hums, tuning spells to the library's hush. Every tome touched leaves a green glow, her lips kissing secrets from the page."
+        },
+        {
+          "outcome": "rejected",
+          "detail": "demo fit: 224 characters; the bio box wants 160 to 210",
+          "text": "Emerald embers dance, {name} weaves them into words. Her fingers trace patterns on tomes, binding ink to intent. She hums in key with creaking floorboards, a tune only the dust knows. One day, a book replied in kind."
+        },
+        {
+          "outcome": "rejected",
+          "detail": "demo fit: 214 characters; the bio box wants 160 to 210",
+          "text": "Emerald sparks dance in her palms. She weaves words into magic, her robes rustling like whispers. In the hush of the library, she summons a book from the stacks, it landing with a soft thud like a cat jumping down."
         },
         {
           "outcome": "ok",
           "detail": "",
-          "text": "Emerald robes whispering secrets, {name} sifts through tomes, her fingers dancing like autumn leaves. In the hush, she hums, matching the library's breath."
+          "text": "Emerald robes rustle... {name} weaves a spell. Ink-stained fingers trace arcane sigils in the air. She hums in a minor key, like a creaking library shelf."
         }
       ],
       "edited": false
@@ -96,23 +121,23 @@
     "edits": [],
     "auto_check": null,
     "art_sha256": "bc999469a8c6c3f2a9173184d0e9f1c5a5a7e0b00200f3c6bdae2289119afd61",
-    "image_sha256": "04f45946c0a92d0d3c33e7888c7b0f86ac48beb3eec07cbb3ceeabbd7c04838e",
-    "created_at": "2026-11-15T13:40:04.452838Z",
+    "image_sha256": "60f4a7ff5ce19fb1b8eb813f71818f17e357da383cbedcf4d392aff9783e08a6",
+    "created_at": "2026-11-15T16:11:30.421671Z",
     "reviews": [
       {
         "role": "moderator",
         "decision": "approved",
         "by": "moderator-1",
-        "at": "2026-11-15T13:40:04.463246Z",
-        "image_sha256": "04f45946c0a92d0d3c33e7888c7b0f86ac48beb3eec07cbb3ceeabbd7c04838e",
+        "at": "2026-11-15T16:11:30.432833Z",
+        "image_sha256": "60f4a7ff5ce19fb1b8eb813f71818f17e357da383cbedcf4d392aff9783e08a6",
         "note": ""
       },
       {
         "role": "owner",
         "decision": "approved",
         "by": "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
-        "at": "2026-11-15T13:40:04.490683Z",
-        "image_sha256": "04f45946c0a92d0d3c33e7888c7b0f86ac48beb3eec07cbb3ceeabbd7c04838e",
+        "at": "2026-11-15T16:11:30.462110Z",
+        "image_sha256": "60f4a7ff5ce19fb1b8eb813f71818f17e357da383cbedcf4d392aff9783e08a6",
         "note": ""
       }
     ]
@@ -136,30 +161,30 @@
         }
       ],
       "art_cid": "bafkreif4tgkgtkggypzksfzrqtiot4ofuwt6bmacadz4npnoekerdgx5me",
-      "image_cid": "bafkreiae6rmunqfjfugtym7hrcghwd4gvrel5m7oyb6lwphovo6xybedry"
+      "image_cid": "bafkreida6st76xhbt6y3r24bh5yyddyx4nl5uob4x3opju4sv74xqpqiuy"
     },
     "reviews": [
       {
         "role": "moderator",
         "decision": "approved",
         "by": "moderator-1",
-        "at": "2026-11-15T13:40:04.463246Z",
-        "image_sha256": "04f45946c0a92d0d3c33e7888c7b0f86ac48beb3eec07cbb3ceeabbd7c04838e",
+        "at": "2026-11-15T16:11:30.432833Z",
+        "image_sha256": "60f4a7ff5ce19fb1b8eb813f71818f17e357da383cbedcf4d392aff9783e08a6",
         "note": ""
       },
       {
         "role": "owner",
         "decision": "approved",
         "by": "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
-        "at": "2026-11-15T13:40:04.490683Z",
-        "image_sha256": "04f45946c0a92d0d3c33e7888c7b0f86ac48beb3eec07cbb3ceeabbd7c04838e",
+        "at": "2026-11-15T16:11:30.462110Z",
+        "image_sha256": "60f4a7ff5ce19fb1b8eb813f71818f17e357da383cbedcf4d392aff9783e08a6",
         "note": ""
       }
     ],
     "metadata": {
       "name": "Emerald Wizard",
-      "description": "Emerald robes whispering secrets, Emerald Wizard sifts through tomes, her fingers dancing like autumn leaves. In the hush, she hums, matching the library's breath.",
-      "image": "ipfs://bafkreiae6rmunqfjfugtym7hrcghwd4gvrel5m7oyb6lwphovo6xybedry",
+      "description": "Emerald robes rustle... Emerald Wizard weaves a spell. Ink-stained fingers trace arcane sigils in the air. She hums in a minor key, like a creaking library shelf.",
+      "image": "ipfs://bafkreida6st76xhbt6y3r24bh5yyddyx4nl5uob4x3opju4sv74xqpqiuy",
       "attributes": [],
       "provenance": {
         "template": "demo-portrait",
@@ -178,7 +203,7 @@
         "bio": {
           "id": "demo-bio",
           "version": 1,
-          "hash": "0xde18a0f71fe53bcbf9fb27292352245b1869d72e562fb95f1f217f28a46eca2d",
+          "hash": "0x32a1cf6ecbb1227a79560e12888d10066514466a0a9dd00b066adef0516e0fb9",
           "model": "mistral-nemo:12b-instruct-2407-q4_K_M"
         },
         "variables": {
@@ -191,15 +216,15 @@
         "model": "sdxl/aureanuanceXL_v2/aureanuanceXL_v2.safetensors"
       }
     },
-    "metadata_cid": "bafkreihyrpwdaxbnhheobqugpzehwsxgtxrklw4djxlxtoixkrjs2v7ojq",
+    "metadata_cid": "bafkreihyl2vil6xucnwkx5k6ptirrsnpnkqym7xemfxqmusvfh62yl4cke",
     "voucher": {
       "to": "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
       "asset_id": "0x26e9840acf58ba86690e67c03e21cf541cefc52f8c6aee1d8fde5986f89180a2",
-      "content_hash": "0xe0c690f4b8058f92ab07f8b3f30d355f56f62f56d93091d6d8dec5a09bbda79a",
+      "content_hash": "0x97fe7dc2f7b9a574ad8f2132b034d6f2699622d9471238260387f315ad738cce",
       "price": 0,
       "deadline": 1900000000
     },
-    "signature": "0xc8fe7e0f26c63761a851ff061e8d801892866ba834b051d16e0c2b577289bfd07dcea1d590e0603d4a08cad0e6ccc35b6498fc56e9f8abb0b0af4fdb459604a61b",
+    "signature": "0xdc65970c14e577177498f4f53d7b7f8c6964081d5ed98e91759c8206539075ed03b9a238fc8044e63aa688e41785e58a3d9493927fd48e05dcd0c14a963c2a141c",
     "typed_data": {
       "types": {
         "EIP712Domain": [
@@ -253,7 +278,7 @@
       "message": {
         "to": "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
         "assetId": "0x26e9840acf58ba86690e67c03e21cf541cefc52f8c6aee1d8fde5986f89180a2",
-        "contentHash": "0xe0c690f4b8058f92ab07f8b3f30d355f56f62f56d93091d6d8dec5a09bbda79a",
+        "contentHash": "0x97fe7dc2f7b9a574ad8f2132b034d6f2699622d9471238260387f315ad738cce",
         "price": 0,
         "deadline": 1900000000
       }

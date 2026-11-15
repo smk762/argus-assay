@@ -1,8 +1,8 @@
 {
-  "id": "0de1ec97f8cdbc65",
+  "id": "f5ec44c808f39e7a",
   "status": "done",
-  "created_at": "2026-11-15T13:43:19.690609Z",
-  "finished_at": "2026-11-15T13:44:54.261219Z",
+  "created_at": "2026-11-15T16:14:32.996747Z",
+  "finished_at": "2026-11-15T16:15:05.542749Z",
   "error": null,
   "request": {
     "template": {
@@ -61,22 +61,12 @@
           }
         }
       ],
-      "bio": "Under moonlight, Sample guards a garden, silver scales shimmering like whispers of frost. In twilight, they tend to blossoms, leaves unfurling beneath their gentle touch. Their odd habit?",
+      "bio": "Silver scales shimmering... Sample guards the garden's treasure. Pattering around, they water the petunias with their own breath. When moonlight catches their eyes, the garden glows like a frozen waterfall.",
       "bio_attempts": [
-        {
-          "outcome": "rejected",
-          "detail": "demo fit: opens with \"in\"; vary the opening",
-          "text": "In a garden of silver moonlight, {name} weaves between iridescent blossoms, a living shadow. They guard their hoard, not of gold, but whispers of songs only the wind knows."
-        },
-        {
-          "outcome": "rejected",
-          "detail": "demo fit: 211 characters; the bio box wants 160 to 210",
-          "text": "Under {name}'s watchful gaze, moonlit petals unfurl. She tends her hoard amidst the blooms, silver scales shimmering like dewdrops. When she hums, the garden whispers back, leaves rustling like secret treasures."
-        },
         {
           "outcome": "ok",
           "detail": "",
-          "text": "Under moonlight, {name} guards a garden, silver scales shimmering like whispers of frost. In twilight, they tend to blossoms, leaves unfurling beneath their gentle touch. Their odd habit?"
+          "text": "Silver scales shimmering... {name} guards the garden's treasure. Pattering around, they water the petunias with their own breath. When moonlight catches their eyes, the garden glows like a frozen waterfall."
         }
       ],
       "error": null,
@@ -107,32 +97,12 @@
           }
         }
       ],
-      "bio": "Beneath steel-grey banners, Sample stands, granite shoulders bearing the temple's weight. They crack open stones, revealing ancient parchments, their mossy fingers turning pages with surprising gentleness.",
+      "bio": "Steel-grey banners ripple... Sample squats, granite eyes scanning parchment. Moss-kissed stone fingers trace symbols, delicate as a spider's web. Between pages, they gently polish a pebble, their pet.",
       "bio_attempts": [
-        {
-          "outcome": "rejected",
-          "detail": "demo fit: 148 characters; the bio box wants 160 to 210",
-          "text": "In the temple's hush, {name} pores over tomes, fingers of granite gently turning pages. Their steel-grey heraldry glimmers like a moonlit graveyard."
-        },
-        {
-          "outcome": "rejected",
-          "detail": "demo fit: opens with \"in\"; vary the opening",
-          "text": "In a temple's steely hush, {name} pores over parchments, mossy fingers tracing ancient lines. As dawn breaks, a pebble drops from their beard, echoing like a tiny boulder."
-        },
-        {
-          "outcome": "rejected",
-          "detail": "demo fit: 229 characters; the bio box wants 160 to 210",
-          "text": "In a temple's hush, {name} turns pages, stone fingers gentle as dawn's first dew. Steel grey heraldry gleams like moonlit lake. Every hour, they whisper rock's history to the walls, which echo, \"Remember, we've heard this before."
-        },
-        {
-          "outcome": "rejected",
-          "detail": "demo fit: opens with \"in\"; vary the opening",
-          "text": "In the temple's hush, {name} pores over a tome, steel-grey heraldry etched in stone. They turn pages with gentle thunder. At dawn, they whisper to the statuary, sharing secrets only stone can keep."
-        },
         {
           "outcome": "ok",
           "detail": "",
-          "text": "Beneath steel-grey banners, {name} stands, granite shoulders bearing the temple's weight. They crack open stones, revealing ancient parchments, their mossy fingers turning pages with surprising gentleness."
+          "text": "Steel-grey banners ripple... {name} squats, granite eyes scanning parchment. Moss-kissed stone fingers trace symbols, delicate as a spider's web. Between pages, they gently polish a pebble, their pet."
         }
       ],
       "error": null,

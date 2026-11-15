@@ -19,7 +19,8 @@ describe("the tape", () => {
   it("is made from the recorded fixture, with every draft's images", () => {
     const t = tape();
     expect(t.provenance.kind).toBe("recorded");
-    expect(t.drafts.map((d) => d.status).sort()).toEqual(["approved", "pending", "pending", "published", "rejected"]);
+    // At least five behind every status filter, so none of the queue's views is a near-empty page.
+    for (const status of ["pending", "approved", "rejected", "published"]) expect(t.drafts.filter((d) => d.status === status).length, status).toBeGreaterThanOrEqual(5);
     for (const d of t.drafts) expect(t.files).toContain(`drafts/${d.id}/image.png`);
   });
 
@@ -59,7 +60,7 @@ describe("the tape", () => {
     expect(checkBios([{ ...ok, layout: at(6, 30) }])[0]).toMatch(/shrinks to 30 px/);
     const a = "Moss Warden keeps a lantern lit for travellers who have not yet set out, and hums.";
     const b = "Ash Piper keeps a lantern lit for travellers who have not yet set out, and naps.";
-    const fit = { ...BIO_FIT, min_chars: 0, banned_words: [], last_sentence_words: 0 }; // each rule below is tried on its own
+    const fit = { ...BIO_FIT, min_chars: 0, banned_words: [], banned_marks: [], last_sentence_words: 0 }; // each rule below is tried on its own
     expect(checkBios([{ where: "a", name: "Moss Warden", text: a }, { where: "b", name: "Ash Piper", text: b }], fit)[0]).toMatch(/share "keeps a lantern lit for travellers"/);
     const dancing = { where: "d", name: "Ash Piper", text: "Ash Piper hums, fingers dancing like sparks on the strings." };
     const dance = { where: "e", name: "Moss Warden", text: "Moss Warden digs; trowels dance like sparks in the beds." };
@@ -75,6 +76,10 @@ describe("the tape", () => {
     expect(checkBios(byName, { ...fit, name_openings: 2 })[0]).toMatch(/3 bios open with the card's name, over 2/);
     expect(checkBios([{ where: "n", name: "Ash Piper", text: "Ash Piper hums while the reeds go dancing in the wind." }], { ...fit, banned_words: ["dance"] })[0]).toMatch(/stock word "dancing"/);
     expect(checkBios([{ where: "o", name: "Ash Piper", text: "Ash Piper tends the reeds by the river each dusk. Her odd habit?" }], { ...fit, last_sentence_words: 4 })[0]).toMatch(/ends on a fragment \("Her odd habit\?"\)/);
+    expect(checkBios([{ where: "p", name: "Ash Piper", text: "Reeds whisper... Ash Piper listens to them all night long." }], { ...fit, banned_marks: ["..."] })[0]).toMatch(/uses "\.\.\."/);
+    expect(checkBios([{ where: "q", name: "Ash Piper", text: "Ash Piper hums while a dancer twirls past the reeds." }], { ...fit, banned_words: ["dance"] })[0]).toMatch(/stock word "dancer"/);
+    expect(checkBios([{ where: "r", name: "Ash Piper", text: "Reeds sway by the river all night long." }], fit)[0]).toMatch(/names the card 0 times/);
+    expect(checkBios([{ where: "s", name: "Ash Piper", text: 'Ash Piper waves and calls "Goodnight, reeds.' }], fit)[0]).toMatch(/quotation open/);
     // Five words in common is allowed, and the names don't count.
     const c = "Nightly, Ash Piper keeps a lantern lit for nobody in particular.";
     expect(checkBios([{ where: "a", name: "Moss Warden", text: a }, { where: "c", name: "Ash Piper", text: c }], fit)).toEqual([]);

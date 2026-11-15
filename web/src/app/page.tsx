@@ -5,6 +5,8 @@ import Link from "next/link";
 import { useState } from "react";
 
 import { DraftBadge, PageTitle, useLoad } from "@/components/bits";
+import { ExpandIcon } from "@/components/icons";
+import { Lightbox } from "@/components/Lightbox";
 import { Button, Notice, Spinner } from "@/components/ui";
 import { draftImage, getDrafts } from "@/lib/api";
 import { awaitingText, shortAddress } from "@/lib/status";
@@ -28,6 +30,7 @@ export default function Queue() {
   const [filter, setFilter] = useState<Filter>("moderator");
   const { data, error, reload } = useLoad(() => getDrafts());
   const items = (data?.items ?? []).filter((d) => matches(d, filter));
+  const [big, setBig] = useState<number | null>(null);
   return (
     <>
       <PageTitle aside={<Button small onClick={reload}>Refresh</Button>}>Review queue</PageTitle>
@@ -39,7 +42,10 @@ export default function Queue() {
               key={f.key}
               role="tab"
               aria-selected={filter === f.key}
-              onClick={() => setFilter(f.key)}
+              onClick={() => {
+                setFilter(f.key);
+                setBig(null);
+              }}
               className={`rounded-md px-2.5 py-1.5 text-small ${filter === f.key ? "bg-interactive text-on-accent" : "bg-base-800 text-text-secondary hover:bg-base-700"}`}
             >
               {f.label} <span className="opacity-70">{data ? count : ""}</span>
@@ -52,7 +58,7 @@ export default function Queue() {
       {data && items.length === 0 ? <p className="text-small text-text-muted">Nothing here.</p> : null}
       <ul className="grid grid-cols-[repeat(auto-fill,minmax(210px,1fr))] gap-4">
         {items.map((d, i) => (
-          <li key={d.id}>
+          <li key={d.id} className="relative">
             <Link href={`/drafts/${d.id}`} className="block overflow-hidden rounded-lg border border-base-600/60 bg-base-800 hover:border-interactive">
               <img src={draftImage(d.id, "image", d.image_sha256)} alt={`Card image of ${d.name}`} {...(i === 0 ? { fetchPriority: "high" as const } : { loading: "lazy" as const })} className="aspect-[5/7] w-full bg-base-900 object-contain" />
               <div className="space-y-1 p-3">
@@ -67,9 +73,39 @@ export default function Queue() {
                 </p>
               </div>
             </Link>
+            <button
+              type="button"
+              onClick={() => setBig(i)}
+              aria-label={`Enlarge ${d.name}`}
+              title="Enlarge"
+              className="absolute right-2 top-2 inline-flex h-9 w-9 items-center justify-center rounded-md bg-black/55 text-white hover:bg-black/75"
+            >
+              <ExpandIcon />
+            </button>
           </li>
         ))}
       </ul>
+      <Lightbox
+        label="Card"
+        index={big}
+        onIndex={setBig}
+        items={items.map((d) => ({
+          key: d.id,
+          src: draftImage(d.id, "image", d.image_sha256),
+          alt: `Card image of ${d.name}`,
+          caption: (
+            <>
+              <b>{d.name}</b> · {d.status}
+              {d.status === "pending" && awaitingText(d.awaiting) ? ` · ${awaitingText(d.awaiting)}` : ""}
+            </>
+          ),
+          actions: (
+            <Link href={`/drafts/${d.id}`} className="underline">
+              Open the draft
+            </Link>
+          ),
+        }))}
+      />
     </>
   );
 }

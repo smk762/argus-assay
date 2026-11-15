@@ -6,6 +6,8 @@ import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
 import { PageTitle } from "@/components/bits";
+import { ExpandIcon } from "@/components/icons";
+import { Lightbox } from "@/components/Lightbox";
 import { Card, Collapsible, Notice, Spinner } from "@/components/ui";
 import { getSample, sampleImage } from "@/lib/api";
 import { checkpointName, loraText } from "@/lib/status";
@@ -15,6 +17,7 @@ export default function SampleView() {
   const { id } = useParams<{ id: string }>();
   const [job, setJob] = useState<SampleJob | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [big, setBig] = useState<number | null>(null);
   useEffect(() => {
     let live = true;
     let timer: ReturnType<typeof setTimeout>;
@@ -41,6 +44,7 @@ export default function SampleView() {
   if (!job) return error ? <Notice tone="error">{error}</Notice> : <Spinner />;
   const r = job.request;
   const running = job.status === "queued" || job.status === "running";
+  const shown = (job.items ?? []).filter((item) => item.framed || item.art);
   return (
     <>
       <PageTitle aside={running ? <Spinner /> : null}>
@@ -76,7 +80,18 @@ export default function SampleView() {
           <li key={item.n}>
             <Card className="space-y-2">
               {item.framed || item.art ? (
-                <img src={sampleImage(job.id, item.n, item.framed ? "framed" : "art")} alt={`Sample ${item.n}`} {...(item === job.items?.[0] ? { fetchPriority: "high" as const } : { loading: "lazy" as const })} className="w-full rounded-md bg-base-900" />
+                <div className="relative">
+                  <img src={sampleImage(job.id, item.n, item.framed ? "framed" : "art")} alt={`Sample ${item.n}`} {...(item === job.items?.[0] ? { fetchPriority: "high" as const } : { loading: "lazy" as const })} className="w-full rounded-md bg-base-900" />
+                  <button
+                    type="button"
+                    onClick={() => setBig(shown.indexOf(item))}
+                    aria-label={`Enlarge sample ${item.n}`}
+                    title="Enlarge"
+                    className="absolute right-2 top-2 inline-flex h-9 w-9 items-center justify-center rounded-md bg-black/55 text-white hover:bg-black/75"
+                  >
+                    <ExpandIcon />
+                  </button>
+                </div>
               ) : (
                 <div className="flex aspect-square items-center justify-center rounded-md bg-base-900 text-small text-text-muted">no image</div>
               )}
@@ -113,6 +128,21 @@ export default function SampleView() {
             ))
           : null}
       </ul>
+      <Lightbox
+        label="Sample card"
+        index={big}
+        onIndex={setBig}
+        items={shown.map((item) => ({
+          key: String(item.n),
+          src: sampleImage(job.id, item.n, item.framed ? "framed" : "art"),
+          alt: `Sample ${item.n}`,
+          caption: (
+            <>
+              <b>Sample {item.n}</b> · {Object.values(item.variables).join(" · ")}
+            </>
+          ),
+        }))}
+      />
     </>
   );
 }

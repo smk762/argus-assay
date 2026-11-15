@@ -123,7 +123,7 @@ const opening = (text, name) => (text.split(name).join(" {name} ").toLowerCase()
  * slot's full size and filling min_fill..max_fill of the slot's height (from the recorded layout),
  * and no two may share BIO_FIT.shared_words words in a row, their first two words, or a simile (a 3-word
  * run around "like" or "as", or "like" comparing to the same word). None may open with a word in
- * BIO_FIT.banned_openings, hold more than max_similes "like", use a banned_words word or another gender's
+ * BIO_FIT.banned_openings, hold more than max_similes "like", use a banned_words word, a banned_marks mark or another gender's
  * pronouns, or end on a sentence shorter than last_sentence_words words; at most
  * name_openings open with the card's name. `bios` is [{ where, name, text, gender?, layout?, slot? }].
  */
@@ -133,8 +133,14 @@ export function checkBios(bios, fit = BIO_FIT) {
   for (const b of bios) {
     const first = opening(b.text, b.name).split(" ")[0];
     if ((fit.banned_openings ?? []).includes(first)) problems.push(`${b.where}: bio opens with "${first}"`);
-    const banned = new Set((fit.banned_words ?? []).map(stem));
-    const stock = words(b.text, b.name).find((w) => banned.has(stem(w)));
+    const mark = (fit.banned_marks ?? []).find((m) => b.text.includes(m));
+    if (mark) problems.push(`${b.where}: bio uses "${mark}"`);
+    const banned = (fit.banned_words ?? []).map(stem);
+    const stock = words(b.text, b.name).find((w) => banned.some((x) => w.startsWith(x)));
+    const named = b.text.split(b.name).length - 1;
+    if (named !== 1) problems.push(`${b.where}: bio names the card ${named} times, not once`);
+    if ((b.text.match(/"/g) ?? []).length % 2 || (b.text.match(/\u201c/g) ?? []).length !== (b.text.match(/\u201d/g) ?? []).length)
+      problems.push(`${b.where}: bio leaves a quotation open`);
     if (stock) problems.push(`${b.where}: bio uses the stock word "${stock}"`);
     const last = b.text.trim().split(/(?<=[.!?])\s+/).pop() ?? "";
     if (fit.last_sentence_words !== undefined && words(last, b.name).length < fit.last_sentence_words)

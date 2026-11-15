@@ -55,7 +55,7 @@ Two checks hold that:
 
 The bio template is `scripts/demo-bio-v1.yaml`: argus-mint's example, asking for three sentences of about 185 characters built from the card's role (its class), heraldry colour, pose and setting, opening on a deed, an object, a sound or a time of day, with the pronouns spelled out per gender and stock phrases ruled out. The card's name never goes to the model (argus-mint's rule): it writes a `{name}` token, and argus-mint puts the name in.
 
-The render template is `scripts/demo-portrait-v1.yaml`: argus-mint's example-portrait v2 with each role worded the way it should look (one figure; a cyborg with chrome plating and joints rather than a person beside a robot; an invented lantern-bearing priestly order, with real-world religious symbols in the negative prompt; a stone giant and a dragon as creatures, not people). Values still come only from its lists. The portrait library stays on example-portrait v2.
+The render templates are `scripts/demo-portrait-v1.yaml`, for the first four drafts and the sample job, and `scripts/demo-cast-v1.yaml`, for the rest of the queue: the same wording with two more variables, age (adults only: thirties and up, every age written as it looks) and build, and a fantasy and science-fiction cast of people of every gender, age and build, robots, creatures and living objects, each worded as it should look. It is a template of its own so the first four keep their renders. `scripts/demo-portrait-v1.yaml` is argus-mint's example-portrait v2 with each role worded the way it should look (one figure; a cyborg with chrome plating and joints rather than a person beside a robot; an invented lantern-bearing priestly order, with real-world religious symbols in the negative prompt; a stone giant and a dragon as creatures, not people). Values still come only from its lists. The portrait library stays on example-portrait v2.
 
 ## What runs in the browser
 
@@ -63,6 +63,7 @@ The render template is `scripts/demo-portrait-v1.yaml`: argus-mint's example-por
 - The owner's card editor: the live SVG preview, with recorded text layouts or an approximate one for new text. "Bake" records the edit as argus-mint would, but can't redraw the PNG, so the image stays the same.
 - Publishing: it shows the tape's recorded publish result (local CIDs, the fixture's voucher).
 - Catalogue approve and retire.
+- Enlarged views: the queue's cards (through the current filter), the sample cards and the library's portraits (through the role filter) open in a viewer with Prev and Next buttons and the arrow keys. It wraps at both ends, so the buttons stay enabled and keep focus.
 
 All of it stays in the tab until a reload.
 
@@ -86,13 +87,13 @@ What `--real` does:
 
 ### 1. Bios (cheap)
 - Ollama's `/api/chat` (it may be on another host than darkroom), with the bio template's model, `mistral-nemo:12b-instruct-2407-q4_K_M` (Mistral NeMo, Apache 2.0). About 8 GB of VRAM.
-- Seven bios (five drafts, two sample cards). With rewrites for length or repeats, expect 15 to 25 calls of a few seconds each.
+- 23 bios (21 drafts, two sample cards). With rewrites for the checks, expect 100 to 150 calls of a few seconds each. With `--cache`, a bio that passed is kept (`DIR/bios.json`) and offered first on the next run, checked again like a new one; `--rewrite-bio "Card Name"` writes one afresh. A draft whose bio runs out of tries gets up to 3 rounds.
 - darkroom's text check screens every try.
 
 ### 2. Renders (GPU host)
-- argus-darkroom on the GPU host, demo-portrait's checkpoint `sdxl/aureanuanceXL_v2`. Four drafts and a two-card sample job: 6 renders at 1152x896, 25 steps. The library card is not rendered.
+- argus-darkroom on the GPU host, demo-portrait's checkpoint `sdxl/aureanuanceXL_v2`. 20 drafts and a two-card sample job: 22 renders at 1152x896, 25 steps (only the ones not in the cache, with `--cache`). The library card is not rendered.
 - The run starts no GPU work from :50 to :05 (a scheduled job has the GPU then), waits while darkroom is busy, and retries a render that ran out of memory (60 s apart, up to 5 times). It prints the record ids of any renders darkroom refused, to purge one by one.
-- **Re-rolls:** run `scripts/record_demo.py` directly (the `RECORD` line in the Makefile) with `--cache DIR`, which keeps every render and reuses one made for the same request, and `--seed "Card Name=SEED"` for each card to render again. A change to the render template changes every request, so it re-renders everything. `--no-render` (with `--cache`) makes no render at all: a request not in the cache stops the run, naming it, so a bios-only run can't reach the GPU. Refusals are cached too, so a replay takes the same retry path. `--reject-note-file FILE` writes the rejected card's image beside `FILE` and waits for the moderator's note in it.
+- **Re-rolls:** run `scripts/record_demo.py` directly (the `RECORD` line in the Makefile) with `--cache DIR`, which keeps every render and reuses one made for the same request, and `--seed "Card Name=SEED"` for each card to render again. A change to the render template changes every request, so it re-renders everything. `--no-render` (with `--cache`) makes no render at all: a request not in the cache stops the run, naming it, so a bios-only run can't reach the GPU. Refusals are cached too, so a replay takes the same retry path. `--reject-notes DIR` writes each rejected card's image to `DIR/<card>.png` and waits for the moderator's note in `DIR/<card>.txt`, so every note says what is wrong with that render; a note is reused on a later run only while the card's art is unchanged.
 - **Licences to check before publishing renders:**
   - The SDXL finetunes inherit CreativeML Open RAIL++-M, plus each author's own terms on Civitai.
   - FLUX.1 [dev] is under Black Forest Labs' non-commercial licence (only in the library's existing images).

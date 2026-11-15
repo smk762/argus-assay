@@ -1,15 +1,15 @@
 {
   "items": [
     {
-      "id": "5657df3d4f957e10",
+      "id": "0de1ec97f8cdbc65",
       "status": "done",
-      "created_at": "2026-11-15T11:18:43.244538Z",
-      "finished_at": "2026-11-15T11:19:52.859738Z",
+      "created_at": "2026-11-15T13:43:19.690609Z",
+      "finished_at": "2026-11-15T13:44:54.261219Z",
       "error": null,
       "request": {
         "template": {
-          "id": "example-portrait",
-          "version": 3
+          "id": "demo-portrait",
+          "version": 2
         },
         "frame": {
           "id": "card-green",
@@ -22,8 +22,10 @@
         "model": null,
         "loras": [],
         "count": 2,
-        "variables": {},
-        "seed": 3,
+        "variables": {
+          "gender": "non-binary"
+        },
+        "seed": 120,
         "name": "Sample",
         "texts": {
           "class": "Sample class",
@@ -37,17 +39,23 @@
           "variables": {
             "background": "garden",
             "colour": "silver",
-            "gender": "male",
-            "pose": "drinking",
-            "role": "giant"
+            "gender": "non-binary",
+            "pose": "guarding a hoard",
+            "role": "dragon, a scaled non-human reptilian beast with horns and folded wings, no human features"
           },
-          "prompt": "waist-up portrait of a single male giant, centered and facing the viewer, wearing silver heraldry, drinking, background: garden, painted fantasy illustration, full bleed, detailed face",
-          "seed": 4,
+          "prompt": "waist-up portrait of one non-binary dragon, a scaled non-human reptilian beast with horns and folded wings, no human features, alone in the picture, centered and facing the viewer, clothing and colour scheme silver, guarding a hoard, background: garden, painted fantasy illustration, full bleed, detailed",
+          "seed": 1152728919,
           "attempts": [
             {
-              "seed": 4,
+              "seed": 121,
+              "outcome": "safety_rejected",
+              "ref": "90b443627c3f4ed785420742abfe4f14",
+              "detail": "omitted: sfw-exposed"
+            },
+            {
+              "seed": 1152728919,
               "outcome": "ok",
-              "ref": "618f847890c142c9b403c16a04bfee33",
+              "ref": "1871aaabfa53431a844b582b143c5a63",
               "detail": "",
               "workflow": {
                 "name": "sdxl",
@@ -55,12 +63,22 @@
               }
             }
           ],
-          "bio": "In a garden of moonlit blossoms, Sample guzzles starlight, insisting it's just another drink. His silver-bedecked form gleams like dewdrops on petals, making the night glow brighter.",
+          "bio": "Under moonlight, Sample guards a garden, silver scales shimmering like whispers of frost. In twilight, they tend to blossoms, leaves unfurling beneath their gentle touch. Their odd habit?",
           "bio_attempts": [
+            {
+              "outcome": "rejected",
+              "detail": "demo fit: opens with \"in\"; vary the opening",
+              "text": "In a garden of silver moonlight, {name} weaves between iridescent blossoms, a living shadow. They guard their hoard, not of gold, but whispers of songs only the wind knows."
+            },
+            {
+              "outcome": "rejected",
+              "detail": "demo fit: 211 characters; the bio box wants 160 to 210",
+              "text": "Under {name}'s watchful gaze, moonlit petals unfurl. She tends her hoard amidst the blooms, silver scales shimmering like dewdrops. When she hums, the garden whispers back, leaves rustling like secret treasures."
+            },
             {
               "outcome": "ok",
               "detail": "",
-              "text": "In a garden of moonlit blossoms, {name} guzzles starlight, insisting it's just another drink. His silver-bedecked form gleams like dewdrops on petals, making the night glow brighter."
+              "text": "Under moonlight, {name} guards a garden, silver scales shimmering like whispers of frost. In twilight, they tend to blossoms, leaves unfurling beneath their gentle touch. Their odd habit?"
             }
           ],
           "error": null,
@@ -71,19 +89,19 @@
         {
           "n": 2,
           "variables": {
-            "background": "none",
-            "colour": "obsidian",
+            "background": "temple",
+            "colour": "steel grey",
             "gender": "non-binary",
-            "pose": "weaving",
-            "role": "dragon"
+            "pose": "reading",
+            "role": "stone giant, a huge troll-like creature whose skin is cracked grey rock, boulder shoulders, moss growing on its stony hide, not a human"
           },
-          "prompt": "waist-up portrait of a single non-binary dragon, centered and facing the viewer, wearing obsidian heraldry, weaving, background: none, painted fantasy illustration, full bleed, detailed face",
-          "seed": 5,
+          "prompt": "waist-up portrait of one non-binary stone giant, a huge troll-like creature whose skin is cracked grey rock, boulder shoulders, moss growing on its stony hide, not a human, alone in the picture, centered and facing the viewer, clothing and colour scheme steel grey, reading, background: temple, painted fantasy illustration, full bleed, detailed",
+          "seed": 122,
           "attempts": [
             {
-              "seed": 5,
+              "seed": 122,
               "outcome": "ok",
-              "ref": "a681681ab8814f2badb3f9b0f5dfb84c",
+              "ref": "22658d8f3ce94a41ab9b79d81f7d9be3",
               "detail": "",
               "workflow": {
                 "name": "sdxl",
@@ -91,22 +109,32 @@
               }
             }
           ],
-          "bio": "In obsidian caverns, Sample weaves tales, black scales clicking like loom shuttles. Their whispers echo through coal-hearted caves, igniting thoughts into existence.",
+          "bio": "Beneath steel-grey banners, Sample stands, granite shoulders bearing the temple's weight. They crack open stones, revealing ancient parchments, their mossy fingers turning pages with surprising gentleness.",
           "bio_attempts": [
             {
               "outcome": "rejected",
-              "detail": "demo fit: 224 characters; the bio box wants 160 to 210",
-              "text": "{name}, obsidian scales glistening, weaves a mountain from smoke and shadow. Their claws, like daggers, slice through the void, leaving trails of stardust. In this realm of obsidian, they knit constellations into their silk."
+              "detail": "demo fit: 148 characters; the bio box wants 160 to 210",
+              "text": "In the temple's hush, {name} pores over tomes, fingers of granite gently turning pages. Their steel-grey heraldry glimmers like a moonlit graveyard."
             },
             {
-              "outcome": "unusable",
-              "detail": "stray braces or empty",
-              "text": "{name}, obsidian scales glinting in starlight, weaves dreams from shadow. Their claws dance, creating silk from smoke. After each tapestry, {they} eat the moon's reflection."
+              "outcome": "rejected",
+              "detail": "demo fit: opens with \"in\"; vary the opening",
+              "text": "In a temple's steely hush, {name} pores over parchments, mossy fingers tracing ancient lines. As dawn breaks, a pebble drops from their beard, echoing like a tiny boulder."
+            },
+            {
+              "outcome": "rejected",
+              "detail": "demo fit: 229 characters; the bio box wants 160 to 210",
+              "text": "In a temple's hush, {name} turns pages, stone fingers gentle as dawn's first dew. Steel grey heraldry gleams like moonlit lake. Every hour, they whisper rock's history to the walls, which echo, \"Remember, we've heard this before."
+            },
+            {
+              "outcome": "rejected",
+              "detail": "demo fit: opens with \"in\"; vary the opening",
+              "text": "In the temple's hush, {name} pores over a tome, steel-grey heraldry etched in stone. They turn pages with gentle thunder. At dawn, they whisper to the statuary, sharing secrets only stone can keep."
             },
             {
               "outcome": "ok",
               "detail": "",
-              "text": "In obsidian caverns, {name} weaves tales, black scales clicking like loom shuttles. Their whispers echo through coal-hearted caves, igniting thoughts into existence."
+              "text": "Beneath steel-grey banners, {name} stands, granite shoulders bearing the temple's weight. They crack open stones, revealing ancient parchments, their mossy fingers turning pages with surprising gentleness."
             }
           ],
           "error": null,

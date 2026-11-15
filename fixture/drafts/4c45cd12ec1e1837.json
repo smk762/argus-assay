@@ -1,0 +1,106 @@
+{
+  "id": "4c45cd12ec1e1837",
+  "status": "approved",
+  "awaiting": [],
+  "draft": {
+    "format": 1,
+    "request": {
+      "template_id": "demo-portrait",
+      "template_version": 1,
+      "template_hash": "0xd659b69292f4422d56ee789cbff7d585bd39f6a4527ff2c2ac5b5d0cd245573c",
+      "model": "sdxl/aureanuanceXL_v2/aureanuanceXL_v2.safetensors",
+      "loras": [],
+      "sampling": {
+        "sampler": "euler",
+        "scheduler": "normal",
+        "steps": 25,
+        "cfg": 6.0,
+        "clip_skip": 1,
+        "guidance": null
+      },
+      "width": 1152,
+      "height": 896,
+      "prompt": "waist-up portrait of one female wizard in long flowing robes, alone in the picture, centered and facing the viewer, clothing and colour scheme azure blue, casting a spell, background: temple, painted fantasy illustration, full bleed, detailed",
+      "negative": "text, letters, words, caption, title, label, logo, watermark, signature, border, frame, card frame, trading card, playing card, game ui, icons, badges, numbers, two people, second person, multiple people, crowd, companion, robot beside, empty scene, landscape, gore, cross, crucifix, mitre, rosary, halo, church, religious symbol, nudity",
+      "variables": {
+        "background": "temple",
+        "colour": "azure blue",
+        "gender": "female",
+        "pose": "casting a spell",
+        "role": "wizard in long flowing robes"
+      },
+      "seed": 8473
+    },
+    "attempts": [
+      {
+        "seed": 8473,
+        "outcome": "ok",
+        "ref": "74e102b9c8cc4749980cfbf87ce1e8b2",
+        "detail": "",
+        "workflow": {
+          "name": "sdxl",
+          "sha256": "02e08f842f7a66e0e1be2ebc506ab8339f3b39df639beb86fc04dc240f3ef38d"
+        }
+      }
+    ],
+    "renderer": "darkroom",
+    "asset_id": "0x89964876bb9e20b0262233b1c023a63554302b2f1653191a12c0e63e3fdc0608",
+    "to": "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
+    "name": "Azure Stormcaller",
+    "description": "Azure Stormcaller weaves azure incantations 'mid temple's echoes. Her robes, like a waterfall, cascade as she dances with shadows. She hums, a tune only the cobwebs understand.",
+    "external_url": null,
+    "consumer": "argus-mint",
+    "frame": {
+      "id": "card-green",
+      "version": 1,
+      "hash": "0xed8933833831ea63e4f8c91eea897814159af3a7b21acfb560c70162366ccf37"
+    },
+    "bio": {
+      "ref": {
+        "id": "demo-bio",
+        "version": 1,
+        "hash": "0xde18a0f71fe53bcbf9fb27292352245b1869d72e562fb95f1f217f28a46eca2d",
+        "model": "mistral-nemo:12b-instruct-2407-q4_K_M"
+      },
+      "text": "Azure Stormcaller weaves azure incantations 'mid temple's echoes. Her robes, like a waterfall, cascade as she dances with shadows. She hums, a tune only the cobwebs understand.",
+      "attempts": [
+        {
+          "outcome": "ok",
+          "detail": "",
+          "text": "{name} weaves azure incantations 'mid temple's echoes. Her robes, like a waterfall, cascade as she dances with shadows. She hums, a tune only the cobwebs understand."
+        }
+      ],
+      "edited": false
+    },
+    "texts": {
+      "class": "Wizard · Azure",
+      "stats": "No. 3"
+    },
+    "style": null,
+    "library": null,
+    "edits": [],
+    "auto_check": null,
+    "art_sha256": "ae7b08b359eb3bf591d9df5a59b44182869739b2d550ce0202cc88ac0e8d153f",
+    "image_sha256": "bf358f11434b7d1124e4fee403c422a47627ecb9ae1fc5c7a05a73de51051605",
+    "created_at": "2026-11-15T13:41:01.124614Z",
+    "reviews": [
+      {
+        "role": "moderator",
+        "decision": "approved",
+        "by": "moderator-1",
+        "at": "2026-11-15T13:41:01.135010Z",
+        "image_sha256": "bf358f11434b7d1124e4fee403c422a47627ecb9ae1fc5c7a05a73de51051605",
+        "note": ""
+      },
+      {
+        "role": "owner",
+        "decision": "approved",
+        "by": "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
+        "at": "2026-11-15T13:41:01.162249Z",
+        "image_sha256": "bf358f11434b7d1124e4fee403c422a47627ecb9ae1fc5c7a05a73de51051605",
+        "note": ""
+      }
+    ]
+  },
+  "published": null
+}

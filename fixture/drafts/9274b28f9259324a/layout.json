@@ -14,19 +14,24 @@
    },
    "lines": [
     {
-     "text": "In the clanking heart of the workshop, Steel Tinker, a",
+     "text": "Golden dawn breaks, Library Pick stands, a sentinel in",
      "x": 108,
      "y": 872
     },
     {
-     "text": "silvered marvel, tames unruly gears. Their steel-plated",
+     "text": "shimmering gold. They polish their sword, not with",
      "x": 108,
      "y": 928
     },
     {
-     "text": "hands dance like sparks, weaving order from chaos.",
+     "text": "cloth, but with sunbeams. At lecture's end, they turn",
      "x": 108,
      "y": 984
+    },
+    {
+     "text": "into a human chalkboard.",
+     "x": 108,
+     "y": 1040
     }
    ]
   },
@@ -42,8 +47,8 @@
    },
    "lines": [
     {
-     "text": "Cyborg \u00b7 Steel",
-     "x": 379,
+     "text": "Knight \u00b7 Gold",
+     "x": 380,
      "y": 772
     }
    ]
@@ -60,8 +65,8 @@
    },
    "lines": [
     {
-     "text": "Steel Tinker",
-     "x": 365,
+     "text": "Library Pick",
+     "x": 364,
      "y": 80
     }
    ]
@@ -78,7 +83,7 @@
    },
    "lines": [
     {
-     "text": "No. 2",
+     "text": "No. 5",
      "x": 770,
      "y": 1221
     }

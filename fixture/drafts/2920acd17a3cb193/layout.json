@@ -14,24 +14,19 @@
    },
    "lines": [
     {
-     "text": "In gilded halls of knowledge, Library Pick stands, a",
+     "text": "Emerald robes whispering secrets, Emerald Wizard sifts",
      "x": 108,
      "y": 872
     },
     {
-     "text": "golden figure etched against dusty tomes. Eyes",
+     "text": "through tomes, her fingers dancing like autumn leaves.",
      "x": 108,
      "y": 928
     },
     {
-     "text": "mirroring sunlit parchments, they hold court, their",
+     "text": "In the hush, she hums, matching the library's breath.",
      "x": 108,
      "y": 984
-    },
-    {
-     "text": "voice a lecturer's gleaming sword.",
-     "x": 108,
-     "y": 1040
     }
    ]
   },
@@ -47,8 +42,8 @@
    },
    "lines": [
     {
-     "text": "Knight \u00b7 Gold",
-     "x": 380,
+     "text": "Wizard \u00b7 Emerald",
+     "x": 352,
      "y": 772
     }
    ]
@@ -65,8 +60,8 @@
    },
    "lines": [
     {
-     "text": "Library Pick",
-     "x": 364,
+     "text": "Emerald Wizard",
+     "x": 319,
      "y": 80
     }
    ]
@@ -83,8 +78,8 @@
    },
    "lines": [
     {
-     "text": "No. 5",
-     "x": 770,
+     "text": "No. 1",
+     "x": 771,
      "y": 1221
     }
    ]

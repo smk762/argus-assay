@@ -6,13 +6,20 @@ The hosted demo (`make pages`, for assay.dragonhound.dev) replays a **data tape*
 
 ## The current tape: recorded 2026-11-15
 
-`make record` with the maintainer's approval, on argus-mint 0.2.1.dev (commit `465d8ad`, wire 1.7):
+`make record` with the maintainer's approval, on argus-mint 0.2.1.dev (commit `465d8ad`, wire 1.7), then a second pass the same day for the art and the bios:
 
-- **Renders:** argus-darkroom on the GPU host, under its SFW `default` policy. Template v2's default checkpoint `sdxl/aureanuanceXL_v2`, 1152x896, 25 steps: four drafts and the two-card sample job (template v3), every one passed on its first attempt. The library card is the portrait library's existing Flux dev image, as before.
-- **Bios:** Ollama on a separate host, `mistral-nemo:12b-instruct-2407-q4_K_M`, screened by darkroom's text check. 16 written for 7 kept: the rest missed the length range (each draft shows its attempts and why). They run 161 to 209 characters, 3 or 4 lines.
+- **Renders:** argus-darkroom on the GPU host, under its SFW `default` policy, from the demo's own render template `scripts/demo-portrait-v1.yaml` (argus-mint's example-portrait v2 with tighter wording; see below). Checkpoint `sdxl/aureanuanceXL_v2`, 1152x896, 25 steps: four drafts and the two-card sample job (demo-portrait v2). The library card is the portrait library's existing Flux dev image, as before.
+- **Bios:** Ollama on a separate host, `mistral-nemo:12b-instruct-2407-q4_K_M`, screened by darkroom's text check and the demo's checks below (each draft shows its attempts and why each missed).
 - **Pins, voucher, wallets:** as in the sample below (local CIDs, public test keys). Nothing was pinned or minted.
-- **GPU time:** about 9 minutes over three runs (4.5 for the one that finished). The first stopped when one card's bio missed the range 8 times (the prompt now asks for words, not characters, and allows 16 tries). The second hit an out-of-memory error on the GPU host straight after a scheduled job; the script now waits out :50 to :05, waits while darkroom is busy, and retries a render that ran out of memory.
-- **Art against the card:** generated, not curated. Most cards match their class and colour; the Steel Tinker reads as a mechanic rather than a cyborg, the Emerald Wizard shows two figures in red and green, and the sample cards (a giant and a dragon in the prompt) came out as people. The rejected card's moderator note is the script's fixed one.
+- **Art against the card**, checked by eye card by card (`--seed NAME=SEED` re-rolls one card; `--cache DIR` reuses every other render):
+  - *Emerald Wizard:* one figure in emerald robes, nothing red.
+  - *Steel Tinker (Cyborg · Steel):* one figure, visibly a cyborg (chrome plating, mechanical neck and joints). Re-rolled once: the first seed lettered "ALONE" and "STEEL" on the plating.
+  - *Azure Stormcaller:* one figure in azure robes. Its first two seeds drew a woman for a male card, so the card is now female and its bio says "she".
+  - *Lantern Keeper (Priest · Gold):* an invented order, no real-world religious symbols; gold vestments and lanterns. It is the rejected card, and its moderator note says what is wrong with this render (one lantern floats above her head). `--reject-note-file` makes the run wait for that note, with the card image beside it.
+  - *Samples:* a dragon (silver, in a garden) and a stone giant (a mossy, troll-like creature reading), not people. The giant's wording was made more creature-like after it first came out as an old man.
+- **Bios against the card:** pronouns match every card, none opens with "In", no simile repeats. Two flaws are left for the next bio run (it needs the bio host, so it is scheduled separately): four bios lean on "dance", and the dragon's ends on the fragment "Their odd habit?". The rules that catch both are written and switched off (below).
+- **GPU time:** 13:15 to 13:45 UTC over five runs, about 15 minutes of it rendering or writing: Ollama dropped its connection in the first, the third ran one bio out of tries, and the fourth was stopped to change Azure's gender. Renders were reused from the cache wherever the request was unchanged.
+- **Purged:** darkroom's image check refused the dragon's first attempt in two runs (the sample job retried it with a new seed both times); each refused record was purged on its own.
 
 ## What the sample tape is
 
@@ -37,14 +44,18 @@ Measured on the `card-green` v1 frame, which every demo card uses (`scripts/bio_
 - **Fill** is the drawn text block's height over the box's: 3 lines 51%, 4 lines 69%, 5 lines 86%. The old canned bios were about 110 to 120 characters, 2 or 3 short lines (about 30 to 50%).
 - **Target: 160 to 210 characters, drawn at 38 px, 50 to 80% fill.** Wrapped prose runs about 52 characters a line, so that is 4 lines (3 only when packed full). The fifth line and the shrink stay in reserve, so nothing overflows.
 - **Every width:** argus-mint bakes the card as one PNG, and the page scales it whole. The fill is the same in the narrowest grid card (210 CSS px, the queue's `minmax(210px, 1fr)`) as on the draft page.
-- **Distinct:** no two cards' bios share a run of 6 words (the names left out).
+- **Distinct:** no two cards' bios share a run of 6 words (the names left out), their first two words, or a simile: a 3-word run around "like" or "as" (stemmed, so "dance like sparks" and "dancing like sparks" are one), or "like" comparing to the same word ("like moonlit snow", "like moonlit dew").
+- **Varied:** none opens with "In", at most 3 open with the card's name, and each holds at most one "like". Two more rules are written but off in `bio_fit.json` until the next bio run, which the current tape would fail: no "dance" (the model's favourite verb: `banned_words`) and no closing fragment (`last_sentence_words`, 4).
+- **Pronouns:** a bio uses only its card's gender's pronouns: she for female, he for male, they for non-binary (the sample's giant and dragon are non-binary). "Their" is allowed, since it is also plural.
 
 Two checks hold that:
 
-1. **As each bio is written** (`scripts/record_demo.py`): a bio outside the range, or repeating another card's, is refused like a flagged one, and argus-mint asks the model again (up to 8 tries). The draft records every attempt with the reason.
+1. **As each bio is written** (`scripts/record_demo.py`): a bio that misses any of these is refused like a flagged one, and argus-mint asks the model again (up to 16 tries). The draft records every attempt with the reason.
 2. **On the whole fixture** (`make tape`, and so `make pages`): it reads each card's recorded layout and refuses the tape on any miss. `web/src/lib/static.test.ts` covers the check.
 
-The bio template is `scripts/demo-bio-v1.yaml`: argus-mint's example, asking for three sentences of 170 to 200 characters built from the card's role (its class), heraldry colour, pose and setting, with stock phrases ruled out. The card's name never goes to the model (argus-mint's rule): it writes a `{name}` token, and argus-mint puts the name in.
+The bio template is `scripts/demo-bio-v1.yaml`: argus-mint's example, asking for three sentences of about 185 characters built from the card's role (its class), heraldry colour, pose and setting, opening on a deed, an object, a sound or a time of day, with the pronouns spelled out per gender and stock phrases ruled out. The card's name never goes to the model (argus-mint's rule): it writes a `{name}` token, and argus-mint puts the name in.
+
+The render template is `scripts/demo-portrait-v1.yaml`: argus-mint's example-portrait v2 with each role worded the way it should look (one figure; a cyborg with chrome plating and joints rather than a person beside a robot; an invented lantern-bearing priestly order, with real-world religious symbols in the negative prompt; a stone giant and a dragon as creatures, not people). Values still come only from its lists. The portrait library stays on example-portrait v2.
 
 ## What runs in the browser
 
@@ -79,7 +90,9 @@ What `--real` does:
 - darkroom's text check screens every try.
 
 ### 2. Renders (GPU host)
-- argus-darkroom on the GPU host, template v2's default checkpoint `sdxl/aureanuanceXL_v2` (the drafts were on it before). Four drafts and a two-card sample job: 6 renders at 1152x896, 25 steps. The library card is not rendered.
+- argus-darkroom on the GPU host, demo-portrait's checkpoint `sdxl/aureanuanceXL_v2`. Four drafts and a two-card sample job: 6 renders at 1152x896, 25 steps. The library card is not rendered.
+- The run starts no GPU work from :50 to :05 (a scheduled job has the GPU then), waits while darkroom is busy, and retries a render that ran out of memory (60 s apart, up to 5 times). It prints the record ids of any renders darkroom refused, to purge one by one.
+- **Re-rolls:** run `scripts/record_demo.py` directly (the `RECORD` line in the Makefile) with `--cache DIR`, which keeps every render and reuses one made for the same request, and `--seed "Card Name=SEED"` for each card to render again. A change to the render template changes every request, so it re-renders everything. `--reject-note-file FILE` writes the rejected card's image beside `FILE` and waits for the moderator's note in it.
 - **Licences to check before publishing renders:**
   - The SDXL finetunes inherit CreativeML Open RAIL++-M, plus each author's own terms on Civitai.
   - FLUX.1 [dev] is under Black Forest Labs' non-commercial licence (only in the library's existing images).

@@ -1,0 +1,175 @@
+{
+  "id": "74fe067343abd4d8",
+  "status": "rejected",
+  "awaiting": [
+    "owner"
+  ],
+  "draft": {
+    "format": 1,
+    "request": {
+      "template_id": "demo-portrait",
+      "template_version": 1,
+      "template_hash": "0xd659b69292f4422d56ee789cbff7d585bd39f6a4527ff2c2ac5b5d0cd245573c",
+      "model": "sdxl/aureanuanceXL_v2/aureanuanceXL_v2.safetensors",
+      "loras": [],
+      "sampling": {
+        "sampler": "euler",
+        "scheduler": "normal",
+        "steps": 25,
+        "cfg": 6.0,
+        "clip_skip": 1,
+        "guidance": null
+      },
+      "width": 1152,
+      "height": 896,
+      "prompt": "waist-up portrait of one female priest of an invented order of lantern-bearers, holding a glowing brass lantern, alone in the picture, centered and facing the viewer, clothing and colour scheme gold, praying, background: temple, painted fantasy illustration, full bleed, detailed",
+      "negative": "text, letters, words, caption, title, label, logo, watermark, signature, border, frame, card frame, trading card, playing card, game ui, icons, badges, numbers, two people, second person, multiple people, crowd, companion, robot beside, empty scene, landscape, gore, cross, crucifix, mitre, rosary, halo, church, religious symbol, nudity",
+      "variables": {
+        "background": "temple",
+        "colour": "gold",
+        "gender": "female",
+        "pose": "praying",
+        "role": "priest of an invented order of lantern-bearers, holding a glowing brass lantern"
+      },
+      "seed": 8464
+    },
+    "attempts": [
+      {
+        "seed": 8464,
+        "outcome": "ok",
+        "ref": "7c8ac17b24b048c19c5d5f017c202866",
+        "detail": "",
+        "workflow": {
+          "name": "sdxl",
+          "sha256": "02e08f842f7a66e0e1be2ebc506ab8339f3b39df639beb86fc04dc240f3ef38d"
+        }
+      }
+    ],
+    "renderer": "darkroom",
+    "asset_id": "0xc69006856306bbeaba31ac4a8f62e322285735071ccf46f6c466a81e32bffeae",
+    "to": "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
+    "name": "Lantern Keeper",
+    "description": "Lantern Keeper, golden lantern casting shadows like sunrise, kneels in the temple's gilded gloom. Her whispers dance with the dust motes, each syllable a prayer for dawn.",
+    "external_url": null,
+    "consumer": "argus-mint",
+    "frame": {
+      "id": "card-green",
+      "version": 1,
+      "hash": "0xed8933833831ea63e4f8c91eea897814159af3a7b21acfb560c70162366ccf37"
+    },
+    "bio": {
+      "ref": {
+        "id": "demo-bio",
+        "version": 1,
+        "hash": "0xde18a0f71fe53bcbf9fb27292352245b1869d72e562fb95f1f217f28a46eca2d",
+        "model": "mistral-nemo:12b-instruct-2407-q4_K_M"
+      },
+      "text": "Lantern Keeper, golden lantern casting shadows like sunrise, kneels in the temple's gilded gloom. Her whispers dance with the dust motes, each syllable a prayer for dawn.",
+      "attempts": [
+        {
+          "outcome": "rejected",
+          "detail": "demo fit: opens with \"in\"; vary the opening",
+          "text": "In the gilded dawn, {name} kindles her lantern, she's no mere acolyte, but a living sunbeam. Her golden heraldry shimmers like temple coins, a symphony of light in her hands."
+        },
+        {
+          "outcome": "rejected",
+          "detail": "demo fit: 246 characters; the bio box wants 160 to 210",
+          "text": "{name}, lantern held high, illumines the temple's gilded frescoes. Her whispered prayers dance on golden rays, echoing through vaulted halls. Every dawn, she polishes the lantern's intricate hinges with a petal from last night's offering."
+        },
+        {
+          "outcome": "rejected",
+          "detail": "demo fit: opens with \"in\"; vary the opening",
+          "text": "In {name}'s hands, gold-plated lantern glows like autumn sunlight. Kneeling before the altar, she whispers prayers, her voice echoing like distant thunder."
+        },
+        {
+          "outcome": "rejected",
+          "detail": "demo fit: 226 characters; the bio box wants 160 to 210",
+          "text": "{name}, her lantern aglow, washes the golden temple in warm, honeyed light. She's a beacon in the gloaming, prayer whispers like tinder to flame. Every dawn, she feeds the birds, their chirps echoing her morning hymns."
+        },
+        {
+          "outcome": "rejected",
+          "detail": "demo fit: 219 characters; the bio box wants 160 to 210",
+          "text": "In gilded dawn, {name} kindles her lantern, her golden heraldry aglow like newly minted coin. Kneeling before the temple's icon, she whispers prayers, each breath a soft tinkle, as if her voice were a tiny bell."
+        },
+        {
+          "outcome": "rejected",
+          "detail": "demo fit: opens with \"in\"; vary the opening",
+          "text": "In gilded dawn, {name}, her eyes aglow, kindles her brass lantern, a beacon in the temple's golden haze. She whispers prayers, each word a soft, warm coin dropped into the silence. Her peculiar habit?"
+        },
+        {
+          "outcome": "rejected",
+          "detail": "demo fit: 152 characters; the bio box wants 160 to 210",
+          "text": "In {name}'s temple, gold-hued light dances on gilded pillars. She hums, her lantern glowing like a sunlit dewdrop, praying to illumine the path."
+        },
+        {
+          "outcome": "rejected",
+          "detail": "demo fit: reuses the simile \"like autumn leaves\" from Emerald Wizard's bio",
+          "text": "Under gilded arches, {name} holds her lantern aloft, a beacon in the twilight. Gold-threaded robes shimmer like autumn leaves as she kneels, whispering petitions to unseen ears."
+        },
+        {
+          "outcome": "rejected",
+          "detail": "demo fit: 235 characters; the bio box wants 160 to 210",
+          "text": "In gilded halls, {name} ignites her lantern, she calls to the light. Gold-trimmed, it glows like a sunrise, her whispers echoing through the temple's golden arches. In hushes, she polishes the lantern's handle with a honeycomb."
+        },
+        {
+          "outcome": "rejected",
+          "detail": "demo fit: opens with \"in\"; vary the opening",
+          "text": "In gilded temple twilight, {name} kindles her lantern, a brass sun beaming through shadows. She prays to light, not for grand miracles, but that her candles keep burning straight."
+        },
+        {
+          "outcome": "rejected",
+          "detail": "demo fit: says \"they\" of a female character",
+          "text": "Under gilded arches, {name} prays, her golden lantern a beacon in the dawn. A hum of golden bees, her secret companions, dance around her. As she whispers, they alight, leaving trails of golden pollen."
+        },
+        {
+          "outcome": "rejected",
+          "detail": "demo fit: opens with \"in\"; vary the opening",
+          "text": "In {name}'s gilded temple, dawn breaks, her lantern's glow a second sun. She prays, her voice a golden thread through morning. Her habit? Whispering to shadows, as if they're old friends."
+        },
+        {
+          "outcome": "rejected",
+          "detail": "demo fit: opens with \"in\"; vary the opening",
+          "text": "In {name}'s temple, dawn breaks, her golden heraldry alight. She prays, lantern aglow, fingers tracing sun-ray patterns. When she whispers, golden moths flutter, her secret confidants."
+        },
+        {
+          "outcome": "rejected",
+          "detail": "demo fit: has more than 1 simile with \"like\"",
+          "text": "{name}, lantern aglow like a golden sun, kneels in the gilded temple, her whispering prayers echoing like distant bees. She hums as she prays, a melody so soft, the flames dance to her tune."
+        },
+        {
+          "outcome": "unusable",
+          "detail": "stray braces or empty",
+          "text": "{In the gilded temple's heart}, she kindles dawn in her golden hands, a brass lantern aglow with divine embers. {Her fingers dance}, tracing sigils in the air as she whispers hymns to light's first breath."
+        },
+        {
+          "outcome": "ok",
+          "detail": "",
+          "text": "{name}, golden lantern casting shadows like sunrise, kneels in the temple's gilded gloom. Her whispers dance with the dust motes, each syllable a prayer for dawn."
+        }
+      ],
+      "edited": false
+    },
+    "texts": {
+      "class": "Priest · Gold",
+      "stats": "No. 4"
+    },
+    "style": null,
+    "library": null,
+    "edits": [],
+    "auto_check": null,
+    "art_sha256": "2ed9f4a44c2903774e5db70498cfd3d0e6a3b272cea1f3c636c1278388697ab6",
+    "image_sha256": "9380bb1912165acd3f62483b09cce344846f81ca981216dc3e1a3ed987d17ae2",
+    "created_at": "2026-11-15T13:42:26.469354Z",
+    "reviews": [
+      {
+        "role": "moderator",
+        "decision": "rejected",
+        "by": "moderator-1",
+        "at": "2026-11-15T13:42:35.486716Z",
+        "image_sha256": "9380bb1912165acd3f62483b09cce344846f81ca981216dc3e1a3ed987d17ae2",
+        "note": "Two lanterns: the one above her head floats with nothing holding it. One lantern, in her hands, please."
+      }
+    ]
+  },
+  "published": null
+}

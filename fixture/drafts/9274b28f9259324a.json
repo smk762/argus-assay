@@ -1,0 +1,127 @@
+{
+  "id": "9274b28f9259324a",
+  "status": "pending",
+  "awaiting": [
+    "moderator",
+    "owner"
+  ],
+  "draft": {
+    "format": 1,
+    "request": {
+      "template_id": "example-portrait",
+      "template_version": 2,
+      "template_hash": "0x315994bdae766bad953c91da83e897b2edf9046a63a4a4e81aad1c1113c45718",
+      "model": "flux/flux1-dev-fp8.safetensors",
+      "loras": [],
+      "sampling": {
+        "sampler": "euler",
+        "scheduler": "simple",
+        "steps": 20,
+        "cfg": 1.0,
+        "clip_skip": 1,
+        "guidance": 3.5
+      },
+      "width": 1152,
+      "height": 896,
+      "prompt": "waist-up portrait of a single non-binary knight, centered and facing the viewer, wearing gold heraldry, standing, background: academy, painted fantasy illustration, full bleed, detailed face",
+      "negative": "",
+      "variables": {
+        "background": "academy",
+        "colour": "gold",
+        "gender": "non-binary",
+        "pose": "standing",
+        "role": "knight"
+      },
+      "seed": 8453047
+    },
+    "attempts": [
+      {
+        "seed": 8453047,
+        "outcome": "ok",
+        "ref": "95d795406a3940e3b2b97a8794599245",
+        "detail": "",
+        "workflow": {
+          "name": "flux",
+          "sha256": "6a7e030a4209526fc92bcb4432b7b5c8d3faca59c515736a49e5024ae884fc92"
+        }
+      }
+    ],
+    "renderer": "darkroom",
+    "asset_id": "0x4e7c4b1ae555535666b339bbef3ecfd778991593efc8590c56c77501872e8ea5",
+    "to": "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
+    "name": "Library Pick",
+    "description": "Golden dawn breaks, Library Pick stands, a sentinel in shimmering gold. They polish their sword, not with cloth, but with sunbeams. At lecture's end, they turn into a human chalkboard.",
+    "external_url": null,
+    "consumer": "argus-mint",
+    "frame": {
+      "id": "card-green",
+      "version": 1,
+      "hash": "0xed8933833831ea63e4f8c91eea897814159af3a7b21acfb560c70162366ccf37"
+    },
+    "bio": {
+      "ref": {
+        "id": "demo-bio",
+        "version": 1,
+        "hash": "0xde18a0f71fe53bcbf9fb27292352245b1869d72e562fb95f1f217f28a46eca2d",
+        "model": "mistral-nemo:12b-instruct-2407-q4_K_M"
+      },
+      "text": "Golden dawn breaks, Library Pick stands, a sentinel in shimmering gold. They polish their sword, not with cloth, but with sunbeams. At lecture's end, they turn into a human chalkboard.",
+      "attempts": [
+        {
+          "outcome": "rejected",
+          "detail": "demo fit: 225 characters; the bio box wants 160 to 210",
+          "text": "{name}, gold surcoat gleaming in the academy's grand hall, lectures the air with a sword dance. They teach metal to sing, humming scales as they spin. After each class, they polish their blade with a tiny, golden brush."
+        },
+        {
+          "outcome": "rejected",
+          "detail": "demo fit: opens with \"in\"; vary the opening",
+          "text": "In the gilded hall, {name} stands, a statue come to life. Golden armor gleams like freshly minted coin. They're teaching swordplay, but their weapon's a quill, writing lessons in gold ink."
+        },
+        {
+          "outcome": "unusable",
+          "detail": "stray braces or empty",
+          "text": "In gilded halls, {they} stand, a statue come to life. Gold on gold, {they} blend with the academy's walls, a challenge for the eyes."
+        },
+        {
+          "outcome": "rejected",
+          "detail": "demo fit: opens with \"in\"; vary the opening",
+          "text": "In gilded halls, {name} stands, a sentinel in gold. They polish their helm, a sun in its keeping. When dawn breaks, they whisper secrets to their shield. \"It's not a ghost,\" they laugh, \"just a mirror."
+        },
+        {
+          "outcome": "rejected",
+          "detail": "demo fit: 231 characters; the bio box wants 160 to 210",
+          "text": "{name}, standing sentinel, gold tabard gleaming like autumn leaves under academ's grand clock. They polish their sword, not with oil, but with honey. Midnight's bell chimes, they dance, armor clanking like hail on a tin roof."
+        },
+        {
+          "outcome": "unusable",
+          "detail": "stray braces or empty",
+          "text": "In the gilded halls of the academy, {they} stand, a golden knight, still as a statue until dawn. Amongst scrolls and sparks, {they} polish their armor, not with a cloth, but by gently singing to it."
+        },
+        {
+          "outcome": "rejected",
+          "detail": "demo fit: 158 characters; the bio box wants 160 to 210",
+          "text": "Under the academy's gilded arch, {name} stands, resplendent in sun-kissed plate. They oversee recruits, their gold heraldry glinting like a coin's edge."
+        },
+        {
+          "outcome": "ok",
+          "detail": "",
+          "text": "Golden dawn breaks, {name} stands, a sentinel in shimmering gold. They polish their sword, not with cloth, but with sunbeams. At lecture's end, they turn into a human chalkboard."
+        }
+      ],
+      "edited": false
+    },
+    "texts": {
+      "class": "Knight · Gold",
+      "stats": "No. 5"
+    },
+    "style": null,
+    "library": "047-flux1-dev-fp8",
+    "edits": [],
+    "auto_check": null,
+    "art_sha256": "1c5b846f1f62dfab6fe36879b09e148e96a87fc5a6c92b7bb0478d560287ddd4",
+    "image_sha256": "d5bf9774c70863e5dc0de1013596913357301b175189fb71b04c73babc4c4280",
+    "created_at": "2026-11-15T13:43:19.636851Z",
+    "reviews": []
+  },
+  "published": null
+}

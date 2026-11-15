@@ -59,10 +59,24 @@ describe("the tape", () => {
     expect(checkBios([{ ...ok, layout: at(6, 30) }])[0]).toMatch(/shrinks to 30 px/);
     const a = "Moss Warden keeps a lantern lit for travellers who have not yet set out, and hums.";
     const b = "Ash Piper keeps a lantern lit for travellers who have not yet set out, and naps.";
-    const fit = { ...BIO_FIT, min_chars: 0 };
+    const fit = { ...BIO_FIT, min_chars: 0, banned_words: [], last_sentence_words: 0 }; // each rule below is tried on its own
     expect(checkBios([{ where: "a", name: "Moss Warden", text: a }, { where: "b", name: "Ash Piper", text: b }], fit)[0]).toMatch(/share "keeps a lantern lit for travellers"/);
+    const dancing = { where: "d", name: "Ash Piper", text: "Ash Piper hums, fingers dancing like sparks on the strings." };
+    const dance = { where: "e", name: "Moss Warden", text: "Moss Warden digs; trowels dance like sparks in the beds." };
+    expect(checkBios([dancing, dance], fit)[0]).toMatch(/simile "fingers dancing like"|simile "dancing like sparks"/);
+    expect(checkBios([{ where: "f", name: "Moss Warden", text: "In the garden Moss Warden digs." }], { ...fit, banned_openings: ["in"] })[0]).toMatch(/opens with "in"/);
+    const twin = { where: "g", name: "Ash Piper", text: "At dawn Ash Piper sings to the river." };
+    expect(checkBios([twin, { where: "h", name: "Moss Warden", text: "At dawn Moss Warden waters the beans." }], fit)[0]).toMatch(/open alike \("at dawn"\)/);
+    expect(checkBios([{ where: "i", name: "Ash Piper", gender: "female", text: "Ash Piper sings; they never miss." }], fit)[0]).toMatch(/says "they" of a female/);
+    expect(checkBios([{ where: "j", name: "Ash Piper", text: "Ash Piper hums like a bee and sleeps like a log." }], { ...fit, max_similes: 1 })[0]).toMatch(/2 "like" similes/);
+    const moon = { where: "k", name: "Ash Piper", text: "Ash Piper's scales shimmer like moonlit snow." };
+    expect(checkBios([moon, { where: "l", name: "Moss Warden", text: "Rakes glint like moonlit dew for Moss Warden." }], fit)[0]).toMatch(/compare "like moonlit/);
+    const byName = ["Ash Piper sings.", "Ash Piper digs.", "Ash Piper naps."].map((text, n) => ({ where: `m${n}`, name: "Ash Piper", text }));
+    expect(checkBios(byName, { ...fit, name_openings: 2 })[0]).toMatch(/3 bios open with the card's name, over 2/);
+    expect(checkBios([{ where: "n", name: "Ash Piper", text: "Ash Piper hums while the reeds go dancing in the wind." }], { ...fit, banned_words: ["dance"] })[0]).toMatch(/stock word "dancing"/);
+    expect(checkBios([{ where: "o", name: "Ash Piper", text: "Ash Piper tends the reeds by the river each dusk. Her odd habit?" }], { ...fit, last_sentence_words: 4 })[0]).toMatch(/ends on a fragment \("Her odd habit\?"\)/);
     // Five words in common is allowed, and the names don't count.
-    const c = "Ash Piper keeps a lantern lit for nobody in particular.";
+    const c = "Nightly, Ash Piper keeps a lantern lit for nobody in particular.";
     expect(checkBios([{ where: "a", name: "Moss Warden", text: a }, { where: "c", name: "Ash Piper", text: c }], fit)).toEqual([]);
   });
 

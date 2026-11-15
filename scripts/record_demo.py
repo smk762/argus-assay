@@ -1,12 +1,14 @@
 """Record the hosted demo's fixture: argus-mint's real server, walked through every review state.
 
     uv run --project $MINT python scripts/record_demo.py [--real] [--out fixture] [--library DIR]
+        [--cache DIR] [--seed "Card Name=SEED" ...] [--reject-note-file FILE]
 
 MINT is an argus-mint checkout (its own environment: `uv sync --all-extras` there). The run is a
-copy of argus-mint's scripts/api_fixture.py with two changes for the demo: the bio template is
-scripts/demo-bio-v1.yaml, and every bio must fill the card's bio box (scripts/bio_fit.json) and
-share no run of 6 words with another card's. A bio that misses is rejected and argus-mint asks
-the writer again, so the draft records each attempt.
+copy of argus-mint's scripts/api_fixture.py with changes for the demo: the drafts render from
+scripts/demo-portrait-v1.yaml, the bio template is scripts/demo-bio-v1.yaml, and every bio must
+pass scripts/bio_fit.json (fill the card's bio box; vary its opening; use its card's pronouns;
+share no run of 6 words, opening or simile with another card's). A bio that misses is rejected
+and argus-mint asks the writer again, so the draft records each attempt.
 
 Backends:
   default    stand-ins, no network and no GPU: art is the library's images, bios are the
@@ -69,18 +71,25 @@ SIGNER = Account.from_key("0x59c6995e998f97a5a0044966f0945389dc9e86dae88c7a8412f
 OWNER = Account.from_key("0x5de4111afa1a4b94908f83103eb1f1706367c2e68ca870fc3fb9a804cdab365a")
 BIO_ID = {"id": "demo-bio", "version": 1}
 
-CARDS = [  # name, variables, display text, what happens to it
-    ("Emerald Wizard", {"gender": "female", "role": "wizard", "colour": "emerald", "pose": "casting a spell",
-                        "background": "library"}, {"class": "Wizard · Emerald", "stats": "No. 1"}, "published"),
-    ("Steel Tinker", {"gender": "non-binary", "role": "cyborg", "colour": "steel",
-                      "pose": "repairing", "background": "workshop"}, {"class": "Cyborg · Steel", "stats": "No. 2"}, "pending"),
-    ("Azure Stormcaller", {"gender": "male", "role": "wizard", "colour": "azure", "pose": "casting a spell",
-                           "background": "temple"}, {"class": "Wizard · Azure", "stats": "No. 3"}, "approved"),
-    ("Lantern Keeper", {"gender": "female", "role": "priest", "colour": "gold", "pose": "praying",
-                        "background": "temple"}, {"class": "Priest · Gold", "stats": "No. 4"}, "rejected"),
+TEMPLATE = {"id": "demo-portrait", "version": 1}  # scripts/demo-portrait-v1.yaml; the library stays on example-portrait v2
+WIZARD, CYBORG = "wizard in long flowing robes", "cyborg whose arms and shoulders are chrome steel plating with visible mechanical joints"
+PRIEST = "priest of an invented order of lantern-bearers, holding a glowing brass lantern"
+CARDS = [  # name, variables, seed, display text, what happens to it
+    ("Emerald Wizard", {"gender": "female", "role": WIZARD, "colour": "emerald green", "pose": "casting a spell",
+                        "background": "library"}, 8461, {"class": "Wizard · Emerald", "stats": "No. 1"}, "published"),
+    ("Steel Tinker", {"gender": "non-binary", "role": CYBORG, "colour": "steel grey", "pose": "repairing a brass mechanism",
+                      "background": "workshop"}, 8462, {"class": "Cyborg · Steel", "stats": "No. 2"}, "pending"),
+    ("Azure Stormcaller", {"gender": "female", "role": WIZARD, "colour": "azure blue", "pose": "casting a spell",
+                           "background": "temple"}, 8463, {"class": "Wizard · Azure", "stats": "No. 3"}, "approved"),
+    ("Lantern Keeper", {"gender": "female", "role": PRIEST, "colour": "gold", "pose": "praying",
+                        "background": "temple"}, 8464, {"class": "Priest · Gold", "stats": "No. 4"}, "rejected"),
 ]  # fmt: skip
+SEEDS: dict[str, int] = {}  # per-card seed overrides, from --seed NAME=SEED (a re-roll)
 LIBRARY_NAME = "Library Pick"
-SAMPLE = {"count": 2, "seed": 3, "name": "Sample", "texts": {"class": "Sample class", "stats": "No. 0"}}
+# Seed 120 over the non-binary combinations of demo-portrait v2 picks a giant and a dragon.
+SAMPLE = {"count": 2, "seed": 120, "variables": {"gender": "non-binary"}, "name": "Sample",
+          "texts": {"class": "Sample class", "stats": "No. 0"}}  # fmt: skip
+DEFAULT_REJECT_NOTE = "The figure sits too far left of the art window at card size."
 
 # The stand-in writer's bios, one per card: (words the prompt must hold, the bio). Hand-written for
 # the sample fixture; each passes the same checks a model's bio must.
@@ -88,25 +97,88 @@ BIOS = [
     (("wizard", "emerald", "library"),
      "{name} reshelves the library by spell, and the books, flattered, line up by colour. Her emerald "
      "sleeves are stuffed with bookmarks. She has never once been shushed, though she keeps trying."),
-    (("cyborg", "steel", "workshop"),
+    (("cyborg", "workshop"),
      "{name} oils every hinge in the workshop before breakfast, their own knees included. Steel fingers "
      "hum as they solder, and the kettle, rebuilt twice, now whistles in three keys."),
     (("wizard", "azure", "temple"),
-     "Drizzle for gardens, snow for birthdays: {name} calls down weather on request. In the temple his "
-     "azure robes crackle faintly, and the bell ringers give him a wide, polite berth."),
-    (("priest", "gold", "praying"),
+     "Drizzle for gardens, snow for birthdays: {name} calls down weather on request. In the temple her "
+     "azure robes crackle faintly, and the bell ringers give her a wide, polite berth."),
+    (("priest", "gold"),
      "{name} prays in a whisper so the temple mice can sleep. Her gold vestments catch the dawn and "
      "pass it on to whoever needs it most. Candles lean her way whenever she walks by."),
     (("knight", "gold", "academy"),
      "At the academy gate stands {name}, polishing gold armour between lessons. Every winter the "
      "students borrow the shield as a sled. The knight pretends not to notice, and waxes it."),
-    (("giant", "silver", "garden"),
-     "{name} sips tea from a silver bucket in the garden, minding the snails. Hedges reach the giant's "
-     "knees and roses the ankles. Bees settle on that wide hat and stay all afternoon."),
-    (("dragon", "obsidian", "weaving"),
-     "For chilly villages, {name} weaves scarves of obsidian thread, warming each stitch with a breath. "
-     "The dragon's tail keeps the yarn tidy. Nobody has yet dared to ask for socks."),
+    (("stone giant", "temple"),
+     "No ladder needed: {name} reads the temple's tallest books where they stand, turning pages with two "
+     "careful fingers. Moss in that beard hosts a family of wrens, who chirp when a chapter ends."),
+    (("dragon", "silver", "hoard"),
+     "Spoons, thimbles, one lost kettle: {name} guards a silver hoard in the garden and polishes it "
+     "nightly. The roses grow in a ring around the pile. Neighbours borrow ladles back."),
 ]  # fmt: skip
+
+
+SIMILE = {"like", "as"}
+
+
+def stem(w: str) -> str:
+    """A crude stem, so "dance like sparks" and "dancing like sparks" count as one simile."""
+    if w in SIMILE:
+        return w
+    for suffix in ("ing", "es", "ed", "s", "e"):
+        if w.endswith(suffix) and len(w) - len(suffix) >= 3:
+            return w[: -len(suffix)]
+    return w
+
+
+def shared_simile(a: str, b: str) -> str | None:
+    """A 3-word run around "like" or "as" that ``a`` and ``b`` share (stemmed), or None."""
+    wa, wb = [stem(w) for w in words(a)], [stem(w) for w in words(b)]
+    grams = {tuple(wb[i : i + 3]) for i in range(len(wb) - 2) if SIMILE & set(wb[i : i + 3])}
+    for i in range(len(wa) - 2):
+        g = tuple(wa[i : i + 3])
+        if SIMILE & set(g) and g in grams:
+            return " ".join(words(a)[i : i + 3])
+    return None
+
+
+ARTICLES = {"a", "an", "the"}
+PRONOUNS = {  # a bio uses only its card's gender's pronouns ("their" is left out: it is also plural)
+    "female": {"she", "her", "hers", "herself"},
+    "male": {"he", "him", "his", "himself"},
+    "non-binary": {"they", "them", "themself", "themselves"},
+}
+
+
+def wrong_pronoun(text: str, gender: str) -> str | None:
+    """A pronoun of another gender than ``gender`` in ``text``, or None."""
+    if gender not in PRONOUNS:
+        return None
+    others = set().union(*(v for k, v in PRONOUNS.items() if k != gender))
+    return next((w for w in words(text) if w in others), None)
+
+
+def simile_heads(text: str) -> set[str]:
+    """What each "like" compares to: the next word that isn't an article, stemmed ("like moonlit snow": "moonlit")."""
+    ws = words(text)
+    heads = set()
+    for i, w in enumerate(ws):
+        if w == "like":
+            rest = [x for x in ws[i + 1 : i + 3] if x not in ARTICLES]
+            if rest:
+                heads.add(stem(rest[0]))
+    return heads
+
+
+def last_sentence(text: str) -> str:
+    """The text's last sentence."""
+    parts = [p.strip() for p in re.split(r"(?<=[.!?])\s+", text.strip()) if p.strip()]
+    return parts[-1] if parts else ""
+
+
+def opening(text: str) -> list[str]:
+    """The first two words, with the name as a word of its own."""
+    return re.findall(r"\{name\}|[a-z0-9']+", text.lower())[:2]
 
 
 def words(text: str) -> list[str]:
@@ -133,7 +205,7 @@ class FitGuard:
     def __init__(self, inner, frame_path: Path):
         self.inner, self.frame = inner, load_frame(frame_path)
         self.slot = self.frame.frame.texts[FIT["slot"]]
-        self.name = ""
+        self.name, self.gender = "", ""
         self.taken: list[tuple[str, str]] = []  # (card name, bio with the token) already on a card
         self.checked = 0
 
@@ -153,10 +225,33 @@ class FitGuard:
             return f"{chars} characters; the bio box wants {FIT['min_chars']} to {FIT['max_chars']}"
         if not FIT["min_fill"] <= fill_ <= FIT["max_fill"]:
             return f"fills {fill_:.0%} of the bio box ({lines} lines); it wants {FIT['min_fill']:.0%} to {FIT['max_fill']:.0%}"
+        first = opening(text)
+        if first and first[0] in FIT["banned_openings"]:
+            return f'opens with "{first[0]}"; vary the opening'
+        banned = next((w for w in words(text) if stem(w) in {stem(b) for b in FIT["banned_words"]}), None)
+        if banned:
+            return f'uses the stock word "{banned}"'
+        if len(words(last_sentence(text))) < FIT["last_sentence_words"]:
+            return f'ends on a fragment ("{last_sentence(text)}")'
+        pronoun = wrong_pronoun(text, self.gender)
+        if pronoun:
+            return f'says "{pronoun}" of a {self.gender} character'
+        if words(text).count("like") > FIT["max_similes"]:
+            return f"has more than {FIT['max_similes']} simile with \"like\""
+        if first[:1] == ["{name}"] and sum(opening(prev)[:1] == ["{name}"] for _, prev in self.taken) >= FIT["name_openings"]:
+            return f"opens with the name, as {FIT['name_openings']} other bios already do; open with a deed, an object or a sound"
         for other, prev in self.taken:
             run = shared_run(text, prev, FIT["shared_words"])
             if run:
                 return f'repeats "{run}" from {other}\'s bio'
+            if opening(prev) == first:
+                return f'opens like {other}\'s bio ("{" ".join(first)}")'
+            simile = shared_simile(text, prev)
+            if simile:
+                return f'reuses the simile "{simile}" from {other}\'s bio'
+            head = simile_heads(text) & simile_heads(prev)
+            if head:
+                return f'compares to "{head.pop()}…" as {other}\'s bio does'
         return None
 
     def check_text(self, text: str) -> tuple[bool, str]:
@@ -351,14 +446,27 @@ def library(src_fixture: Path, full: Path | None, t: Template, dst: Path) -> tup
     return manifest.entries, {e.id: (dst / e.file).read_bytes() for e in manifest.entries}
 
 
+def reject_note(c: TestClient, draft_id: str, note_file: Path | None) -> str:
+    """The moderator's note on the rejected card. With ``note_file``, the card image is written beside
+    it and the run waits for a person to write the note (so it says what is true of this render)."""
+    if note_file is None:
+        return DEFAULT_REJECT_NOTE
+    note_file.unlink(missing_ok=True)
+    note_file.with_suffix(".png").write_bytes(c.get(f"/drafts/{draft_id}/image").content)
+    print(f"  waiting for the moderator's note in {note_file} (the card is {note_file.with_suffix('.png')})", file=sys.stderr)
+    while not note_file.is_file() or not note_file.read_text().strip():
+        time.sleep(3)
+    return note_file.read_text().strip()
+
+
 def plan(real: bool) -> str:
     renders = len(CARDS) + SAMPLE["count"]
     bios = renders + 1
     return (
-        f"{'GPU' if real else 'stand-in'} work: {renders} renders (template v2's SDXL default checkpoint, "
+        f"{'GPU' if real else 'stand-in'} work: {renders} renders (demo-portrait's SDXL checkpoint, "
         f"1152x896, 25 steps, plus a retry if darkroom's image check refuses one), {bios} bios on "
         f"{yaml.safe_load((HERE / 'demo-bio-v1.yaml').read_text())['model']} (each rewritten until it fits; "
-        f"at most 8 tries), and darkroom's text check on every try."
+        f"at most 16 tries), and darkroom's text check on every try."
     )
 
 
@@ -389,9 +497,12 @@ def main(a: argparse.Namespace) -> None:
         src = mint / "templates" / "example-portrait-v2.yaml"
         approved(src, work / "templates" / "t.yaml", by, pickers(src))
         t = Template.model_validate(yaml.safe_load((work / "templates" / "t.yaml").read_text()))
-        nxt = yaml.safe_load(src.read_text())
-        nxt |= {"version": t.version + 1, "status": "draft", "negative": nxt["negative"] + ", blurry"}
-        (work / "templates" / "t-next.yaml").write_text(yaml.safe_dump(nxt, sort_keys=False))
+        demo_src = HERE / "demo-portrait-v1.yaml"
+        approved(demo_src, work / "templates" / "demo.yaml", by)
+        # awaiting catalogue review: the demo template one version up, with one more negative term
+        nxt = yaml.safe_load(demo_src.read_text())
+        nxt |= {"version": TEMPLATE["version"] + 1, "status": "draft", "negative": nxt["negative"] + ", blurry"}
+        (work / "templates" / "demo-next.yaml").write_text(yaml.safe_dump(nxt, sort_keys=False))
         approved(mint / "frames" / "card-green-v1.yaml", work / "frames" / "card-green-v1.yaml", by)
         shutil.copy(mint / "frames" / "card-green-v1.png", work / "frames")
         shutil.copy(mint / "frames" / "example-plain-v1.yaml", work / "frames")
@@ -409,12 +520,28 @@ def main(a: argparse.Namespace) -> None:
             writer = StandInWriter()
         guard = FitGuard(darkroom, work / "frames" / "card-green-v1.yaml")
 
+        refused: list[str] = []  # darkroom records of renders its image check refused (to purge one by one)
+
         class Backend:  # renders go to darkroom; argus-mint's text check goes through the fit guard
             def generate(self, req):
+                # --cache: a render already made for this exact request is reused (same record), so a re-roll
+                # of one card renders that card alone.
+                key = hashlib.sha256(json.dumps(req.model_dump(mode="json"), sort_keys=True).encode()).hexdigest()[:24]
+                hit = a.cache / f"{key}.json" if a.cache and a.real else None
+                if hit and hit.is_file():
+                    meta = json.loads(hit.read_text())
+                    print(f"  render from the cache ({meta['ref']})", file=sys.stderr)
+                    return GenResult.ok(hit.with_suffix(".png").read_bytes(), ref=meta["ref"], workflow=meta["workflow"])
                 # A ComfyUI out-of-memory error is the GPU's state, not the request's: wait and render it again.
                 for n in range(6):
                     gpu_window(a.real)
                     r = darkroom.generate(req)
+                    if r.outcome == "safety_rejected" and r.ref:
+                        refused.append(r.ref)
+                    if r.outcome == "ok" and hit:
+                        hit.parent.mkdir(parents=True, exist_ok=True)
+                        hit.with_suffix(".png").write_bytes(r.image)
+                        hit.write_text(json.dumps({"ref": r.ref, "workflow": r.workflow}))
                     if not (a.real and r.outcome == "error" and any(m in r.detail.lower() for m in OOM)) or n == 5:
                         return r
                     print(f"  out of GPU memory; retrying in 60 s ({n + 1}/5)", file=sys.stderr)
@@ -445,14 +572,14 @@ def main(a: argparse.Namespace) -> None:
                 sys.exit(f"{path}: {r.status_code} {r.text}")
             return r.json()
 
-        for i, (name, values, texts, fate) in enumerate(CARDS):
+        for i, (name, values, seed, texts, fate) in enumerate(CARDS):
             gpu_window(a.real)
-            guard.name = name
+            guard.name, guard.gender = name, values["gender"]
             print(f"draft {name} ({fate})", file=sys.stderr)
             draft_id = post(
                 "/drafts",
                 {
-                    "template": {"id": t.id, "version": t.version}, "variables": values, "seed": 8453 + i,
+                    "template": TEMPLATE, "variables": values, "seed": SEEDS.get(name, seed),
                     "asset": f"fixture-{i + 1}", "to": OWNER.address, "name": name,
                     "frame": {"id": "card-green", "version": 1}, "bio": BIO_ID, "texts": texts,
                 },
@@ -460,7 +587,7 @@ def main(a: argparse.Namespace) -> None:
             if fate == "pending":
                 continue
             approve = fate != "rejected"
-            note = "" if approve else "The halo reads as a second face at card size."
+            note = "" if approve else reject_note(c, draft_id, a.reject_note_file)
             post(f"/drafts/{draft_id}/review", {"role": "moderator", "approve": approve, "by": "moderator-1", "note": note})
             if fate == "rejected":
                 continue
@@ -473,7 +600,7 @@ def main(a: argparse.Namespace) -> None:
         # A card from the library, on another checkpoint: no render; its variables and seed come with it.
         pick = next((e for e in reversed(entries) if e.model != default), entries[-1])
         gpu_window(a.real)
-        guard.name = LIBRARY_NAME
+        guard.name, guard.gender = LIBRARY_NAME, pick.variables["gender"]
         print(f"draft {LIBRARY_NAME} (library {pick.id}, pending)", file=sys.stderr)
         post(
             "/drafts",
@@ -485,11 +612,12 @@ def main(a: argparse.Namespace) -> None:
         )  # fmt: skip
 
         gpu_window(a.real)
-        guard.name = SAMPLE["name"]
-        print(f"sample job: {SAMPLE['count']} cards of template v{t.version + 1}", file=sys.stderr)
+        guard.name, guard.gender = SAMPLE["name"], SAMPLE["variables"]["gender"]
+        nxt_ref = {"id": TEMPLATE["id"], "version": TEMPLATE["version"] + 1}
+        print(f"sample job: {SAMPLE['count']} cards of {nxt_ref['id']} v{nxt_ref['version']}", file=sys.stderr)
         job_id = post(
             "/samples",
-            {"template": {"id": t.id, "version": t.version + 1}, "frame": {"id": "card-green", "version": 1}, "bio": BIO_ID, **SAMPLE},
+            {"template": nxt_ref, "frame": {"id": "card-green", "version": 1}, "bio": BIO_ID, **SAMPLE},
         )["id"]  # fmt: skip
         deadline = time.monotonic() + (5400 if a.real else 30)
         while (job := c.get(f"/samples/{job_id}").json())["status"] not in ("done", "failed"):
@@ -566,6 +694,8 @@ def main(a: argparse.Namespace) -> None:
         if out.exists():
             shutil.rmtree(out)
         stage.rename(out)
+    if refused:
+        print(f"darkroom refused {len(refused)} render(s); purge each: {' '.join(refused)}", file=sys.stderr)
     calls = OllamaWriter.calls if a.real else StandInWriter.calls
     print(
         f"{out}: {kind}, {len(listing['items'])} drafts, 1 sample job; {calls} bio(s) written, "
@@ -583,12 +713,14 @@ docs/demo-recording.md.
 {note}
 
 - One draft per state: pending (one rendered, one from the portrait library), approved, rejected,
-  published (with its `publish.json` result: pins, metadata, signed voucher). One sample job.
-- The template (example-portrait v2), the card-green frame and the bio template
-  (scripts/demo-bio-v1.yaml) are marked approved for the recording. Template v3 (v2 with one more
-  negative term) and the placeholder example-plain frame await catalogue review.
-- Every bio fills 50 to 80% of the card's bio box, and no two share a run of 6 words
-  (scripts/bio_fit.json; checked as each is written and again by `make tape`).
+  published (with its `publish.json` result: pins, metadata, signed voucher). One sample job, of a
+  giant and a dragon.
+- The drafts' render template is scripts/demo-portrait-v1.yaml; the library card's is argus-mint's
+  example-portrait v2. Both, the card-green frame and the bio template (scripts/demo-bio-v1.yaml)
+  are marked approved for the recording. demo-portrait v2 (v1 with one more negative term) and the
+  placeholder example-plain frame await catalogue review; the sample job renders v2.
+- Every bio fills 50 to 80% of the card's bio box; no two share a run of 6 words, an opening or a
+  simile (scripts/bio_fit.json; checked as each is written and again by `make tape`).
 - `drafts/<id>/layout.json` is where each line of the card's text sits, and `frames/<id>/<v>/fonts/`
   holds the fonts the frame names (SIL OFL), for the style editor's preview.
 - `library.json` is `GET /library` for six whole groups of the portrait library (one entry per
@@ -606,7 +738,13 @@ if __name__ == "__main__":
     ap.add_argument("--fixture", type=Path, default=ROOT / "fixture", help="the fixture whose library to keep")
     ap.add_argument("--library", type=Path, help="a built argus-mint library with the full images")
     ap.add_argument("--out", type=Path, default=ROOT / "fixture", help="where to write (default fixture/)")
+    ap.add_argument("--cache", type=Path, help="keep renders here and reuse one made for the same request (re-rolls)")
+    ap.add_argument("--seed", action="append", default=[], metavar="NAME=SEED", help="re-roll one card with a new seed")
+    ap.add_argument("--reject-note-file", type=Path, help="wait for the rejected card's moderator note in this file")
     args = ap.parse_args()
+    for kv in args.seed:
+        card, _, value = kv.rpartition("=")
+        SEEDS[card] = int(value)
     try:
         main(args)
     finally:  # done or failed, the bio model leaves the GPU at once

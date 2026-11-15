@@ -1,0 +1,144 @@
+{
+  "id": "0de1ec97f8cdbc65",
+  "status": "done",
+  "created_at": "2026-11-15T13:43:19.690609Z",
+  "finished_at": "2026-11-15T13:44:54.261219Z",
+  "error": null,
+  "request": {
+    "template": {
+      "id": "demo-portrait",
+      "version": 2
+    },
+    "frame": {
+      "id": "card-green",
+      "version": 1
+    },
+    "bio": {
+      "id": "demo-bio",
+      "version": 1
+    },
+    "model": null,
+    "loras": [],
+    "count": 2,
+    "variables": {
+      "gender": "non-binary"
+    },
+    "seed": 120,
+    "name": "Sample",
+    "texts": {
+      "class": "Sample class",
+      "stats": "No. 0"
+    },
+    "style": null
+  },
+  "items": [
+    {
+      "n": 1,
+      "variables": {
+        "background": "garden",
+        "colour": "silver",
+        "gender": "non-binary",
+        "pose": "guarding a hoard",
+        "role": "dragon, a scaled non-human reptilian beast with horns and folded wings, no human features"
+      },
+      "prompt": "waist-up portrait of one non-binary dragon, a scaled non-human reptilian beast with horns and folded wings, no human features, alone in the picture, centered and facing the viewer, clothing and colour scheme silver, guarding a hoard, background: garden, painted fantasy illustration, full bleed, detailed",
+      "seed": 1152728919,
+      "attempts": [
+        {
+          "seed": 121,
+          "outcome": "safety_rejected",
+          "ref": "90b443627c3f4ed785420742abfe4f14",
+          "detail": "omitted: sfw-exposed"
+        },
+        {
+          "seed": 1152728919,
+          "outcome": "ok",
+          "ref": "1871aaabfa53431a844b582b143c5a63",
+          "detail": "",
+          "workflow": {
+            "name": "sdxl",
+            "sha256": "02e08f842f7a66e0e1be2ebc506ab8339f3b39df639beb86fc04dc240f3ef38d"
+          }
+        }
+      ],
+      "bio": "Under moonlight, Sample guards a garden, silver scales shimmering like whispers of frost. In twilight, they tend to blossoms, leaves unfurling beneath their gentle touch. Their odd habit?",
+      "bio_attempts": [
+        {
+          "outcome": "rejected",
+          "detail": "demo fit: opens with \"in\"; vary the opening",
+          "text": "In a garden of silver moonlight, {name} weaves between iridescent blossoms, a living shadow. They guard their hoard, not of gold, but whispers of songs only the wind knows."
+        },
+        {
+          "outcome": "rejected",
+          "detail": "demo fit: 211 characters; the bio box wants 160 to 210",
+          "text": "Under {name}'s watchful gaze, moonlit petals unfurl. She tends her hoard amidst the blooms, silver scales shimmering like dewdrops. When she hums, the garden whispers back, leaves rustling like secret treasures."
+        },
+        {
+          "outcome": "ok",
+          "detail": "",
+          "text": "Under moonlight, {name} guards a garden, silver scales shimmering like whispers of frost. In twilight, they tend to blossoms, leaves unfurling beneath their gentle touch. Their odd habit?"
+        }
+      ],
+      "error": null,
+      "bio_error": null,
+      "art": true,
+      "framed": true
+    },
+    {
+      "n": 2,
+      "variables": {
+        "background": "temple",
+        "colour": "steel grey",
+        "gender": "non-binary",
+        "pose": "reading",
+        "role": "stone giant, a huge troll-like creature whose skin is cracked grey rock, boulder shoulders, moss growing on its stony hide, not a human"
+      },
+      "prompt": "waist-up portrait of one non-binary stone giant, a huge troll-like creature whose skin is cracked grey rock, boulder shoulders, moss growing on its stony hide, not a human, alone in the picture, centered and facing the viewer, clothing and colour scheme steel grey, reading, background: temple, painted fantasy illustration, full bleed, detailed",
+      "seed": 122,
+      "attempts": [
+        {
+          "seed": 122,
+          "outcome": "ok",
+          "ref": "22658d8f3ce94a41ab9b79d81f7d9be3",
+          "detail": "",
+          "workflow": {
+            "name": "sdxl",
+            "sha256": "02e08f842f7a66e0e1be2ebc506ab8339f3b39df639beb86fc04dc240f3ef38d"
+          }
+        }
+      ],
+      "bio": "Beneath steel-grey banners, Sample stands, granite shoulders bearing the temple's weight. They crack open stones, revealing ancient parchments, their mossy fingers turning pages with surprising gentleness.",
+      "bio_attempts": [
+        {
+          "outcome": "rejected",
+          "detail": "demo fit: 148 characters; the bio box wants 160 to 210",
+          "text": "In the temple's hush, {name} pores over tomes, fingers of granite gently turning pages. Their steel-grey heraldry glimmers like a moonlit graveyard."
+        },
+        {
+          "outcome": "rejected",
+          "detail": "demo fit: opens with \"in\"; vary the opening",
+          "text": "In a temple's steely hush, {name} pores over parchments, mossy fingers tracing ancient lines. As dawn breaks, a pebble drops from their beard, echoing like a tiny boulder."
+        },
+        {
+          "outcome": "rejected",
+          "detail": "demo fit: 229 characters; the bio box wants 160 to 210",
+          "text": "In a temple's hush, {name} turns pages, stone fingers gentle as dawn's first dew. Steel grey heraldry gleams like moonlit lake. Every hour, they whisper rock's history to the walls, which echo, \"Remember, we've heard this before."
+        },
+        {
+          "outcome": "rejected",
+          "detail": "demo fit: opens with \"in\"; vary the opening",
+          "text": "In the temple's hush, {name} pores over a tome, steel-grey heraldry etched in stone. They turn pages with gentle thunder. At dawn, they whisper to the statuary, sharing secrets only stone can keep."
+        },
+        {
+          "outcome": "ok",
+          "detail": "",
+          "text": "Beneath steel-grey banners, {name} stands, granite shoulders bearing the temple's weight. They crack open stones, revealing ancient parchments, their mossy fingers turning pages with surprising gentleness."
+        }
+      ],
+      "error": null,
+      "bio_error": null,
+      "art": true,
+      "framed": true
+    }
+  ]
+}

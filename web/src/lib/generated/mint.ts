@@ -1,4 +1,4 @@
-// Generated from smk762/argus-mint@5db062ffa3c759a1d4030c4f544e71f99cca2d86 schema/mint-wire.schema.json.
+// Generated from smk762/argus-mint@aba0d2fce88d9aef3dd0f0ba0407f944ffdd78bb schema/mint-wire.schema.json.
 // Do not edit: change schema/pins.json and run `npm run wire:pull`.
 
 export interface MintWire {
@@ -152,6 +152,9 @@ export interface CardDraft {
   frame?: FrameRef | null;
   image_sha256: string;
   library?: string | null;
+  made_with?: {
+    [k: string]: string;
+  };
   name: string;
   renderer: string;
   request: RenderRequest;

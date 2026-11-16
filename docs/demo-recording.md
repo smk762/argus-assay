@@ -4,12 +4,12 @@ The hosted demo (`make pages`, for assay.dragonhound.dev) replays a **data tape*
 
 `fixture/` is recorded by `scripts/record_demo.py`: argus-mint's real server (`argus-mint serve`, in-process), walked through every review state. With stand-in backends it makes the **Sample data** tape; with the GPU host's darkroom and Ollama it makes a **Recorded** one. `fixture/provenance.json` tells `make tape` which. This page says what each is, and how to record. Every render, pin and on-chain step needs the maintainer's approval first.
 
-## The current tape: recorded 2026-11-16
+## The current tape: recorded 2026-11-16 (re-recorded on argus-mint 0.2.2)
 
-`scripts/record_demo.py --real` with the maintainer's approval, on argus-mint 0.2.1.dev (commit `465d8ad`, wire 1.7), in bounded GPU windows (`--until`), resumed from `--cache`:
+`scripts/record_demo.py --real` with the maintainer's approval, on argus-mint 0.2.2 (commit `aba0d2f`, wire 1.9, the commit `web/schema/pins.json` pins), with `--library` on argus-mint's v3 portrait library and `--cache`. Every draft records `made_with` (argus-mint's version, and darkroom's for a render). The re-record reused the first recording's choices: each render came out byte-identical at its pinned seed (the by-eye check carries over), the bios and the rejected cards' notes were offered from the first recording's accepted ones and checked again, and only the library card and the sample job's images are new. The first recording, on argus-mint 0.2.1.dev (commit `465d8ad`, wire 1.7), was made in bounded GPU windows (`--until`), resumed from `--cache`:
 
 - **Queue:** 20 drafts, at least five behind every status filter: 5 published, 5 approved, 5 rejected, 5 pending (all awaiting the moderator, so the default view shows five), plus the two-card sample job.
-- **Renders:** argus-darkroom on the GPU host, under its SFW `default` policy. The first four drafts and the sample job render from `scripts/demo-portrait-v1.yaml`; the other sixteen from `scripts/demo-cast-v1.yaml`. Checkpoint `sdxl/aureanuanceXL_v2`, 1152x896, 25 steps, each at a seed pinned in `record_demo.py`. The library card is the portrait library's existing Flux dev image.
+- **Renders:** argus-darkroom on the GPU host, under its SFW `default` policy. The first four drafts and the sample job render from `scripts/demo-portrait-v1.yaml`; the other sixteen from `scripts/demo-cast-v1.yaml`. Checkpoint `sdxl/aureanuanceXL_v2`, 1152x896, 25 steps, each at a seed pinned in `record_demo.py`. The library card is a portrait from the library (since the re-record, v3's SD3.5 Large image of group 47).
 - **Bios:** Ollama on a separate host, `mistral-nemo:12b-instruct-2407-q4_K_M`, screened by darkroom's text check and the demo's checks below. Each draft shows its attempts and why each missed.
 - **Pins, voucher, wallets:** as in the sample below (local CIDs, public test keys). Nothing was pinned or minted.
 - **The cast:** people of every gender and of adult ages (thirties, sixties, elderly) and builds; robots (a brass automaton, a salvage walker, a cyborg); a creature (a salamander); living objects (a teapot pouring itself, a would-be spellbook); and the sample job's dragon and stone giant. Every card was checked by eye: one subject where the card has one, and nothing that could read as a teen or a minor. Seeds that missed were re-rolled (`--seed`, or candidate seeds rendered into the cache and picked by eye).
@@ -70,13 +70,13 @@ All of it stays in the tab until a reload.
 
 ## Recording
 
-One command, from this repo, with an argus-mint checkout at the fixture's wire (`MINT`, default `../argus-mint`; commit `465d8ad`, 0.2.1.dev, wire 1.7):
+One command, from this repo, with an argus-mint checkout at the pinned commit (`MINT`, default `../argus-mint`; `web/schema/pins.json`, now `aba0d2f`, 0.2.2, wire 1.9):
 
 ```sh
 make record MINT=<argus-mint checkout> DARKROOM_URL=<GPU host's argus-darkroom> OLLAMA_URL=<GPU host's Ollama>
 ```
 
-It checks that darkroom answers and Ollama has the bio model (no GPU work), records into `fixture/` with `--real`, then runs `make pages`, whose tape step re-checks every address and bio. A failed run leaves `fixture/` as it was. Then the Playwright pass at 1440 and 390, light and dark, and commit `fixture/` once the tape is accepted. `LIBRARY=<dir>` serves the portrait library's full images (`argus-mint library build`); without it the fixture's 640 px previews stand in.
+It checks that darkroom answers and Ollama has the bio model (no GPU work), records into `fixture/` with `--real`, then runs `make pages`, whose tape step re-checks every address and bio. A failed run leaves `fixture/` as it was. Then the Playwright pass at 1440 and 390, light and dark, and commit `fixture/` once the tape is accepted. `LIBRARY=<dir>` serves the portrait library's full images (`argus-mint library build`): the fixture's six groups, whole, on every checkpoint that library has, and the library's own template; without it the fixture's 640 px previews and template stand in.
 
 **Dry run, no GPU:** `make record-dry MINT=...` is the same run (server, cards, prompts, checks) on stand-ins, into `.record-dry/`, then the tape checks. `make sample-fixture` writes it to `fixture/`.
 

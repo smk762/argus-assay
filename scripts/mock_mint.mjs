@@ -30,7 +30,9 @@ const frames = read("frames.json");
 const bios = read("bios.json");
 const drafts = new Map(); // id -> detail
 const images = new Map(); // id -> { image, art }
-for (const item of read("drafts.json").items) {
+// Kept oldest first (drafts.json is newest first), so a draft made here goes last and the list, reversed, is
+// newest first as in argus-mint. make_tape.mjs stores the tape the same way for lib/demoMint.ts (parity.test.ts).
+for (const item of [...read("drafts.json").items].reverse()) {
   drafts.set(item.id, read(`drafts/${item.id}.json`));
   images.set(item.id, { image: png(`drafts/${item.id}/image.png`), art: png(`drafts/${item.id}/art.png`) });
 }

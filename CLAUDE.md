@@ -18,7 +18,7 @@ Each row names what catches it. An **UNENFORCED** row gets a check, not more pro
 
 | Must never happen | Enforced by |
 |---|---|
-| The browser works out a status or `awaiting`, checks a signature, or skips a review step (rules 1, 5) | **UNENFORCED**: #41 |
+| The browser works out a status or `awaiting`, checks a signature, or skips a review step (rules 1, 5) | `rules.test.ts` "the browser decides nothing" (no status or `awaiting` set or built, no review tallied, no signature library or check, each review panel behind `moderatorCanReview`/`ownerCanReview`/`status`) |
 | A write (the moderator's or the owner's) reaches argus-mint before `requireCapability` (rule 2) | `rules.test.ts` "every write is gated…" (finds every poster in `api.ts`); `api.test.ts` "writes are gated on /health…" (behaviour) |
 | A template variable typed rather than picked, or a prompt sent (rule 3) | `rules.test.ts` "no free-text prompts" (no prompt field on the wire, via tsc; no text field names a variable or prompt); argus-mint refuses a value not on the template's list |
 | The moderator token in localStorage, the bundle or a URL (rule 4) | `rules.test.ts` "the moderator token stays in the tab" |
@@ -31,12 +31,12 @@ Each row names what catches it. An **UNENFORCED** row gets a check, not more pro
 | The hosted demo asks a wallet for anything | `wallet.test.ts` "never asks a wallet, even one the page has injected" |
 | An explorer link to anything but the Card contract (a wallet's page lists its holdings) | `rules.test.ts` "explorer links name only the Card contract" |
 | An address not on `make_tape.mjs`'s allowlist, or a secret, in the tape | `static.test.ts` "refuses an address that isn't on the allowlist, and secrets by name" |
-| `demoMint.ts` and `mock_mint.mjs` answering differently | **UNENFORCED**: #42 |
+| `demoMint.ts` and `mock_mint.mjs` answering differently | `parity.test.ts` (runs the mock, asks both the same requests: every list, draft and sample job, 404s, a review, catalogue decisions) |
 | A static demo page without its CSP | `check-static.mjs` (CI `pages`) |
 | Wire types, imported docs or the demo fixture out of step with the pin | `wire:check` (CI `web`); `sync.test.ts`; `mint-drift.yml` flags argus-mint `dev` moving past the pin |
 | An imported doc carrying a private IP, a home path or an email | `docs-pull.mjs`'s opsec gate (at import; the hashes in `sync.test.ts` then hold the files) |
 | An imported doc running markup or loading anything from elsewhere | `mintDocs.test.ts` "drops raw HTML and unsafe links…", "loads no image" |
-| Work pushed to `main`, or `main` ahead of `dev` (Branches) | **UNENFORCED**: #43 |
+| Work pushed to `main`, or `main` ahead of `dev` (Branches) | CI `branch-rule.yml` (a PR into `main` only from `dev`; `main` moves only to a `dev` commit or a release merge with its tree). It flags a break after the push; a ruleset on `main` would prevent one |
 
 ## Argus suite
 <!-- argus-suite: keep this block; argus-ci checks for it -->

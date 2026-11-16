@@ -5,7 +5,7 @@ import { useState } from "react";
 
 import { checkTemplate, decide, startSamples } from "@/lib/api";
 import { readReviewer, saveReviewer } from "@/lib/reviewer";
-import { allowedModels, catalogueAction, loraChoices, samplingHint } from "@/lib/status";
+import { allowedModels, CATALOGUE_STATUS, catalogueAction, loraChoices, samplingHint, statusText } from "@/lib/status";
 import { displaySlots } from "@/lib/slots";
 import type { BioInfo, CatalogueKind, CatalogueStatus, FrameInfo, TemplateCheck, TemplateInfo } from "@/lib/types";
 
@@ -204,7 +204,7 @@ export function SampleRunner({
           <select className={INPUT} value={template} onChange={(e) => setTemplate(e.target.value)} disabled={!!fixed?.template}>
             {templates.map((x) => (
               <option key={key(x.template.id, x.template.version)} value={key(x.template.id, x.template.version)}>
-                {x.template.id} v{x.template.version} ({x.template.status})
+                {x.template.id} v{x.template.version} ({statusText(CATALOGUE_STATUS[x.template.status])})
               </option>
             ))}
           </select>
@@ -214,7 +214,7 @@ export function SampleRunner({
             <option value="">None</option>
             {frames.map((x) => (
               <option key={key(x.frame.id, x.frame.version)} value={key(x.frame.id, x.frame.version)}>
-                {x.frame.id} v{x.frame.version} ({x.frame.status})
+                {x.frame.id} v{x.frame.version} ({statusText(CATALOGUE_STATUS[x.frame.status])})
               </option>
             ))}
           </select>
@@ -224,7 +224,7 @@ export function SampleRunner({
             <option value="">None</option>
             {bios.map((x) => (
               <option key={key(x.bio.id, x.bio.version)} value={key(x.bio.id, x.bio.version)}>
-                {x.bio.id} v{x.bio.version} ({x.bio.status})
+                {x.bio.id} v{x.bio.version} ({statusText(CATALOGUE_STATUS[x.bio.status])})
               </option>
             ))}
           </select>

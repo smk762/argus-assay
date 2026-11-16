@@ -1,13 +1,17 @@
 /**
  * The owner's wallet, through EIP-1193 (`window.ethereum`). The owner signs the challenge
  * argus-mint issued; argus-mint checks the signature, the message and the address.
- * The browser decides nothing here: it relays.
+ * The browser decides nothing here: it relays. The hosted demo never asks a wallet for anything
+ * (CLAUDE.md): in the static build there is no provider, whatever the page has injected.
  */
+import { staticDemo } from "./demo";
+
 interface Eip1193 {
   request(args: { method: string; params?: unknown[] }): Promise<unknown>;
 }
 
 function provider(): Eip1193 | null {
+  if (staticDemo()) return null;
   const eth = (globalThis as { ethereum?: Eip1193 }).ethereum;
   return eth && typeof eth.request === "function" ? eth : null;
 }

@@ -1,7 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { headers } from "next/headers";
 
-import { DemoStrip } from "@/components/DemoStrip";
+import { DemoStrip, STRIP_LABEL } from "@/components/DemoStrip";
 import { MintProvider } from "@/components/MintProvider";
 import { Shell } from "@/components/Shell";
 import { staticDemo } from "@/lib/demo";
@@ -34,7 +34,10 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
   // export has no request (and no headers()): scripts/csp.mjs hashes its scripts instead.
   const nonce = staticDemo() ? undefined : ((await headers()).get("x-nonce") ?? undefined);
   return (
-    <html lang="en" suppressHydrationWarning>
+    // data-dh-label="browser" (STRIP_LABEL): the strip reads "Live demo · runs in your browser". The
+    // moderator and owner actions run live in this tab; nothing is a recording. The family's flag for it, as
+    // on the pasted strips; DemoStrip renders that suffix itself. Without the strip (the live build) it does nothing.
+    <html lang="en" data-dh-label={STRIP_LABEL} suppressHydrationWarning>
       <head>
         {/*
           The family theme script (public/dh-theme.js, a copy of vendor/dh/dh-theme.js). A plain blocking

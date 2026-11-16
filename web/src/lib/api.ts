@@ -40,14 +40,17 @@ export class CapabilityRefused extends ApiError {
   }
 }
 
+/** argus-mint's error `detail` as one line: a string, `{error}`, or the JSON of anything else. */
+function detailMessage(detail: unknown): string | null {
+  if (typeof detail === "string") return detail;
+  if (detail && typeof detail === "object" && "error" in detail) return String((detail as { error: unknown }).error);
+  return detail != null ? JSON.stringify(detail) : null;
+}
+
 export async function readError(response: Response): Promise<string> {
   try {
-    const body = (await response.json()) as { detail?: unknown };
-    if (typeof body.detail === "string") return body.detail;
-    if (body.detail && typeof body.detail === "object" && "error" in body.detail) {
-      return String((body.detail as { error: unknown }).error);
-    }
-    if (body.detail != null) return JSON.stringify(body.detail);
+    const message = detailMessage(((await response.json()) as { detail?: unknown }).detail);
+    if (message) return message;
   } catch {
     // A non-JSON error body still needs a readable message.
   }
@@ -91,7 +94,7 @@ function demoMint(): Promise<DemoMint> {
 export const getDemoProvenance = async () => (await demoMint()).provenance();
 
 function demoAnswer<T>({ status, body }: DemoResponse): T {
-  if (status >= 300) throw new ApiError(String((body as { detail?: unknown }).detail ?? `HTTP ${status}`), status);
+  if (status >= 300) throw new ApiError(detailMessage((body as { detail?: unknown } | null)?.detail) ?? `HTTP ${status}`, status);
   return body as T;
 }
 

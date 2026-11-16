@@ -11,7 +11,7 @@ import { useMint } from "@/components/MintProvider";
 import { Button, Card, Collapsible, Kv, Notice, SectionTitle, Spinner } from "@/components/ui";
 import { draftImage, getDraft, getDrafts, getFrames, moderatorReview, ownerChallenge, ownerReview, publishDraft } from "@/lib/api";
 import { awaitingText, canPublish, checkpointName, isAutoReview, loraText, madeWith, moderatorCanReview, ownerCanReview, shortAddress } from "@/lib/status";
-import { cardContractUrl } from "@/lib/chain";
+import { cardContractUrl, networkFor } from "@/lib/chain";
 import { draftHref, FILTERS, parseFilter, queuePosition } from "@/lib/queue";
 import { staticDemo } from "@/lib/demo";
 import { readReviewer, saveReviewer } from "@/lib/reviewer";
@@ -138,7 +138,10 @@ function PublishPanel({ d, onDone }: { d: DraftDetail; onDone: (d: DraftDetail) 
   const [error, setError] = useState<string | null>(null);
   if (d.published) {
     const p = d.published;
-    const card = health ? cardContractUrl(health.network, health.card) : null;
+    // The contract the voucher was signed for (its EIP-712 domain), not the one the server points at now.
+    const domain = (p.typed_data as { domain?: { chainId?: number; verifyingContract?: string } }).domain;
+    const network = networkFor(domain?.chainId);
+    const card = cardContractUrl(network, domain?.verifyingContract);
     return (
       <Card>
         <SectionTitle className="mb-2">Published</SectionTitle>
@@ -150,8 +153,8 @@ function PublishPanel({ d, onDone }: { d: DraftDetail; onDone: (d: DraftDetail) 
           <Kv label="Voucher expires">{when(new Date(Number(p.voucher.deadline) * 1000).toISOString())}</Kv>
           {card ? (
             <Kv label="Card contract">
-              <a href={card} className="underline decoration-base-600 underline-offset-2 hover:text-text-secondary" title={health?.card ?? ""}>
-                {shortAddress(health?.card ?? "")} on {health?.network === "base" ? "Base" : "Base Sepolia"}
+              <a href={card} className="underline decoration-base-600 underline-offset-2 hover:text-text-secondary" title={domain?.verifyingContract ?? ""}>
+                {shortAddress(domain?.verifyingContract ?? "")} on {network === "base" ? "Base" : "Base Sepolia"}
               </a>
             </Kv>
           ) : null}
@@ -249,6 +252,7 @@ function Draft() {
                 next={draftHref(pos.next, pos.filter)}
                 n={pos.n}
                 total={pos.total}
+                keys={!editing}
               />
             ) : null}
           </div>

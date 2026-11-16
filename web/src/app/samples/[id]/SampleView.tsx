@@ -11,6 +11,7 @@ import { Lightbox } from "@/components/Lightbox";
 import { StepNav } from "@/components/StepNav";
 import { Card, Collapsible, Notice, Spinner } from "@/components/ui";
 import { getSample, getSamples, sampleImage } from "@/lib/api";
+import { staticDemo } from "@/lib/demo";
 import { step } from "@/lib/step";
 import { checkpointName, loraText } from "@/lib/status";
 import type { SampleJob } from "@/lib/types";
@@ -50,7 +51,7 @@ export default function SampleView() {
   const at = ids.indexOf(job.id);
   const nav =
     at < 0 ? null : (
-      <StepNav label="Sample jobs" prev={`/samples/${ids[step(at, -1, ids.length)!]}/`} next={`/samples/${ids[step(at, 1, ids.length)!]}/`} n={at + 1} total={ids.length} />
+      <StepNav label="Sample jobs" prev={`/samples/${ids[step(at, -1, ids.length)!]}${staticDemo() ? "/" : ""}`} next={`/samples/${ids[step(at, 1, ids.length)!]}${staticDemo() ? "/" : ""}`} n={at + 1} total={ids.length} />
     );
   const r = job.request;
   const running = job.status === "queued" || job.status === "running";

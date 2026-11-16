@@ -1,3 +1,4 @@
+import { staticDemo } from "./demo";
 import type { DraftStatus, DraftSummary } from "./types";
 
 /** The review queue's filters, in the order its tabs show them. */
@@ -18,8 +19,12 @@ export const matches = (d: DraftSummary, f: Filter) =>
 export const parseFilter = (value: string | null | undefined, fallback: Filter = "all"): Filter =>
   FILTERS.find((f) => f.key === value)?.key ?? fallback;
 
-/** A draft's page, remembering the queue filter it was opened from (a query, so the static export's one page per draft serves it). */
-export const draftHref = (id: string, filter: Filter) => `/drafts/${id}/${filter === "all" ? "" : `?status=${filter}`}`;
+/**
+ * A draft's page, remembering the queue filter it was opened from (a query, so the static export's one page per
+ * draft serves it). The static export is built with trailingSlash; the live build would 308 a trailing slash.
+ */
+export const draftHref = (id: string, filter: Filter) =>
+  `/drafts/${id}${staticDemo() ? "/" : ""}${filter === "all" ? "" : `?status=${filter}`}`;
 
 /**
  * Where `id` sits in `items` (the queue's order) under `filter`: its 1-based position, the count, and the ids

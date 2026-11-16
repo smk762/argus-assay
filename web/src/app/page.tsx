@@ -108,7 +108,7 @@ function Queue() {
           alt: `Card image of ${d.name}`,
           caption: (
             <>
-              <b>{d.name}</b> · {d.status}
+              <b>{d.name}</b> <DraftBadge status={d.status} />
               {d.status === "pending" && awaitingText(d.awaiting) ? ` · ${awaitingText(d.awaiting)}` : ""}
             </>
           ),

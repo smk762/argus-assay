@@ -14,7 +14,7 @@ import { CheckpointOptions, LoraPicker } from "./Checkpoints";
 import { useMint } from "./MintProvider";
 import { Button, Card, Notice, SectionTitle, Spinner } from "./ui";
 
-export type TemplateCheckState = { capable: boolean; data: TemplateCheck | null; error: string | null; reload: () => void };
+export type TemplateCheckState = { capable: boolean; demo: boolean; data: TemplateCheck | null; error: string | null; reload: () => void };
 
 /**
  * argus-mint's check of a template against darkroom's model list: checkpoints, LoRAs, sampler and
@@ -25,7 +25,7 @@ export function useTemplateCheck(id: string, version: number, enabled: boolean):
   const { health } = useMint();
   const capable = enabled && Boolean(health?.capabilities.check_templates);
   const check = useLoad(() => (capable ? checkTemplate(id, version) : Promise.resolve(null)), [id, version, capable]);
-  return { capable, ...check };
+  return { capable, demo: Boolean((health as { mock?: boolean } | null)?.mock), ...check };
 }
 
 /** The check as argus-mint reports it; argus-mint refuses to approve while it finds problems. */
@@ -45,7 +45,11 @@ export function TemplateCheckPanel({ check }: { check: TemplateCheckState }) {
         ) : null}
       </div>
       {!capable ? (
-        <p className="text-small text-text-muted">This server can&apos;t check templates: no darkroom is configured for it to ask.</p>
+        <p className="text-small text-text-muted">
+          {check.demo
+            ? "The demo has no darkroom to ask. A live argus-mint checks each template against darkroom before it can be approved."
+            : "This server can't check templates: no darkroom is configured for it to ask."}
+        </p>
       ) : check.error ? (
         <Notice tone="error">{check.error}</Notice>
       ) : !check.data ? (

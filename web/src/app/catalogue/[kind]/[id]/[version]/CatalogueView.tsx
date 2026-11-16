@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useParams, useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useState } from "react";
 
-import { DecisionPanel, SampleRunner } from "@/components/Catalogue";
+import { DecisionPanel, SampleRunner, TemplateCheckPanel, useTemplateCheck } from "@/components/Catalogue";
 import { CatalogueBadge, Field, Hash, INPUT, PageTitle, useLoad } from "@/components/bits";
 import { Button, Card, Kv, Notice, SectionTitle, Spinner } from "@/components/ui";
 import { frameOverlay, getBios, getDrafts, getFrames, getSamples, getTemplates, previewFrame } from "@/lib/api";
@@ -248,6 +248,9 @@ function Detail() {
   const { kind, id, version } = useParams<{ kind: string; id: string; version: string }>();
   const v = Number(version);
   const all = useLoad(() => Promise.all([getTemplates(), getFrames(), getBios()]), [kind, id, version]);
+  // Before the early returns (a hook): only a known template that isn't retired is checked.
+  const checked = kind === "template" ? all.data?.[0].find((x) => x.template.id === id && x.template.version === v) : undefined;
+  const check = useTemplateCheck(id, v, Boolean(checked && checked.template.status !== "retired"));
   if (all.error) return <Notice tone="error">{all.error}</Notice>;
   if (!all.data) return <Spinner />;
   const [templates, frames, bios] = all.data;
@@ -279,7 +282,19 @@ function Detail() {
           fixed={kind === "template" ? { template: k } : kind === "frame" ? { frame: k } : { bio: k }}
         />
         )}
-        <DecisionPanel kind={kind as "template" | "frame" | "bio"} id={id} version={v} status={status} onDone={all.reload} />
+        {t && status !== "retired" ? <TemplateCheckPanel check={check} /> : null}
+        <DecisionPanel
+          kind={kind as "template" | "frame" | "bio"}
+          id={id}
+          version={v}
+          status={status}
+          onDone={all.reload}
+          warning={
+            check.data && !check.data.ok
+              ? `argus-mint will refuse to approve this while its check against darkroom finds problems (${check.data.problems.length}, listed above).`
+              : null
+          }
+        />
       </div>
     </>
   );

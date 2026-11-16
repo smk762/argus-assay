@@ -18,7 +18,7 @@ import type {
   SampleJob,
   SampleJobList,
   SampleRequest,
-  TemplateInfo,
+  TemplateCheck, TemplateInfo,
   TextEdit,
   FrameLayout,
   LibraryListing,
@@ -133,6 +133,16 @@ export const frameOverlay = (id: string, version: number): string =>
 
 export const getTemplates = (): Promise<TemplateInfo[]> => getJson("/templates");
 export const getLibrary = (): Promise<LibraryListing> => getJson("/library");
+
+/**
+ * What would make darkroom refuse a template, as argus-mint finds it against darkroom's model list.
+ * Only asked where `/health` says the server can check (a darkroom is configured); argus-mint
+ * refuses to approve a template while `problems` isn't empty.
+ */
+export async function checkTemplate(id: string, version: number): Promise<TemplateCheck> {
+  await requireCapability("check_templates");
+  return getJson(`/templates/${encodeURIComponent(id)}/${version}/check`);
+}
 /** A library entry's image: the PNG, or with `thumb` a JPEG preview that wide. */
 export const libraryImage = (id: string, thumb = 0): string =>
   // The tape holds one thumbnail per entry, which stands in for every size (as the mock's fixture does).

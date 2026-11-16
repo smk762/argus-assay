@@ -150,3 +150,41 @@ describe("explorer links name only the Card contract (CLAUDE.md, static demo)", 
     for (const file of sources.filter((f) => f !== "lib/chain.ts")) expect(read(file), file).not.toMatch(/basescan\.org|etherscan\.io/);
   });
 });
+
+describe("the browser decides nothing (rules 1, 5)", () => {
+  // demoMint.ts is the hosted demo's stand-in argus-mint: there it is the server, so it may.
+  const page = sources.filter((f) => f !== "lib/demoMint.ts");
+
+  it("never sets a status or awaiting: it shows the ones argus-mint sent", () => {
+    for (const file of page) {
+      const text = read(file);
+      expect(text, `${file} sets a status or awaiting`).not.toMatch(/\.(?:status|awaiting)\s*=(?!=)/);
+      expect(text, `${file} builds a status or awaiting`).not.toMatch(/\b(?:status|awaiting)\s*:\s*["[]/);
+      expect(text, `${file} adds to awaiting`).not.toMatch(/\bawaiting\??\.(?:push|splice|unshift)\(/);
+    }
+  });
+
+  it("never tallies reviews to work out where a draft stands", () => {
+    // Reviews are shown (map, length), never counted into a decision.
+    for (const file of page) expect(read(file), file).not.toMatch(/reviews\??\.(?:every|some|filter|find|findLast|reduce)\(/);
+  });
+
+  it("never checks a signature: it relays the owner's to argus-mint", () => {
+    for (const file of sources) expect(read(file), file).not.toMatch(/recover(?:Message)?Address|verifyMessage|verifyTypedData|ecrecover/i);
+    const pkg = JSON.parse(readFileSync(join(src, "..", "package.json"), "utf8")) as { dependencies?: object; devDependencies?: object };
+    const deps = Object.keys({ ...pkg.dependencies, ...pkg.devDependencies });
+    expect(deps.filter((d) => /^(?:viem|ethers|siwe|web3|@noble\/(?:secp256k1|curves)|@ethersproject\/)/.test(d))).toEqual([]);
+  });
+
+  it("offers each review step only where argus-mint's status and awaiting say so", () => {
+    const view = read("app/drafts/[id]/DraftView.tsx");
+    const panel = (name: string) => view.slice(view.indexOf(`function ${name}(`), view.indexOf("\nfunction ", view.indexOf(`function ${name}(`) + 1));
+    expect(panel("ModeratorPanel")).toMatch(/if \(!moderatorCanReview\(d\.status, d\.awaiting\)\) return null;/);
+    expect(panel("OwnerPanel")).toMatch(/if \(!ownerCanReview\(d\.status, d\.awaiting\)\) return null;/);
+    expect(panel("PublishPanel")).toMatch(/if \(d\.status !== "approved"\) return null;/);
+    // The guards themselves read nothing but those two fields (and /health, to publish).
+    const status = read("lib/status.ts");
+    expect(status).toMatch(/export const moderatorCanReview = \(status: DraftStatus, awaiting: string\[\]\): boolean =>\s*status === "pending" && awaiting\.includes\("moderator"\);/);
+    expect(status).toMatch(/export const ownerCanReview = \(status: DraftStatus, awaiting: string\[\]\): boolean =>\s*status === "pending" && awaiting\.includes\("owner"\);/);
+  });
+});

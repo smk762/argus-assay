@@ -1,0 +1,46 @@
+name: Branch rule
+
+# CLAUDE.md "Branches": main is never ahead of dev, except a release PR's merge commit with dev's tree, and
+# only dev is merged into main (argus-assay#43). This flags a break; a ruleset on main would prevent one.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  main-follows-dev:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Only dev is merged into main
+        if: github.event_name == 'pull_request'
+        env:
+          HEAD_REF: ${{ github.head_ref }}
+          HEAD_REPO: ${{ github.event.pull_request.head.repo.full_name }}
+        run: |
+          if [ "$HEAD_REF" != "dev" ] || [ "$HEAD_REPO" != "$GITHUB_REPOSITORY" ]; then
+            echo "::error::A PR into main must come from this repo's dev (the release PR), not ${HEAD_REPO}:${HEAD_REF}."
+            exit 1
+          fi
+      - uses: actions/checkout@v4
+        if: github.event_name == 'push'
+        with:
+          fetch-depth: 0
+      - name: main moved only to dev, or to a release merge of dev
+        if: github.event_name == 'push'
+        run: |
+          git fetch --quiet origin dev
+          # A fast-forward release: main's new tip is a commit on dev.
+          if git merge-base --is-ancestor HEAD origin/dev; then exit 0; fi
+          # A release PR: a merge whose second parent is on dev, with that commit's tree exactly.
+          if git rev-parse --quiet --verify HEAD^2 >/dev/null \
+            && git merge-base --is-ancestor HEAD^2 origin/dev \
+            && git diff --quiet HEAD^2 HEAD; then
+            exit 0
+          fi
+          echo "::error::main moved to $(git rev-parse --short HEAD), which is neither a dev commit nor a release merge with dev's tree."
+          exit 1

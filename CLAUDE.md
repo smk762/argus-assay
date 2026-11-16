@@ -36,7 +36,7 @@ Each row names what catches it. An **UNENFORCED** row gets a check, not more pro
 | Wire types, imported docs or the demo fixture out of step with the pin | `wire:check` (CI `web`); `sync.test.ts`; `mint-drift.yml` flags argus-mint `dev` moving past the pin |
 | An imported doc carrying a private IP, a home path or an email | `docs-pull.mjs`'s opsec gate (at import; the hashes in `sync.test.ts` then hold the files) |
 | An imported doc running markup or loading anything from elsewhere | `mintDocs.test.ts` "drops raw HTML and unsafe links…", "loads no image" |
-| Work pushed to `main`, or `main` ahead of `dev` (Branches) | GitHub ruleset "main: releases from dev only" (a PR is required, no force push or deletion, no bypass); CI `branch-rule.yml` (a PR into `main` only from `dev`; `main` moves only to a `dev` commit or a release merge with its tree) |
+| Work pushed to `main`, or `main` ahead of `dev` (Branches) | GitHub ruleset "main: releases from dev only" (a PR is required and must pass `main-follows-dev`; no force push or deletion; no bypass); CI `branch-rule.yml` (a PR into `main` only from `dev`; `main` moves only to a `dev` commit or a release merge with its tree) |
 
 ## Argus suite
 <!-- argus-suite: keep this block; argus-ci checks for it -->

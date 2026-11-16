@@ -71,7 +71,7 @@ SIGNER = Account.from_key("0x59c6995e998f97a5a0044966f0945389dc9e86dae88c7a8412f
 OWNER = Account.from_key("0x5de4111afa1a4b94908f83103eb1f1706367c2e68ca870fc3fb9a804cdab365a")
 BIO_ID = {"id": "demo-bio", "version": 1}
 
-TEMPLATE = {"id": "demo-portrait", "version": 1}  # scripts/demo-portrait-v1.yaml; the library stays on example-portrait v2
+TEMPLATE = {"id": "demo-portrait", "version": 1}  # scripts/demo-portrait-v1.yaml; the library keeps its own template
 WIZARD, CYBORG = "wizard in long flowing robes", "cyborg whose arms and shoulders are chrome steel plating with visible mechanical joints"
 PRIEST = "priest of an invented order of lantern-bearers, holding a glowing brass lantern"
 CAST = {"id": "demo-cast", "version": 1}  # scripts/demo-cast-v1.yaml: the wider cast, so the first four keep their renders
@@ -494,23 +494,33 @@ def pickers(template: Path) -> dict:
     }  # fmt: skip
 
 
+def library_template(src_fixture: Path, full: Path | None) -> tuple[str, int]:
+    """The template the library was rendered from: the built library's own, else the fixture's."""
+    if full is not None:
+        m = Manifest.model_validate_json((full / MANIFEST).read_text())
+        return m.template, m.template_version
+    listing = json.loads((src_fixture / "library.json").read_text())
+    return listing["template"]["id"], listing["template"]["version"]
+
+
 def library(src_fixture: Path, full: Path | None, t: Template, dst: Path) -> tuple[list[LibraryEntry], dict[str, bytes]]:
     """The fixture's library subset as a library argus-mint serves from ``dst``.
 
-    With ``full`` (a built library), entries and images come from it. Without, each entry is
+    With ``full`` (a built library), entries and images come from it: the fixture's groups (ids and
+    group numbers kept, as argus-mint's api_fixture.py does), whole, on every checkpoint the built
+    library has, so a newer library's checkpoints come in with it. Without, each entry is
     rebuilt from the listing: the request the approved template makes for it, the attempts the
     old fixture's library draft recorded (or one ok attempt), and the 640 px preview as its image.
     """
     listing = json.loads((src_fixture / "library.json").read_text())
-    ids = [i["id"] for i in listing["items"]]
     (dst / "images").mkdir(parents=True)
     if full is not None:
         m = Manifest.model_validate_json((full / MANIFEST).read_text())
-        by_id = {e.id: e for e in m.entries}
-        entries = [by_id[i] for i in ids]
+        groups = sorted({i["group"] for i in listing["items"]})
+        entries = sorted((e for e in m.entries if e.group in groups), key=lambda e: (e.group, m.models.index(e.model)))
         for e in entries:
             shutil.copy(full / e.file, dst / e.file)
-        manifest = m.model_copy(update={"entries": entries, "count": listing["count"], "failed": []})
+        manifest = m.model_copy(update={"entries": entries, "count": len(groups), "failed": []})
     else:
         old = {}
         for item in json.loads((src_fixture / "drafts.json").read_text())["items"]:
@@ -602,7 +612,8 @@ def main(a: argparse.Namespace) -> None:
         work = Path(tmp)
         for d in ("templates", "frames", "bios"):
             (work / d).mkdir()
-        src = mint / "templates" / "example-portrait-v2.yaml"
+        tid, tv = library_template(src_fixture, a.library)
+        src = mint / "templates" / f"{tid}-v{tv}.yaml"
         approved(src, work / "templates" / "t.yaml", by, pickers(src))
         t = Template.model_validate(yaml.safe_load((work / "templates" / "t.yaml").read_text()))
         demo_src = HERE / "demo-portrait-v1.yaml"
@@ -817,7 +828,7 @@ def main(a: argparse.Namespace) -> None:
         )
         provenance = {"kind": kind, "source": "argus-assay scripts/record_demo.py", "note": note}
         (stage / "provenance.json").write_text(json.dumps(provenance, indent=2) + "\n")
-        (stage / "README.md").write_text(README.format(kind=kind, note=note))
+        (stage / "README.md").write_text(README.format(kind=kind, note=note, library_template=f"{t.id} v{t.version}"))
         if out.exists():
             shutil.rmtree(out)
         stage.rename(out)
@@ -845,7 +856,7 @@ docs/demo-recording.md.
   giant and a dragon.
 - The first four drafts render from scripts/demo-portrait-v1.yaml, the rest (people, robots,
   creatures and living objects) from scripts/demo-cast-v1.yaml; the library card's template is
-  argus-mint's example-portrait v2. All three, the card-green frame and the bio template (scripts/demo-bio-v1.yaml)
+  argus-mint's {library_template}, the portrait library's own. All three, the card-green frame and the bio template (scripts/demo-bio-v1.yaml)
   are marked approved for the recording. demo-portrait v2 (v1 with one more negative term) and the
   placeholder example-plain frame await catalogue review; the sample job renders v2.
 - Every bio fills 50 to 80% of the card's bio box; no two share a run of 6 words, an opening or a

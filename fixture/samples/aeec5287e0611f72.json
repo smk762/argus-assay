@@ -1,0 +1,114 @@
+{
+  "id": "aeec5287e0611f72",
+  "status": "done",
+  "created_at": "2026-11-16T07:40:46.625574Z",
+  "finished_at": "2026-11-16T07:41:31.828152Z",
+  "error": null,
+  "request": {
+    "template": {
+      "id": "demo-portrait",
+      "version": 2
+    },
+    "frame": {
+      "id": "card-green",
+      "version": 1
+    },
+    "bio": {
+      "id": "demo-bio",
+      "version": 1
+    },
+    "model": null,
+    "loras": [],
+    "count": 2,
+    "variables": {
+      "gender": "non-binary"
+    },
+    "seed": 120,
+    "name": "Sample",
+    "texts": {
+      "class": "Sample class",
+      "stats": "No. 0"
+    },
+    "style": null
+  },
+  "items": [
+    {
+      "n": 1,
+      "variables": {
+        "background": "garden",
+        "colour": "silver",
+        "gender": "non-binary",
+        "pose": "guarding a hoard",
+        "role": "dragon, a scaled non-human reptilian beast with horns and folded wings, no human features"
+      },
+      "prompt": "waist-up portrait of one non-binary dragon, a scaled non-human reptilian beast with horns and folded wings, no human features, alone in the picture, centered and facing the viewer, clothing and colour scheme silver, guarding a hoard, background: garden, painted fantasy illustration, full bleed, detailed",
+      "seed": 1152728919,
+      "attempts": [
+        {
+          "seed": 121,
+          "outcome": "safety_rejected",
+          "ref": "21fcb13efc20491baacc9779b1f28399",
+          "detail": "omitted: sfw-exposed"
+        },
+        {
+          "seed": 1152728919,
+          "outcome": "ok",
+          "ref": "11f622d47ba0467ab58b6af76fc6ddf0",
+          "detail": "",
+          "workflow": {
+            "name": "sdxl",
+            "sha256": "02e08f842f7a66e0e1be2ebc506ab8339f3b39df639beb86fc04dc240f3ef38d"
+          }
+        }
+      ],
+      "bio": "Brass gears whir in Sample's scales, mirroring the garden's silver sheen. They tend to the roses, humming softly as if teaching them to sing. Every petal, a tiny, gleaming trophy, they claim without a bite.",
+      "bio_attempts": [
+        {
+          "outcome": "ok",
+          "detail": "",
+          "text": "Brass gears whir in {name}'s scales, mirroring the garden's silver sheen. They tend to the roses, humming softly as if teaching them to sing. Every petal, a tiny, gleaming trophy, they claim without a bite."
+        }
+      ],
+      "error": null,
+      "bio_error": null,
+      "art": true,
+      "framed": true
+    },
+    {
+      "n": 2,
+      "variables": {
+        "background": "temple",
+        "colour": "steel grey",
+        "gender": "non-binary",
+        "pose": "reading",
+        "role": "stone giant, a huge troll-like creature whose skin is cracked grey rock, boulder shoulders, moss growing on its stony hide, not a human"
+      },
+      "prompt": "waist-up portrait of one non-binary stone giant, a huge troll-like creature whose skin is cracked grey rock, boulder shoulders, moss growing on its stony hide, not a human, alone in the picture, centered and facing the viewer, clothing and colour scheme steel grey, reading, background: temple, painted fantasy illustration, full bleed, detailed",
+      "seed": 122,
+      "attempts": [
+        {
+          "seed": 122,
+          "outcome": "ok",
+          "ref": "da8670b073824aae95eea31bc1a69b5c",
+          "detail": "",
+          "workflow": {
+            "name": "sdxl",
+            "sha256": "02e08f842f7a66e0e1be2ebc506ab8339f3b39df639beb86fc04dc240f3ef38d"
+          }
+        }
+      ],
+      "bio": "Brass-bound tomes creak open, Sample lost in ancient pages. Steel-grey robes pool around, a quiet storm in the temple's hush. Moss-sprouting fingers trace symbols, leaving trails of earth in the air.",
+      "bio_attempts": [
+        {
+          "outcome": "ok",
+          "detail": "",
+          "text": "Brass-bound tomes creak open, {name} lost in ancient pages. Steel-grey robes pool around, a quiet storm in the temple's hush. Moss-sprouting fingers trace symbols, leaving trails of earth in the air."
+        }
+      ],
+      "error": null,
+      "bio_error": null,
+      "art": true,
+      "framed": true
+    }
+  ]
+}

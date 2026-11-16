@@ -1,0 +1,93 @@
+{
+ "width": 969,
+ "height": 1352,
+ "slots": {
+  "bio": {
+   "font": "fonts/CrimsonText-Italic.ttf",
+   "size": 38,
+   "ascent": 37,
+   "descent": 14,
+   "effects": {
+    "shadow": 2,
+    "outline": 2,
+    "glow": 7
+   },
+   "lines": [
+    {
+     "text": "Copper cogs spin, Brass Butler pours. Steam hisses from",
+     "x": 108,
+     "y": 872
+    },
+    {
+     "text": "their fingertips, mimicking the kettle's song. Sugar",
+     "x": 108,
+     "y": 928
+    },
+    {
+     "text": "cubes clink like tiny cogs in their hands. Every pour,",
+     "x": 108,
+     "y": 984
+    },
+    {
+     "text": "they click and whirr, counting the drops.",
+     "x": 108,
+     "y": 1040
+    }
+   ]
+  },
+  "class": {
+   "font": "fonts/Cinzel.ttf",
+   "size": 30,
+   "ascent": 30,
+   "descent": 12,
+   "effects": {
+    "shadow": 2,
+    "outline": 2,
+    "glow": 5
+   },
+   "lines": [
+    {
+     "text": "Automaton \u00b7 Copper",
+     "x": 329,
+     "y": 772
+    }
+   ]
+  },
+  "name": {
+   "font": "fonts/Cinzel.ttf",
+   "size": 39,
+   "ascent": 39,
+   "descent": 15,
+   "effects": {
+    "shadow": 2,
+    "outline": 2,
+    "glow": 7
+   },
+   "lines": [
+    {
+     "text": "Brass Butler",
+     "x": 362,
+     "y": 80
+    }
+   ]
+  },
+  "stats": {
+   "font": "fonts/CrimsonText-Bold.ttf",
+   "size": 34,
+   "ascent": 33,
+   "descent": 12,
+   "effects": {
+    "shadow": 2,
+    "outline": 2,
+    "glow": 6
+   },
+   "lines": [
+    {
+     "text": "No. 7",
+     "x": 770,
+     "y": 1221
+    }
+   ]
+  }
+ }
+}

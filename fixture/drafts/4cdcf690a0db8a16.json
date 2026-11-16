@@ -1,0 +1,250 @@
+{
+  "id": "4cdcf690a0db8a16",
+  "status": "published",
+  "awaiting": [],
+  "draft": {
+    "format": 1,
+    "request": {
+      "template_id": "demo-portrait",
+      "template_version": 1,
+      "template_hash": "0xd659b69292f4422d56ee789cbff7d585bd39f6a4527ff2c2ac5b5d0cd245573c",
+      "model": "sdxl/aureanuanceXL_v2/aureanuanceXL_v2.safetensors",
+      "loras": [],
+      "sampling": {
+        "sampler": "euler",
+        "scheduler": "normal",
+        "steps": 25,
+        "cfg": 6.0,
+        "clip_skip": 1,
+        "guidance": null
+      },
+      "width": 1152,
+      "height": 896,
+      "prompt": "waist-up portrait of one female wizard in long flowing robes, alone in the picture, centered and facing the viewer, clothing and colour scheme emerald green, casting a spell, background: library, painted fantasy illustration, full bleed, detailed",
+      "negative": "text, letters, words, caption, title, label, logo, watermark, signature, border, frame, card frame, trading card, playing card, game ui, icons, badges, numbers, two people, second person, multiple people, crowd, companion, robot beside, empty scene, landscape, gore, cross, crucifix, mitre, rosary, halo, church, religious symbol, nudity",
+      "variables": {
+        "background": "library",
+        "colour": "emerald green",
+        "gender": "female",
+        "pose": "casting a spell",
+        "role": "wizard in long flowing robes"
+      },
+      "seed": 8461
+    },
+    "attempts": [
+      {
+        "seed": 8461,
+        "outcome": "ok",
+        "ref": "b92a8efa05404d1c94b913843b4b457f",
+        "detail": "",
+        "workflow": {
+          "name": "sdxl",
+          "sha256": "02e08f842f7a66e0e1be2ebc506ab8339f3b39df639beb86fc04dc240f3ef38d"
+        }
+      }
+    ],
+    "renderer": "darkroom",
+    "asset_id": "0x26e9840acf58ba86690e67c03e21cf541cefc52f8c6aee1d8fde5986f89180a2",
+    "to": "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
+    "name": "Emerald Wizard",
+    "description": "Whispers of emerald tomes, Emerald Wizard casts a spell. Her robes ripple like river currents. She hums a tune, slightly off-key. Ink blooms beneath her fingers, spilling secrets onto parchment.",
+    "external_url": null,
+    "consumer": "argus-mint",
+    "frame": {
+      "id": "card-green",
+      "version": 1,
+      "hash": "0xed8933833831ea63e4f8c91eea897814159af3a7b21acfb560c70162366ccf37"
+    },
+    "bio": {
+      "ref": {
+        "id": "demo-bio",
+        "version": 1,
+        "hash": "0xfee903b50f7131012c3fef6bb3c89daff4fc67e9ad3a1584fe44693f0774e861",
+        "model": "mistral-nemo:12b-instruct-2407-q4_K_M"
+      },
+      "text": "Whispers of emerald tomes, Emerald Wizard casts a spell. Her robes ripple like river currents. She hums a tune, slightly off-key. Ink blooms beneath her fingers, spilling secrets onto parchment.",
+      "attempts": [
+        {
+          "outcome": "ok",
+          "detail": "",
+          "text": "Whispers of emerald tomes, {name} casts a spell. Her robes ripple like river currents. She hums a tune, slightly off-key. Ink blooms beneath her fingers, spilling secrets onto parchment."
+        }
+      ],
+      "edited": false
+    },
+    "texts": {
+      "class": "Wizard · Emerald",
+      "stats": "No. 1"
+    },
+    "style": null,
+    "library": null,
+    "made_with": {
+      "argus-mint": "0.2.2"
+    },
+    "edits": [],
+    "auto_check": null,
+    "art_sha256": "bc999469a8c6c3f2a9173184d0e9f1c5a5a7e0b00200f3c6bdae2289119afd61",
+    "image_sha256": "0450d92990c3b9711391333b1f4605530bbde8ade486c417579a19254d19e774",
+    "created_at": "2026-11-16T07:40:24.380034Z",
+    "reviews": [
+      {
+        "role": "moderator",
+        "decision": "approved",
+        "by": "moderator-1",
+        "at": "2026-11-16T07:40:24.389090Z",
+        "image_sha256": "0450d92990c3b9711391333b1f4605530bbde8ade486c417579a19254d19e774",
+        "note": ""
+      },
+      {
+        "role": "owner",
+        "decision": "approved",
+        "by": "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
+        "at": "2026-11-16T07:40:24.413953Z",
+        "image_sha256": "0450d92990c3b9711391333b1f4605530bbde8ade486c417579a19254d19e774",
+        "note": ""
+      }
+    ]
+  },
+  "published": {
+    "signer": "0x70997970C51812dc3A010C7d01b50e0d17dc79C8",
+    "render": {
+      "renderer": "darkroom",
+      "prompt": "waist-up portrait of one female wizard in long flowing robes, alone in the picture, centered and facing the viewer, clothing and colour scheme emerald green, casting a spell, background: library, painted fantasy illustration, full bleed, detailed",
+      "seed": 8461,
+      "attempts": [
+        {
+          "seed": 8461,
+          "outcome": "ok",
+          "ref": "b92a8efa05404d1c94b913843b4b457f",
+          "detail": "",
+          "workflow": {
+            "name": "sdxl",
+            "sha256": "02e08f842f7a66e0e1be2ebc506ab8339f3b39df639beb86fc04dc240f3ef38d"
+          }
+        }
+      ],
+      "art_cid": "bafkreif4tgkgtkggypzksfzrqtiot4ofuwt6bmacadz4npnoekerdgx5me",
+      "image_cid": "bafkreiaekdmstegdxfyrhejthmpumbktbo66rlpeq3cbov42desu2gphoq"
+    },
+    "reviews": [
+      {
+        "role": "moderator",
+        "decision": "approved",
+        "by": "moderator-1",
+        "at": "2026-11-16T07:40:24.389090Z",
+        "image_sha256": "0450d92990c3b9711391333b1f4605530bbde8ade486c417579a19254d19e774",
+        "note": ""
+      },
+      {
+        "role": "owner",
+        "decision": "approved",
+        "by": "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
+        "at": "2026-11-16T07:40:24.413953Z",
+        "image_sha256": "0450d92990c3b9711391333b1f4605530bbde8ade486c417579a19254d19e774",
+        "note": ""
+      }
+    ],
+    "metadata": {
+      "name": "Emerald Wizard",
+      "description": "Whispers of emerald tomes, Emerald Wizard casts a spell. Her robes ripple like river currents. She hums a tune, slightly off-key. Ink blooms beneath her fingers, spilling secrets onto parchment.",
+      "image": "ipfs://bafkreiaekdmstegdxfyrhejthmpumbktbo66rlpeq3cbov42desu2gphoq",
+      "attributes": [],
+      "provenance": {
+        "template": "demo-portrait",
+        "template_version": 1,
+        "template_hash": "0xd659b69292f4422d56ee789cbff7d585bd39f6a4527ff2c2ac5b5d0cd245573c",
+        "seed": 8461,
+        "attempts": 1,
+        "asset_id": "0x26e9840acf58ba86690e67c03e21cf541cefc52f8c6aee1d8fde5986f89180a2",
+        "consumer": "argus-mint",
+        "frame": {
+          "id": "card-green",
+          "version": 1,
+          "hash": "0xed8933833831ea63e4f8c91eea897814159af3a7b21acfb560c70162366ccf37"
+        },
+        "art": "ipfs://bafkreif4tgkgtkggypzksfzrqtiot4ofuwt6bmacadz4npnoekerdgx5me",
+        "bio": {
+          "id": "demo-bio",
+          "version": 1,
+          "hash": "0xfee903b50f7131012c3fef6bb3c89daff4fc67e9ad3a1584fe44693f0774e861",
+          "model": "mistral-nemo:12b-instruct-2407-q4_K_M"
+        },
+        "variables": {
+          "background": "library",
+          "colour": "emerald green",
+          "gender": "female",
+          "pose": "casting a spell",
+          "role": "wizard in long flowing robes"
+        },
+        "model": "sdxl/aureanuanceXL_v2/aureanuanceXL_v2.safetensors"
+      }
+    },
+    "metadata_cid": "bafkreigjzxqjfna7aecjv5wa2mcd74edxxu3gfwadjaakfo5drcogfnfdq",
+    "voucher": {
+      "to": "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
+      "asset_id": "0x26e9840acf58ba86690e67c03e21cf541cefc52f8c6aee1d8fde5986f89180a2",
+      "content_hash": "0xbdb29e4bb48baf57d493caa17ca5d9ac523c7a96c52c66625224afef1838daa3",
+      "price": 0,
+      "deadline": 1900000000
+    },
+    "signature": "0xea78f9e838d42a802fa371c9d6d691aab177d8bf581d0d2dc199cef66119fba5361a0e5bd3c89562181a31a59cc001633ad79a153563bf022ecd5a40d320831b1c",
+    "typed_data": {
+      "types": {
+        "EIP712Domain": [
+          {
+            "name": "name",
+            "type": "string"
+          },
+          {
+            "name": "version",
+            "type": "string"
+          },
+          {
+            "name": "chainId",
+            "type": "uint256"
+          },
+          {
+            "name": "verifyingContract",
+            "type": "address"
+          }
+        ],
+        "MintVoucher": [
+          {
+            "name": "to",
+            "type": "address"
+          },
+          {
+            "name": "assetId",
+            "type": "bytes32"
+          },
+          {
+            "name": "contentHash",
+            "type": "bytes32"
+          },
+          {
+            "name": "price",
+            "type": "uint256"
+          },
+          {
+            "name": "deadline",
+            "type": "uint64"
+          }
+        ]
+      },
+      "primaryType": "MintVoucher",
+      "domain": {
+        "name": "argus-mint Card",
+        "version": "1",
+        "chainId": 84532,
+        "verifyingContract": "0xCAa3573b5550870A5e15C47c650b8700D70a8fA7"
+      },
+      "message": {
+        "to": "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
+        "assetId": "0x26e9840acf58ba86690e67c03e21cf541cefc52f8c6aee1d8fde5986f89180a2",
+        "contentHash": "0xbdb29e4bb48baf57d493caa17ca5d9ac523c7a96c52c66625224afef1838daa3",
+        "price": 0,
+        "deadline": 1900000000
+      }
+    }
+  }
+}

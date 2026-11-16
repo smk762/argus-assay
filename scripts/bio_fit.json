@@ -1,9 +1,23 @@
 {
-  "_what": "How full a card's bio must be. Measured on the card-green v1 frame's bio slot: 750 x 318 px (of a 969 x 1352 card), Crimson Text Italic at 38 px (min 22), line height round((37 + 14) x 1.1) = 56 px, so 5 lines at full size. Fill is the drawn text block's height over the slot's height: 3 lines 51%, 4 lines 69%, 5 lines 86%. Wrapped prose runs about 52 characters a line at 38 px, so 160 to 210 characters lands on 4 lines (3 only when they are packed). The fifth line and the shrink to 22 px stay in reserve. The card is baked at that size and scaled as a whole, so the fill is the same at every width the page shows it. Checked by scripts/record_demo.py (each bio as it is written; a miss is rewritten) and scripts/make_tape.mjs (the whole fixture).",
+  "_what": "How full a card's bio must be. Measured on the card-green v1 frame's bio slot: 750 x 318 px (of a 969 x 1352 card), Crimson Text Italic at 38 px (min 22), line height round((37 + 14) x 1.1) = 56 px, so 5 lines at full size. Fill is the drawn text block's height over the slot's height: 3 lines 51%, 4 lines 69%, 5 lines 86%. Wrapped prose runs about 52 characters a line at 38 px, so 160 to 210 characters lands on 4 lines (3 only when they are packed). The fifth line and the shrink to 22 px stay in reserve. The card is baked at that size and scaled as a whole, so the fill is the same at every width the page shows it. Checked by scripts/record_demo.py (each bio as it is written; a miss is rewritten) and scripts/make_tape.mjs (the whole fixture). Each bio must also open differently from every other (not with a banned word such as \"in\", nor with another card's first two words, and at most name_openings of them with the card's name), use only the pronouns of its card's gender (they for non-binary), hold at most max_similes \"like\", and reuse no simile: no 3-word run around \"like\" or \"as\" (stemmed, so \"dance like sparks\" and \"dancing like sparks\" are one) and no \"like\" comparing to the same word (\"like moonlit snow\", \"like moonlit dew\"). No bio may use a word in banned_words (stemmed, so \"dance\" also bars \"dancing\"), and its last sentence must run to at least last_sentence_words words (no trailing fragment such as \"Their odd habit?\"). Nor may it use a mark in banned_marks: the model leans on ellipses (\"Emerald robes rustle...\"), so they are out. Each bio names the card exactly once and closes every quotation it opens; banned_words match as a prefix (\"dance\" bars \"dancer\" too; \"blood\" keeps the all-ages bios free of it).",
   "slot": "bio",
   "min_chars": 160,
   "max_chars": 210,
   "min_fill": 0.5,
   "max_fill": 0.8,
-  "shared_words": 6
+  "shared_words": 6,
+  "banned_openings": [
+    "in"
+  ],
+  "max_similes": 1,
+  "name_openings": 3,
+  "banned_words": [
+    "dance",
+    "blood"
+  ],
+  "last_sentence_words": 4,
+  "banned_marks": [
+    "...",
+    "…"
+  ]
 }

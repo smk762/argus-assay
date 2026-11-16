@@ -23,7 +23,7 @@
     "library": true,
     "edit_text": true,
     "auto_moderate": false,
-    "check_templates": false
+    "check_templates": true
   },
   "backends": {
     "darkroom": true,

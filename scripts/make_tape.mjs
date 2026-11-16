@@ -42,7 +42,9 @@ export const ADDRESSES = {
 
 /** Things a public tape must never carry. Hashes (0x + 64 hex) are everywhere, so keys are caught by name. */
 const FORBIDDEN = [
-  [/private[_-]?key|mnemonic|seed[_-]?phrase|secret|api[_-]?key|bearer|authorization|pinata|jwt/i, "a key or token field"],
+  // By field name, so a bio that says "a secret shared" isn't taken for one.
+  [/"[^"]*(?:private[_-]?key|mnemonic|seed[_-]?phrase|secret|api[_-]?key|bearer|authorization|pinata|jwt)[^"]*"\s*:/i, "a key or token field"],
+  [/\bBearer\s+[A-Za-z0-9._~+/-]{8,}/, "a bearer token"],
   [/https?:\/\/[^"\s]*(alchemy|infura|quicknode|ankr|drpc|llamarpc)[^"\s]*/i, "an RPC URL"],
   [/\b(?:192\.168|10\.\d{1,3}|172\.(?:1[6-9]|2\d|3[01]))\.\d{1,3}\.\d{1,3}\b/, "a LAN address"],
   [/\b[a-z0-9-]+\.(?:local|lan|internal|home)\b/i, "an internal hostname"],
@@ -70,15 +72,83 @@ export function sharedRun(a, nameA, b, nameB, n = BIO_FIT.shared_words) {
   return null;
 }
 
+const SIMILE = new Set(["like", "as"]);
+const stem = (w) => {
+  if (SIMILE.has(w)) return w;
+  for (const suffix of ["ing", "es", "ed", "s", "e"]) if (w.endsWith(suffix) && w.length - suffix.length >= 3) return w.slice(0, -suffix.length);
+  return w;
+};
+
+/** A 3-word run around "like" or "as" two bios share, stemmed ("dance like sparks" = "dancing like sparks"), or null. */
+export function sharedSimile(a, nameA, b, nameB) {
+  const wa = words(a, nameA);
+  const sa = wa.map(stem);
+  const sb = words(b, nameB).map(stem);
+  const grams = new Set();
+  for (let i = 0; i + 3 <= sb.length; i++) if (sb.slice(i, i + 3).some((w) => SIMILE.has(w))) grams.add(sb.slice(i, i + 3).join(" "));
+  for (let i = 0; i + 3 <= sa.length; i++)
+    if (sa.slice(i, i + 3).some((w) => SIMILE.has(w)) && grams.has(sa.slice(i, i + 3).join(" "))) return wa.slice(i, i + 3).join(" ");
+  return null;
+}
+
+/** What each "like" compares to: the next word that isn't an article, stemmed ("like moonlit snow": "moonlit"). */
+const ARTICLES = new Set(["a", "an", "the"]);
+const simileHeads = (text, name) => {
+  const ws = words(text, name);
+  const heads = new Set();
+  ws.forEach((w, i) => {
+    const next = ws.slice(i + 1, i + 3).filter((x) => !ARTICLES.has(x));
+    if (w === "like" && next.length) heads.add(stem(next[0]));
+  });
+  return heads;
+};
+
+/** A bio uses only its card's gender's pronouns ("their" is left out: it is also plural). */
+const PRONOUNS = {
+  female: ["she", "her", "hers", "herself"],
+  male: ["he", "him", "his", "himself"],
+  "non-binary": ["they", "them", "themself", "themselves"],
+};
+const wrongPronoun = (text, name, gender) => {
+  if (!PRONOUNS[gender]) return null;
+  const others = new Set(Object.entries(PRONOUNS).flatMap(([g, ps]) => (g === gender ? [] : ps)));
+  return words(text, name).find((w) => others.has(w)) ?? null;
+};
+
+/** The first two words, with the card's name as one word. */
+const opening = (text, name) => (text.split(name).join(" {name} ").toLowerCase().match(/\{name\}|[a-z0-9']+/g) ?? []).slice(0, 2).join(" ");
+
 /**
  * Problems with the cards' bios: each must be BIO_FIT.min_chars..max_chars long, drawn at its
  * slot's full size and filling min_fill..max_fill of the slot's height (from the recorded layout),
- * and no two may share BIO_FIT.shared_words words in a row. `bios` is [{ where, name, text, layout?, slot? }].
+ * and no two may share BIO_FIT.shared_words words in a row, their first two words, or a simile (a 3-word
+ * run around "like" or "as", or "like" comparing to the same word). None may open with a word in
+ * BIO_FIT.banned_openings, hold more than max_similes "like", use a banned_words word, a banned_marks mark or another gender's
+ * pronouns, or end on a sentence shorter than last_sentence_words words; at most
+ * name_openings open with the card's name. `bios` is [{ where, name, text, gender?, layout?, slot? }].
  */
 export function checkBios(bios, fit = BIO_FIT) {
   const problems = [];
   const pct = (x) => `${Math.round(x * 100)}%`;
   for (const b of bios) {
+    const first = opening(b.text, b.name).split(" ")[0];
+    if ((fit.banned_openings ?? []).includes(first)) problems.push(`${b.where}: bio opens with "${first}"`);
+    const mark = (fit.banned_marks ?? []).find((m) => b.text.includes(m));
+    if (mark) problems.push(`${b.where}: bio uses "${mark}"`);
+    const banned = (fit.banned_words ?? []).map(stem);
+    const stock = words(b.text, b.name).find((w) => banned.some((x) => w.startsWith(x)));
+    const named = b.text.split(b.name).length - 1;
+    if (named !== 1) problems.push(`${b.where}: bio names the card ${named} times, not once`);
+    if ((b.text.match(/"/g) ?? []).length % 2 || (b.text.match(/\u201c/g) ?? []).length !== (b.text.match(/\u201d/g) ?? []).length)
+      problems.push(`${b.where}: bio leaves a quotation open`);
+    if (stock) problems.push(`${b.where}: bio uses the stock word "${stock}"`);
+    const last = b.text.trim().split(/(?<=[.!?])\s+/).pop() ?? "";
+    if (fit.last_sentence_words !== undefined && words(last, b.name).length < fit.last_sentence_words)
+      problems.push(`${b.where}: bio ends on a fragment ("${last}")`);
+    const pronoun = wrongPronoun(b.text, b.name, b.gender);
+    if (pronoun) problems.push(`${b.where}: bio says "${pronoun}" of a ${b.gender} character`);
+    const likes = words(b.text, b.name).filter((w) => w === "like").length;
+    if (fit.max_similes !== undefined && likes > fit.max_similes) problems.push(`${b.where}: bio has ${likes} "like" similes, over ${fit.max_similes}`);
     if (b.text.length < fit.min_chars || b.text.length > fit.max_chars)
       problems.push(`${b.where}: bio is ${b.text.length} characters, outside ${fit.min_chars}-${fit.max_chars}`);
     if (b.layout && b.slot) {
@@ -90,10 +160,20 @@ export function checkBios(bios, fit = BIO_FIT) {
         problems.push(`${b.where}: bio fills ${pct(fill)} of its box (${lines.length} lines), outside ${pct(fit.min_fill)}-${pct(fit.max_fill)}`);
     }
   }
+  const byName = bios.filter((b) => opening(b.text, b.name).startsWith("{name}"));
+  if (fit.name_openings !== undefined && byName.length > fit.name_openings)
+    problems.push(`${byName.map((b) => b.where).join(", ")}: ${byName.length} bios open with the card's name, over ${fit.name_openings}`);
   for (let i = 0; i < bios.length; i++)
     for (let j = i + 1; j < bios.length; j++) {
       const run = sharedRun(bios[i].text, bios[i].name, bios[j].text, bios[j].name, fit.shared_words);
       if (run) problems.push(`${bios[i].where} and ${bios[j].where}: bios share "${run}"`);
+      const simile = sharedSimile(bios[i].text, bios[i].name, bios[j].text, bios[j].name);
+      if (simile) problems.push(`${bios[i].where} and ${bios[j].where}: bios share the simile "${simile}"`);
+      const heads = simileHeads(bios[i].text, bios[i].name);
+      const head = [...simileHeads(bios[j].text, bios[j].name)].find((h) => heads.has(h));
+      if (head) problems.push(`${bios[i].where} and ${bios[j].where}: bios both compare "like ${head}…"`);
+      if (opening(bios[i].text, bios[i].name) === opening(bios[j].text, bios[j].name))
+        problems.push(`${bios[i].where} and ${bios[j].where}: bios open alike ("${opening(bios[i].text, bios[i].name)}")`);
     }
   return problems;
 }
@@ -125,10 +205,10 @@ export function buildTape(fixtureDir, { kind, note } = {}) {
   const slotOf = (ref) => frames.find((f) => f.frame.id === ref?.id && f.frame.version === ref?.version)?.frame.texts[BIO_FIT.slot];
   const bios = [
     ...drafts.filter((d) => d.draft.bio).map((d) => ({
-      where: `draft ${d.id} (${d.draft.name})`, name: d.draft.name, text: d.draft.bio.text,
+      where: `draft ${d.id} (${d.draft.name})`, name: d.draft.name, text: d.draft.bio.text, gender: d.draft.request?.variables?.gender,
       layout: layouts[d.id]?.slots?.[BIO_FIT.slot], slot: slotOf(d.draft.frame),
     })),
-    ...samples.flatMap((job) => job.items.filter((it) => it.bio).map((it) => ({ where: `sample ${job.id}/${it.n}`, name: job.request.name, text: it.bio }))),
+    ...samples.flatMap((job) => job.items.filter((it) => it.bio).map((it) => ({ where: `sample ${job.id}/${it.n}`, name: job.request.name, text: it.bio, gender: it.variables?.gender }))),
   ];
   const bioProblems = checkBios(bios);
   if (bioProblems.length) throw new Error(`refusing to make the tape, ${bioProblems.length} bio problem(s) (scripts/bio_fit.json)\n  ${bioProblems.join("\n  ")}`);

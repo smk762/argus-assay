@@ -83,7 +83,7 @@ The static build (`ASSAY_STATIC=1`) needs no argus-mint. The page answers its ow
 - Reviews, the owner's card editor, publishing (the recorded result) and catalogue decisions work, in the tab until reload.
 - Making drafts and samples needs a GPU, so it is off.
 
-Today's tape is labelled Sample data. `fixture/` is recorded by `scripts/record_demo.py` (argus-mint's real server; stand-in backends for the sample, the GPU host's darkroom and Ollama for `make record`). [docs/demo-recording.md](docs/demo-recording.md) says what each is, how full and how distinct the card bios must be, and how to record.
+Today's tape is labelled Recorded: real renders and model-written bios, recorded on 2026-11-15. `fixture/` is recorded by `scripts/record_demo.py` (argus-mint's real server; stand-in backends for the sample, the GPU host's darkroom and Ollama for `make record`). [docs/demo-recording.md](docs/demo-recording.md) says what each is, how full and how distinct the card bios must be, and how to record.
 
 ## Develop
 

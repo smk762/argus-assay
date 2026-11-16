@@ -1,0 +1,93 @@
+{
+ "width": 969,
+ "height": 1352,
+ "slots": {
+  "bio": {
+   "font": "fonts/CrimsonText-Italic.ttf",
+   "size": 38,
+   "ascent": 37,
+   "descent": 14,
+   "effects": {
+    "shadow": 2,
+    "outline": 2,
+    "glow": 7
+   },
+   "lines": [
+    {
+     "text": "Porcelain lips whistle a soft tune, Teapot Oracle pours.",
+     "x": 108,
+     "y": 872
+    },
+    {
+     "text": "Ivory steams in market's maze, a teapot, unhurried.",
+     "x": 108,
+     "y": 928
+    },
+    {
+     "text": "Each cup, a tiny world, stirred with a paint-brushed",
+     "x": 108,
+     "y": 984
+    },
+    {
+     "text": "finger.",
+     "x": 108,
+     "y": 1040
+    }
+   ]
+  },
+  "class": {
+   "font": "fonts/Cinzel.ttf",
+   "size": 30,
+   "ascent": 30,
+   "descent": 12,
+   "effects": {
+    "shadow": 2,
+    "outline": 2,
+    "glow": 5
+   },
+   "lines": [
+    {
+     "text": "Object \u00b7 Ivory",
+     "x": 383,
+     "y": 772
+    }
+   ]
+  },
+  "name": {
+   "font": "fonts/Cinzel.ttf",
+   "size": 39,
+   "ascent": 39,
+   "descent": 15,
+   "effects": {
+    "shadow": 2,
+    "outline": 2,
+    "glow": 7
+   },
+   "lines": [
+    {
+     "text": "Teapot Oracle",
+     "x": 338,
+     "y": 80
+    }
+   ]
+  },
+  "stats": {
+   "font": "fonts/CrimsonText-Bold.ttf",
+   "size": 34,
+   "ascent": 33,
+   "descent": 12,
+   "effects": {
+    "shadow": 2,
+    "outline": 2,
+    "glow": 6
+   },
+   "lines": [
+    {
+     "text": "No. 9",
+     "x": 770,
+     "y": 1221
+    }
+   ]
+  }
+ }
+}

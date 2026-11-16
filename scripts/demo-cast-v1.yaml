@@ -1,0 +1,50 @@
+# The hosted demo's second render template, for the wider cast of the review queue (scripts/record_demo.py
+# marks a copy approved for the recording). demo-portrait-v1.yaml's wording with two more variables, age
+# (adults only: thirties and up) and build, and a fantasy and science-fiction cast: people of every
+# gender, age and build, plus robots, creatures and living objects, each worded the way it should look
+# (one subject; a robot with no human skin; a creature or an object, not a person in costume). Values
+# come only from the lists below (no free-text prompts). Gender and age are weighted in the prompt
+# (ComfyUI's "(word:1.4)"), and each age is described by how it looks, because the checkpoint
+# otherwise draws a young woman whatever the card says. It is a template of its own so that the cards
+# already recorded on demo-portrait v1 keep their renders.
+id: demo-cast
+version: 1
+status: draft             # draft | approved | retired
+model: sdxl/aureanuanceXL_v2/aureanuanceXL_v2.safetensors
+models:
+  - sdxl/aureanuanceXL_v2/aureanuanceXL_v2.safetensors
+loras: []
+sampling:
+  sampler: euler
+  scheduler: normal
+  steps: 25
+  cfg: 6.0
+width: 1152
+height: 896
+prompt: "waist-up portrait of one ({gender}:1.4) ({age}:1.3) {build} {role}, the only subject in the picture, centered and facing the viewer, clothing and colour scheme {colour}, {pose}, background: {background}, painted fantasy and science-fiction illustration, full bleed, detailed"
+negative: "text, letters, words, caption, title, label, logo, watermark, signature, border, frame, card frame, trading card, playing card, game ui, icons, badges, numbers, two people, second person, multiple people, crowd, companion, child, teenager, empty scene, landscape, gore, blood, weapon pointed at viewer, cross, crucifix, halo, religious symbol, nudity"
+variables:
+  role:
+    - blacksmith
+    - astronomer
+    - starship pilot in a flight suit
+    - bard
+    - sky-pirate captain
+    - alchemist
+    - botanist
+    - starship medic
+    - city guard in a plain helmet
+    - clockwork automaton, a brass robot with a round glass face and riveted limbs, no human skin
+    - salvage robot, a boxy six-legged machine with one large camera eye, no human features
+    - owlfolk, a person-sized owl creature with feathers and a beak, wearing a scholar's coat
+    - salamander, a fire lizard creature with glowing scales and four legs, no human features
+    - mushroom sprite, a small walking toadstool creature with a wide cap and a tiny face, not a human
+    - animated porcelain teapot with a friendly painted face, a living object, no human
+    - living spellbook with two round eyes on its leather cover, a magical object, no human
+  gender: [male, female, non-binary]
+  age: [in their thirties with clearly adult features, middle-aged with lines around the eyes, grey-haired and lined in their sixties, elderly with white hair and a wrinkled face, ageless]
+  build: [slender, wiry, stocky, broad-shouldered, heavyset, tall and lanky, compact]
+  colour: [crimson red, amber orange, gold, moss green, teal, azure blue, violet purple, rose pink, ivory white, copper, steel grey, obsidian black]
+  pose: [standing, forging, stargazing, piloting, playing a lute, charting a map, brewing a potion, gardening, keeping watch, pouring tea, repairing a brass mechanism, reading, guarding a hoard, floating above a desk]
+  background: [workshop, observatory, starship bridge, harbour, airship deck, alchemy lab, greenhouse, space station, market, kitchen, library, mountain cave, forest]
+max_attempts: 4

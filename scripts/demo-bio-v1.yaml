@@ -3,9 +3,9 @@
 # scripts/bio_fit.json has the measurement (160 to 210 characters, 4 lines at full size). The
 # model sees only the render template's fixed-list values; the card's name never reaches it (a
 # literal {name} token comes back, and argus-mint puts the name in). The class and colour on the
-# card are the role and colour below. record_demo.py rejects a bio outside the length range, or one
-# sharing 6 or more words in a row with another card's, and argus-mint asks again (every attempt
-# is recorded on the draft).
+# card are the role and colour below. record_demo.py rejects a bio that misses scripts/bio_fit.json
+# (length, fill, opening, pronouns, similes, or 6 words in a row from another card's), and
+# argus-mint asks again (every attempt is recorded on the draft).
 id: demo-bio
 version: 1
 status: draft             # draft | approved | retired
@@ -13,19 +13,23 @@ model: mistral-nemo:12b-instruct-2407-q4_K_M
 temperature: 0.95
 max_tokens: 140
 max_chars: 240
-max_attempts: 8
+max_attempts: 16
 system: >-
   You write flavour text for fantasy trading cards: warm, witty and a little absurd, for readers
-  of all ages. Write exactly three sentences, 30 to 36 words and 170 to 200 characters in all.
-  Refer to the character only as {{name}}, written exactly like that, braces included, once, in
-  the first sentence; after that use pronouns or their calling. Never give them any other name or
-  title, and never name other people or real places. Build the text from the details you are
-  given: their calling, the colour of their heraldry, what they are doing and where. Give them
-  one small, specific, surprising habit or deed that belongs to those details, and end on a light
-  twist. The first sentence may open with the place, the colour or the deed rather than the
-  name. Avoid stock
-  phrases: no lanterns for travellers, no mending engines, no arguing with storms, no prophecies,
-  no "legend has it". Write no numbers, statistics or game rules. No gore, no sex, no cruelty.
+  of all ages. Write exactly three short sentences of 9 to 11 words each: 30 to 32 words in all,
+  about 175 characters and never more than 200. Count the words before you reply.
+  Refer to the character as {{name}}, written exactly like that, braces included, once, in the
+  middle of the first sentence, never as its first word. Begin with a noun or a verb, such as
+  "Brass gears whir", "Humming softly", "Every dawn" or "Spilled ink", never with a preposition.
+  Write whole sentences, with no ellipses. After the name, use the pronouns the gender asks
+  for: she and her for female, he and him for male, they and them for non-binary. Never give the
+  character any other name or title, and never name other people or real places. Build the text
+  from the details given: the calling, the colour of the heraldry, what the character is doing and
+  where. Give one small, specific, surprising habit or deed that belongs to those details, and end
+  on a light twist told in a full sentence. At most one simile, and no stock ones. Use plain,
+  concrete verbs for what the character does. Avoid stock phrases: no
+  lanterns for travellers, no mending engines, no arguing with storms, no prophecies, no "legend has it". Write no numbers, statistics
+  or game rules. No gore, no sex, no cruelty.
   Reply with the flavour text only.
 prompt: >-
   Write the flavour text for {{name}}, a {gender} {role} who wears {colour} heraldry and is most

@@ -1,5 +1,5 @@
 {
-  "kind": "sample",
+  "kind": "recorded",
   "source": "argus-assay scripts/record_demo.py",
-  "note": "argus-mint's real server with stand-in backends: art from the portrait library, hand-written bios, local (non-IPFS) CIDs, a public test-key owner and Base Sepolia's chain id. Nothing was pinned or minted."
+  "note": "Recorded from argus-mint with real backends: renders and text checks by argus-darkroom, bios by Ollama. Pins are local (non-IPFS) CIDs; the voucher is signed with a public test key for Base Sepolia's demo Card contract. Nothing was pinned or minted."
 }

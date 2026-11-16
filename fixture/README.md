@@ -12,7 +12,7 @@ Recorded from argus-mint with real backends: renders and text checks by argus-da
   giant and a dragon.
 - The first four drafts render from scripts/demo-portrait-v1.yaml, the rest (people, robots,
   creatures and living objects) from scripts/demo-cast-v1.yaml; the library card's template is
-  argus-mint's example-portrait v2. All three, the card-green frame and the bio template (scripts/demo-bio-v1.yaml)
+  argus-mint's example-portrait v3, the portrait library's own. All three, the card-green frame and the bio template (scripts/demo-bio-v1.yaml)
   are marked approved for the recording. demo-portrait v2 (v1 with one more negative term) and the
   placeholder example-plain frame await catalogue review; the sample job renders v2.
 - Every bio fills 50 to 80% of the card's bio box; no two share a run of 6 words, an opening or a

@@ -1,10 +1,10 @@
 {
   "items": [
     {
-      "id": "6276a526b0c4d14b",
+      "id": "aeec5287e0611f72",
       "status": "done",
-      "created_at": "2026-11-15T20:28:57.083215Z",
-      "finished_at": "2026-11-15T20:28:58.250333Z",
+      "created_at": "2026-11-16T07:40:46.625574Z",
+      "finished_at": "2026-11-16T07:41:31.828152Z",
       "error": null,
       "request": {
         "template": {
@@ -49,13 +49,13 @@
             {
               "seed": 121,
               "outcome": "safety_rejected",
-              "ref": "b3b34b1bcdff4a5bb781517e891b6982",
+              "ref": "21fcb13efc20491baacc9779b1f28399",
               "detail": "omitted: sfw-exposed"
             },
             {
               "seed": 1152728919,
               "outcome": "ok",
-              "ref": "68cadb2e1d9442c099d0f83677f2fc56",
+              "ref": "11f622d47ba0467ab58b6af76fc6ddf0",
               "detail": "",
               "workflow": {
                 "name": "sdxl",
@@ -63,12 +63,12 @@
               }
             }
           ],
-          "bio": "Silver scales shimmer in sunlight, Sample guards the garden's treasures. A gentle breeze ruffles their iridescent wings. They hum a tune, coaxing blossoms to bloom.",
+          "bio": "Brass gears whir in Sample's scales, mirroring the garden's silver sheen. They tend to the roses, humming softly as if teaching them to sing. Every petal, a tiny, gleaming trophy, they claim without a bite.",
           "bio_attempts": [
             {
               "outcome": "ok",
               "detail": "",
-              "text": "Silver scales shimmer in sunlight, {name} guards the garden's treasures. A gentle breeze ruffles their iridescent wings. They hum a tune, coaxing blossoms to bloom."
+              "text": "Brass gears whir in {name}'s scales, mirroring the garden's silver sheen. They tend to the roses, humming softly as if teaching them to sing. Every petal, a tiny, gleaming trophy, they claim without a bite."
             }
           ],
           "error": null,
@@ -91,7 +91,7 @@
             {
               "seed": 122,
               "outcome": "ok",
-              "ref": "acec145a332c4f7f9ad5bbb805dd6182",
+              "ref": "da8670b073824aae95eea31bc1a69b5c",
               "detail": "",
               "workflow": {
                 "name": "sdxl",
@@ -99,12 +99,12 @@
               }
             }
           ],
-          "bio": "Stone shards crackle, moss rustles. Sample thumbs through tome, grey stone fingers careful. Temples echo with turning pages. Once, they sculpted silence into song.",
+          "bio": "Brass-bound tomes creak open, Sample lost in ancient pages. Steel-grey robes pool around, a quiet storm in the temple's hush. Moss-sprouting fingers trace symbols, leaving trails of earth in the air.",
           "bio_attempts": [
             {
               "outcome": "ok",
               "detail": "",
-              "text": "Stone shards crackle, moss rustles. {name} thumbs through tome, grey stone fingers careful. Temples echo with turning pages. Once, they sculpted silence into song."
+              "text": "Brass-bound tomes creak open, {name} lost in ancient pages. Steel-grey robes pool around, a quiet storm in the temple's hush. Moss-sprouting fingers trace symbols, leaving trails of earth in the air."
             }
           ],
           "error": null,

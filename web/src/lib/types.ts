@@ -22,6 +22,7 @@ export type {
   SampleJobList,
   SampleRequest,
   Template,
+  TemplateCheck,
   TemplateInfo,
   TextEdit,
   FrameLayout,

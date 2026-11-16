@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 
 import { draftImage, frameLayout, ownerEdit, ownerEditChallenge } from "@/lib/api";
+import { staticDemo } from "@/lib/demo";
 import { diffEdit, shortAddress } from "@/lib/status";
 import { normalise, sameStyle, type CardStyle, type Effect, type SlotStyle } from "@/lib/style";
 import type { DraftDetail, FrameInfo, FrameLayout } from "@/lib/types";
@@ -168,7 +169,7 @@ export function CardEditor({ d, frame, onDone, onClose }: { d: DraftDetail; fram
                       setTarget(t);
                       setField(t === "border" ? "tint" : "text");
                     }}
-                    className={`rounded-md px-2.5 py-1 text-small capitalize ${target === t ? "bg-interactive text-white" : "bg-base-700 text-text-secondary hover:bg-base-600"}`}
+                    className={`rounded-md px-2.5 py-1 text-small capitalize ${target === t ? "bg-interactive text-on-accent" : "bg-base-700 text-text-secondary hover:bg-base-600"}`}
                   >
                     {t}
                   </button>
@@ -259,11 +260,14 @@ export function CardEditor({ d, frame, onDone, onClose }: { d: DraftDetail; fram
           )}
 
           <div className="flex flex-wrap items-center gap-2 border-t border-base-600/60 pt-3">
-            <Button tone="primary" disabled={busy || !edit || (!hasWallet() && !mock)} onClick={() => bake(false)}>
-              Sign with wallet and bake
-            </Button>
+            {/* The hosted demo never asks a real wallet to sign: the demo owner stands in for it. */}
+            {staticDemo() ? null : (
+              <Button tone="primary" disabled={busy || !edit || (!hasWallet() && !mock)} onClick={() => bake(false)}>
+                Sign with wallet and bake
+              </Button>
+            )}
             {mock ? (
-              <Button disabled={busy || !edit} onClick={() => bake(true)}>
+              <Button tone={staticDemo() ? "primary" : "neutral"} disabled={busy || !edit} onClick={() => bake(true)}>
                 Bake as demo owner
               </Button>
             ) : null}

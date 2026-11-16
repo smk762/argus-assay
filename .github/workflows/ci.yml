@@ -25,3 +25,32 @@ jobs:
       - run: npm run wire:check
       - run: npm test
       - run: npm run build
+
+  # The static demo (make pages): the tape from fixture/, a pure static export with a hash CSP on
+  # every page, and scripts/check-static.mjs.
+  pages:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - run: npm ci
+        working-directory: web
+      - run: make pages
+
+  # The Dragonhound shared design layer (web/vendor/dh) is vendored from
+  # dragonhound-site/shared and must not be edited here. Fails if a vendored file
+  # changed locally or no longer matches the published v1 manifest; a newer
+  # upstream version is only a warning (re-sync in its own PR).
+  dh-shared:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - run: node web/vendor/dh/sync-shared.mjs --check . --against https://dragonhound.dev/brand/v1/manifest.json --allow-outdated

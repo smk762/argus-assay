@@ -4,14 +4,15 @@
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useState } from "react";
 
-import { Field, INPUT, PageTitle, useLoad } from "@/components/bits";
+import { DocLink, Field, INPUT, PageTitle, useLoad } from "@/components/bits";
 import { CheckpointOptions, LoraPicker } from "@/components/Checkpoints";
 import { LibraryPicker } from "@/components/LibraryPicker";
 import { useMint } from "@/components/MintProvider";
 import { Card, Kv, Notice, SectionTitle, Spinner } from "@/components/ui";
 import { createDraft, getBios, getFrames, getLibrary, getTemplates, libraryImage } from "@/lib/api";
+import { OFF, staticDemo } from "@/lib/demo";
 import { displaySlots } from "@/lib/slots";
-import { allowedModels, checkpointName, draftSources, loraChoices } from "@/lib/status";
+import { allowedModels, checkpointName, draftSources, loraChoices, samplingHint } from "@/lib/status";
 
 type Source = "render" | "library";
 
@@ -73,7 +74,9 @@ function NewDraftForm() {
   const chosenLoras = t ? loraChoices(loras, t, modelValue || t.model) : [];
   const values: Record<string, string> = Object.fromEntries(Object.entries(t?.variables ?? {}).map(([k, list]) => [k, list.includes(vars[k]) ? vars[k] : list[0]]));
   const biosOff = !health?.capabilities.write_bios;
-  const off = !health?.capabilities.create_drafts
+  const off = staticDemo()
+    ? OFF.create
+    : !health?.capabilities.create_drafts
     ? "This server can't create drafts (it is read-only, or has neither darkroom nor a library)."
     : !hasToken
       ? "Set the moderator token (key icon) to create drafts."
@@ -86,7 +89,7 @@ function NewDraftForm() {
   if (!all.data) return <Spinner />;
   return (
     <>
-      <PageTitle>New draft</PageTitle>
+      <PageTitle aside={<DocLink topic="making-a-draft">How a draft is made</DocLink>}>New draft</PageTitle>
       <p className="mb-4 max-w-3xl text-small text-text-secondary">
         Makes a card from approved files into a draft for review. Nothing is pinned or signed until the moderator and the owner have both
         approved the image. Rendering and the bio take about half a minute{sources.library ? "; a library portrait is already rendered" : ""}.
@@ -123,7 +126,9 @@ function NewDraftForm() {
       >
         {sources.library ? (
           <fieldset>
-            <legend className="mb-1 text-small font-medium text-text-secondary">Art</legend>
+            <legend className="mb-1 flex flex-wrap items-baseline gap-x-3 text-small font-medium text-text-secondary">
+              Art <DocLink topic="attempts">How darkroom checks each render</DocLink>
+            </legend>
             <div className="grid gap-2 sm:grid-cols-2">
               {(
                 [
@@ -228,7 +233,7 @@ function NewDraftForm() {
           <Card>
             <SectionTitle className="mb-2">Variables</SectionTitle>
             <div className="grid gap-3 sm:grid-cols-3">
-              <Field label="Checkpoint">
+              <Field label="Checkpoint" hint={samplingHint(t, modelValue || t.model)}>
                 <select className={INPUT} value={modelValue} onChange={(e) => setModel(e.target.value)}>
                   <CheckpointOptions models={models} defaultModel={t.model} />
                 </select>
@@ -269,7 +274,7 @@ function NewDraftForm() {
           ))}
         </Card>
         <div className="flex items-center gap-2">
-          <button type="submit" disabled={!!off || busy || !t} className="rounded-md bg-interactive px-3.5 py-2 text-small font-medium text-white hover:bg-interactive-hover disabled:opacity-50">
+          <button type="submit" disabled={!!off || busy || !t} className="rounded-md bg-interactive px-3.5 py-2 text-small font-medium text-on-accent hover:bg-interactive-hover disabled:opacity-50">
             {source === "library" ? "Create draft" : "Render draft"}
           </button>
           {busy ? (

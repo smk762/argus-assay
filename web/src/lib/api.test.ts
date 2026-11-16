@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import { CapabilityRefused, createDraft, decide, moderatorReview, readError, resetHealthMemo } from "./api";
+import { CapabilityRefused, checkTemplate, createDraft, decide, moderatorReview, readError, resetHealthMemo } from "./api";
 import type { Health } from "./types";
 
 const health = (caps: Partial<Health["capabilities"]>) =>
@@ -37,6 +37,24 @@ describe("writes are gated on /health before they reach the wire", () => {
     expect(url).toMatch(/\/frames\/card-green\/1\/review$/);
     expect((init.headers as Record<string, string>).Authorization).toBe("Bearer tok");
     expect(JSON.parse(init.body as string)).toEqual({ decision: "approve", by: "me" });
+  });
+});
+
+describe("template check", () => {
+  it("isn't asked of a server that can't check", async () => {
+    const fetch = vi.fn();
+    vi.stubGlobal("fetch", fetch);
+    resetHealthMemo(health({ check_templates: false }));
+    await expect(checkTemplate("example-portrait", 3)).rejects.toBeInstanceOf(CapabilityRefused);
+    expect(fetch).not.toHaveBeenCalled();
+  });
+  it("returns argus-mint's problems as reported", async () => {
+    const body = { template: { id: "example-portrait", version: 3 }, ok: false, problems: ["no workflow renders flux/x with 2 LoRAs"] };
+    const fetch = vi.fn(async () => new Response(JSON.stringify(body), { status: 200 }));
+    vi.stubGlobal("fetch", fetch);
+    resetHealthMemo(health({ check_templates: true }));
+    expect(await checkTemplate("example-portrait", 3)).toEqual(body);
+    expect((fetch.mock.calls[0] as unknown as [string])[0]).toMatch(/\/templates\/example-portrait\/3\/check$/);
   });
 });
 

@@ -52,7 +52,7 @@ export function TokenButton() {
               Forget
             </Button>
             <Button onClick={() => setOpen(false)}>Cancel</Button>
-            <button type="submit" className="rounded-md bg-interactive px-3.5 py-2 text-small font-medium text-white hover:bg-interactive-hover">
+            <button type="submit" className="rounded-md bg-interactive px-3.5 py-2 text-small font-medium text-on-accent hover:bg-interactive-hover">
               Save
             </button>
           </div>

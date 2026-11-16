@@ -1,0 +1,5 @@
+{
+  "kind": "recorded",
+  "source": "argus-assay scripts/record_demo.py",
+  "note": "Recorded from argus-mint with real backends: renders and text checks by argus-darkroom, bios by Ollama. Pins are local (non-IPFS) CIDs; the voucher is signed with a public test key for Base Sepolia's demo Card contract. Nothing was pinned or minted."
+}

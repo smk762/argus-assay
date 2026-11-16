@@ -5,10 +5,11 @@ import Link from "next/link";
 import { useState } from "react";
 
 import { INPUT, PageTitle, useLoad } from "@/components/bits";
-import { Modal } from "@/components/Modal";
+import { Lightbox } from "@/components/Lightbox";
 import { useMint } from "@/components/MintProvider";
 import { Notice, Spinner } from "@/components/ui";
 import { getLibrary, libraryImage } from "@/lib/api";
+import { staticDemo } from "@/lib/demo";
 import { byFamily, checkpointName } from "@/lib/status";
 
 /** The library as a comparison: one row per variable combination, one column per checkpoint, same seed across. */
@@ -27,13 +28,22 @@ export default function LibraryPage() {
   const cell = new Map(data.items.map((i) => [`${i.group}|${i.model}`, i]));
   const roles = Array.from(new Set(data.items.map((i) => i.variables.role).filter(Boolean))).sort();
   const shown = groups.filter((g) => !role || data.items.find((i) => i.group === g)?.variables.role === role);
+  // The enlarged view steps through the grid as filtered, row by row.
+  const order = shown.flatMap((g) => models.map((m) => cell.get(`${g}|${m}`)).filter((it) => it !== undefined));
+  const bigIndex = big === null ? null : order.findIndex((it) => it.id === big);
   return (
     <>
       <PageTitle aside={<span className="text-small text-text-muted">{data.items.length} portraits</span>}>Library</PageTitle>
       <p className="mb-4 max-w-3xl text-small text-text-secondary">
         Pre-rendered portraits of {data.template.id} v{data.template.version}: {data.count} combinations on {data.models.length} checkpoints{families.length > 1 ? `, grouped by family (${families.map((f) => f.family || "other").join(", ")})` : ""}. Each row
-        uses the same variables and seed on every checkpoint, so the columns compare like for like. Any of them can become a card without a GPU:
-        pick one under <Link href="/new" className="underline">New draft</Link>, or open one here.
+        uses the same variables and seed on every checkpoint, so the columns compare like for like.{" "}
+        {staticDemo() ? (
+          "Open one to see it larger, and step through the rest with Prev and Next or the arrow keys; with a running argus-mint, any of them can become a card without a GPU."
+        ) : (
+          <>
+            Any of them can become a card without a GPU: pick one under <Link href="/new" className="underline">New draft</Link>, or open one here.
+          </>
+        )}
       </p>
       {roles.length ? (
         <select className={`${INPUT} mb-3 max-w-56`} value={role} onChange={(e) => setRole(e.target.value)} aria-label="Role">
@@ -98,24 +108,26 @@ export default function LibraryPage() {
           </tbody>
         </table>
       </div>
-      <Modal open={big !== null} onClose={() => setBig(null)} label="Portrait" lightDismiss className="max-w-5xl backdrop:bg-black/80">
-        {big ? (
-          <figure className="space-y-2">
-            <img src={libraryImage(big)} alt="The full portrait" className="max-h-[80vh] rounded-lg" />
-            <figcaption className="flex flex-wrap items-center justify-between gap-2 text-small text-white">
-              <span>{checkpointName(data.items.find((i) => i.id === big)?.model ?? "")}</span>
-              <span className="flex gap-3">
-                <Link href={`/new?library=${encodeURIComponent(big)}`} className="underline">
-                  Make a card from this
-                </Link>
-                <button type="button" onClick={() => setBig(null)} className="underline" data-autofocus>
-                  Close
-                </button>
-              </span>
-            </figcaption>
-          </figure>
-        ) : null}
-      </Modal>
+      <Lightbox
+        label="Portrait"
+        index={bigIndex !== null && bigIndex >= 0 ? bigIndex : null}
+        onIndex={(n) => setBig(n === null ? null : order[n].id)}
+        items={order.map((it) => ({
+          key: it.id,
+          src: libraryImage(it.id),
+          alt: `The full portrait: ${Object.values(it.variables).join(", ")}`,
+          caption: (
+            <>
+              <b>{checkpointName(it.model)}</b> · {Object.values(it.variables).join(" · ")} · seed {it.seed}
+            </>
+          ),
+          actions: staticDemo() ? null : (
+            <Link href={`/new?library=${encodeURIComponent(it.id)}`} className="underline">
+              Make a card from this
+            </Link>
+          ),
+        }))}
+      />
     </>
   );
 }

@@ -1,0 +1,35 @@
+# The hosted demo's render template (scripts/record_demo.py marks a copy approved for the recording).
+# argus-mint's templates/example-portrait-v2.yaml with tighter wording, so a card's art matches its
+# class and colour: one figure, the colour dominant, each role described the way it should look
+# (a cyborg with steel limbs rather than a person beside a robot, a giant and a dragon as creatures,
+# an invented priestly order with no real-world religious symbols). Values still come only from
+# the lists below (no free-text prompts). The portrait library stays on example-portrait v2.
+id: demo-portrait
+version: 1
+status: draft             # draft | approved | retired
+model: sdxl/aureanuanceXL_v2/aureanuanceXL_v2.safetensors
+models:
+  - sdxl/aureanuanceXL_v2/aureanuanceXL_v2.safetensors
+loras: []
+sampling:
+  sampler: euler
+  scheduler: normal
+  steps: 25
+  cfg: 6.0
+width: 1152
+height: 896
+prompt: "waist-up portrait of one {gender} {role}, alone in the picture, centered and facing the viewer, clothing and colour scheme {colour}, {pose}, background: {background}, painted fantasy illustration, full bleed, detailed"
+negative: "text, letters, words, caption, title, label, logo, watermark, signature, border, frame, card frame, trading card, playing card, game ui, icons, badges, numbers, two people, second person, multiple people, crowd, companion, robot beside, empty scene, landscape, gore, cross, crucifix, mitre, rosary, halo, church, religious symbol, nudity"
+variables:
+  role:
+    - wizard in long flowing robes
+    - priest of an invented order of lantern-bearers, holding a glowing brass lantern
+    - cyborg whose arms and shoulders are chrome steel plating with visible mechanical joints
+    - stone giant, a huge troll-like creature whose skin is cracked grey rock, boulder shoulders, moss growing on its stony hide, not a human
+    - dragon, a scaled non-human reptilian beast with horns and folded wings, no human features
+    - knight in full plate armour
+  gender: [male, female, non-binary]
+  colour: [emerald green, azure blue, gold, silver, steel grey, obsidian black]
+  pose: [standing, casting a spell, praying, repairing a brass mechanism, reading, weaving, gardening, guarding a hoard]
+  background: [library, temple, workshop, garden, mountain cave, academy]
+max_attempts: 4

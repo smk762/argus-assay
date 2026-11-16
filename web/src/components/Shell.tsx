@@ -4,9 +4,13 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import type { ReactNode } from "react";
 
+import { getDemoProvenance } from "@/lib/api";
+import { MINT_PYPI_URL, MINT_REPO_URL, REPO_URL, staticDemo } from "@/lib/demo";
+import { pagePath } from "@/lib/mintDocs";
 import { wireCompatible } from "@/lib/status";
 import { WIRE_MAJOR } from "@/lib/types";
 
+import { useLoad } from "./bits";
 import { useMint } from "./MintProvider";
 import { ThemeToggle } from "./ThemeToggle";
 import { TokenButton } from "./TokenDialog";
@@ -18,6 +22,9 @@ const NAV = [
   { href: "/library", label: "Library", match: (p: string) => p.startsWith("/library") },
   { href: "/catalogue", label: "Catalogue", match: (p: string) => p.startsWith("/catalogue") },
   { href: "/samples", label: "Samples", match: (p: string) => p.startsWith("/samples") },
+  // A full page load, not a client navigation: the docs page sets its article with innerHTML, which the
+  // static demo's Trusted Types policy (scripts/csp.mjs) refuses on a client render.
+  { href: "/docs", label: "Docs", match: (p: string) => p.startsWith("/docs"), reload: true },
 ];
 
 function HealthDot() {
@@ -39,6 +46,32 @@ function HealthDot() {
   );
 }
 
+/** The static demo's stand-in for the health dot: what the page is showing, and from what. */
+function DemoBadge() {
+  const { data, error } = useLoad(() => getDemoProvenance());
+  if (error) {
+    return (
+      <span role="status" className="dh-badge dh-badge--sample">
+        Demo data didn&apos;t load
+      </span>
+    );
+  }
+  if (!data) return null;
+  const sample = data.kind !== "recorded";
+  const label = sample
+    ? "Sample data: argus-mint's recorded API fixture, with stand-in renders, local CIDs and a throwaway wallet. Nothing here was pinned or minted."
+    : `Recorded from argus-mint ${data.mint_version ?? ""} on ${data.recorded_at.slice(0, 10)}.`;
+  return (
+    <Tip label={label}>
+      <span role="status" aria-label={label} className={sample ? "dh-badge dh-badge--sample" : "dh-badge"}>
+        {sample ? "Sample data" : "Recorded"}
+      </span>
+    </Tip>
+  );
+}
+
+const FOOT_LINK = "underline decoration-base-600 underline-offset-2 hover:text-text-secondary";
+
 export function Shell({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const { health } = useMint();
@@ -58,21 +91,22 @@ export function Shell({ children }: { children: ReactNode }) {
         <nav aria-label="Pages" className="flex flex-wrap items-center gap-1">
           {NAV.map((item) => {
             const active = item.match(pathname);
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                aria-current={active ? "page" : undefined}
-                className={`rounded-md px-2.5 py-1.5 text-small ${active ? "bg-base-700 text-text-primary" : "text-text-secondary hover:bg-base-700 hover:text-text-primary"}`}
-              >
+            const className = `rounded-md px-2.5 py-1.5 text-small ${active ? "bg-base-700 text-text-primary" : "text-text-secondary hover:bg-base-700 hover:text-text-primary"}`;
+            return "reload" in item ? (
+              <a key={item.href} href={pagePath("")} aria-current={active ? "page" : undefined} className={className}>
+                {item.label}
+              </a>
+            ) : (
+              <Link key={item.href} href={item.href} aria-current={active ? "page" : undefined} className={className}>
                 {item.label}
               </Link>
             );
           })}
         </nav>
         <div className="ml-auto flex items-center gap-1">
-          <HealthDot />
-          <TokenButton />
+          {staticDemo() ? <DemoBadge /> : <HealthDot />}
+          {/* The demo checks no token: the moderator's controls are on without one. */}
+          {staticDemo() ? null : <TokenButton />}
           <ThemeToggle />
         </div>
       </header>
@@ -85,6 +119,24 @@ export function Shell({ children }: { children: ReactNode }) {
       <footer className="border-t border-base-600/60 px-4 py-3 text-caption text-text-muted sm:px-6">
         Assay shows what argus-mint decided and recorded; it decides nothing itself. Nothing is pinned or signed until the moderator and the owner
         have both approved the exact image.
+        {staticDemo() ? (
+          <p className="mt-1">
+            This demo replays argus-mint&apos;s API fixture in your browser: reviews, edits and catalogue decisions stay in this tab until you reload, and
+            &ldquo;publishing&rdquo; shows the fixture&apos;s recorded result. Source:{" "}
+            <a href={REPO_URL} className={FOOT_LINK}>
+              argus-assay
+            </a>
+            ,{" "}
+            <a href={MINT_REPO_URL} className={FOOT_LINK}>
+              argus-mint
+            </a>{" "}
+            (
+            <a href={MINT_PYPI_URL} className={FOOT_LINK}>
+              PyPI
+            </a>
+            ).
+          </p>
+        ) : null}
       </footer>
     </div>
   );

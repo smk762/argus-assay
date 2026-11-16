@@ -1,14 +1,287 @@
 [
   {
-    "hash": "0x5c36dcb87248112c3c6a1c876cd76718f72063a155cc762147d871da2b8e08e7",
+    "hash": "0x781f2f17e65402cef5c46a2b7767947951a8eced410d01aa104927bd7283d8f1",
+    "file": "cast.yaml",
+    "combinations": 3669120,
+    "template": {
+      "id": "demo-cast",
+      "version": 1,
+      "status": "approved",
+      "approved_by": "maintainer",
+      "approved_at": "2026-11-15",
+      "model": "sdxl/aureanuanceXL_v2/aureanuanceXL_v2.safetensors",
+      "models": [
+        "sdxl/aureanuanceXL_v2/aureanuanceXL_v2.safetensors"
+      ],
+      "loras": [],
+      "lora_options": [],
+      "max_loras": 1,
+      "sampling": {
+        "sampler": "euler",
+        "scheduler": "normal",
+        "steps": 25,
+        "cfg": 6.0,
+        "clip_skip": 1,
+        "guidance": null
+      },
+      "sampling_by_family": {},
+      "sampling_by_model": {},
+      "width": 1152,
+      "height": 896,
+      "prompt": "waist-up portrait of one ({gender}:1.4) ({age}:1.3) {build} {role}, the only subject in the picture, centered and facing the viewer, clothing and colour scheme {colour}, {pose}, background: {background}, painted fantasy and science-fiction illustration, full bleed, detailed",
+      "negative": "text, letters, words, caption, title, label, logo, watermark, signature, border, frame, card frame, trading card, playing card, game ui, icons, badges, numbers, two people, second person, multiple people, crowd, companion, child, teenager, empty scene, landscape, gore, blood, weapon pointed at viewer, cross, crucifix, halo, religious symbol, nudity",
+      "negative_by_family": {},
+      "variables": {
+        "role": [
+          "blacksmith",
+          "astronomer",
+          "starship pilot in a flight suit",
+          "bard",
+          "sky-pirate captain",
+          "alchemist",
+          "botanist",
+          "starship medic",
+          "city guard in a plain helmet",
+          "clockwork automaton, a brass robot with a round glass face and riveted limbs, no human skin",
+          "salvage robot, a boxy six-legged machine with one large camera eye, no human features",
+          "owlfolk, a person-sized owl creature with feathers and a beak, wearing a scholar's coat",
+          "salamander, a fire lizard creature with glowing scales and four legs, no human features",
+          "mushroom sprite, a small walking toadstool creature with a wide cap and a tiny face, not a human",
+          "animated porcelain teapot with a friendly painted face, a living object, no human",
+          "living spellbook with two round eyes on its leather cover, a magical object, no human"
+        ],
+        "gender": [
+          "male",
+          "female",
+          "non-binary"
+        ],
+        "age": [
+          "in their thirties with clearly adult features",
+          "middle-aged with lines around the eyes",
+          "grey-haired and lined in their sixties",
+          "elderly with white hair and a wrinkled face",
+          "ageless"
+        ],
+        "build": [
+          "slender",
+          "wiry",
+          "stocky",
+          "broad-shouldered",
+          "heavyset",
+          "tall and lanky",
+          "compact"
+        ],
+        "colour": [
+          "crimson red",
+          "amber orange",
+          "gold",
+          "moss green",
+          "teal",
+          "azure blue",
+          "violet purple",
+          "rose pink",
+          "ivory white",
+          "copper",
+          "steel grey",
+          "obsidian black"
+        ],
+        "pose": [
+          "standing",
+          "forging",
+          "stargazing",
+          "piloting",
+          "playing a lute",
+          "charting a map",
+          "brewing a potion",
+          "gardening",
+          "keeping watch",
+          "pouring tea",
+          "repairing a brass mechanism",
+          "reading",
+          "guarding a hoard",
+          "floating above a desk"
+        ],
+        "background": [
+          "workshop",
+          "observatory",
+          "starship bridge",
+          "harbour",
+          "airship deck",
+          "alchemy lab",
+          "greenhouse",
+          "space station",
+          "market",
+          "kitchen",
+          "library",
+          "mountain cave",
+          "forest"
+        ]
+      },
+      "max_attempts": 4
+    }
+  },
+  {
+    "hash": "0xd659b69292f4422d56ee789cbff7d585bd39f6a4527ff2c2ac5b5d0cd245573c",
+    "file": "demo.yaml",
+    "combinations": 5184,
+    "template": {
+      "id": "demo-portrait",
+      "version": 1,
+      "status": "approved",
+      "approved_by": "maintainer",
+      "approved_at": "2026-11-15",
+      "model": "sdxl/aureanuanceXL_v2/aureanuanceXL_v2.safetensors",
+      "models": [
+        "sdxl/aureanuanceXL_v2/aureanuanceXL_v2.safetensors"
+      ],
+      "loras": [],
+      "lora_options": [],
+      "max_loras": 1,
+      "sampling": {
+        "sampler": "euler",
+        "scheduler": "normal",
+        "steps": 25,
+        "cfg": 6.0,
+        "clip_skip": 1,
+        "guidance": null
+      },
+      "sampling_by_family": {},
+      "sampling_by_model": {},
+      "width": 1152,
+      "height": 896,
+      "prompt": "waist-up portrait of one {gender} {role}, alone in the picture, centered and facing the viewer, clothing and colour scheme {colour}, {pose}, background: {background}, painted fantasy illustration, full bleed, detailed",
+      "negative": "text, letters, words, caption, title, label, logo, watermark, signature, border, frame, card frame, trading card, playing card, game ui, icons, badges, numbers, two people, second person, multiple people, crowd, companion, robot beside, empty scene, landscape, gore, cross, crucifix, mitre, rosary, halo, church, religious symbol, nudity",
+      "negative_by_family": {},
+      "variables": {
+        "role": [
+          "wizard in long flowing robes",
+          "priest of an invented order of lantern-bearers, holding a glowing brass lantern",
+          "cyborg whose arms and shoulders are chrome steel plating with visible mechanical joints",
+          "stone giant, a huge troll-like creature whose skin is cracked grey rock, boulder shoulders, moss growing on its stony hide, not a human",
+          "dragon, a scaled non-human reptilian beast with horns and folded wings, no human features",
+          "knight in full plate armour"
+        ],
+        "gender": [
+          "male",
+          "female",
+          "non-binary"
+        ],
+        "colour": [
+          "emerald green",
+          "azure blue",
+          "gold",
+          "silver",
+          "steel grey",
+          "obsidian black"
+        ],
+        "pose": [
+          "standing",
+          "casting a spell",
+          "praying",
+          "repairing a brass mechanism",
+          "reading",
+          "weaving",
+          "gardening",
+          "guarding a hoard"
+        ],
+        "background": [
+          "library",
+          "temple",
+          "workshop",
+          "garden",
+          "mountain cave",
+          "academy"
+        ]
+      },
+      "max_attempts": 4
+    }
+  },
+  {
+    "hash": "0xf50d3197c1ea6ac2921b2e30c5c8f7bd39a3d0e596197034d1a911376504b0ac",
+    "file": "demo-next.yaml",
+    "combinations": 5184,
+    "template": {
+      "id": "demo-portrait",
+      "version": 2,
+      "status": "draft",
+      "approved_by": null,
+      "approved_at": null,
+      "model": "sdxl/aureanuanceXL_v2/aureanuanceXL_v2.safetensors",
+      "models": [
+        "sdxl/aureanuanceXL_v2/aureanuanceXL_v2.safetensors"
+      ],
+      "loras": [],
+      "lora_options": [],
+      "max_loras": 1,
+      "sampling": {
+        "sampler": "euler",
+        "scheduler": "normal",
+        "steps": 25,
+        "cfg": 6.0,
+        "clip_skip": 1,
+        "guidance": null
+      },
+      "sampling_by_family": {},
+      "sampling_by_model": {},
+      "width": 1152,
+      "height": 896,
+      "prompt": "waist-up portrait of one {gender} {role}, alone in the picture, centered and facing the viewer, clothing and colour scheme {colour}, {pose}, background: {background}, painted fantasy illustration, full bleed, detailed",
+      "negative": "text, letters, words, caption, title, label, logo, watermark, signature, border, frame, card frame, trading card, playing card, game ui, icons, badges, numbers, two people, second person, multiple people, crowd, companion, robot beside, empty scene, landscape, gore, cross, crucifix, mitre, rosary, halo, church, religious symbol, nudity, blurry",
+      "negative_by_family": {},
+      "variables": {
+        "role": [
+          "wizard in long flowing robes",
+          "priest of an invented order of lantern-bearers, holding a glowing brass lantern",
+          "cyborg whose arms and shoulders are chrome steel plating with visible mechanical joints",
+          "stone giant, a huge troll-like creature whose skin is cracked grey rock, boulder shoulders, moss growing on its stony hide, not a human",
+          "dragon, a scaled non-human reptilian beast with horns and folded wings, no human features",
+          "knight in full plate armour"
+        ],
+        "gender": [
+          "male",
+          "female",
+          "non-binary"
+        ],
+        "colour": [
+          "emerald green",
+          "azure blue",
+          "gold",
+          "silver",
+          "steel grey",
+          "obsidian black"
+        ],
+        "pose": [
+          "standing",
+          "casting a spell",
+          "praying",
+          "repairing a brass mechanism",
+          "reading",
+          "weaving",
+          "gardening",
+          "guarding a hoard"
+        ],
+        "background": [
+          "library",
+          "temple",
+          "workshop",
+          "garden",
+          "mountain cave",
+          "academy"
+        ]
+      },
+      "max_attempts": 4
+    }
+  },
+  {
+    "hash": "0x686665bb00253947c55c42f6d6a35aa15276073d4c5102822b79ff720587c7ec",
     "file": "t.yaml",
     "combinations": 156816,
     "template": {
       "id": "example-portrait",
-      "version": 2,
+      "version": 3,
       "status": "approved",
-      "approved_by": "fixture",
-      "approved_at": "2026-11-09",
+      "approved_by": "maintainer",
+      "approved_at": "2026-11-15",
       "model": "sdxl/aureanuanceXL_v2/aureanuanceXL_v2.safetensors",
       "models": [
         "sdxl/aureanuanceXL_v2/aureanuanceXL_v2.safetensors",
@@ -18,7 +291,10 @@
         "sdxl/eventHorizon_xlV60/eventHorizon_xlV60.safetensors",
         "sdxl/juggernautXL_ragnarokBy/juggernautXL_ragnarokBy.safetensors",
         "sdxl/realityBoundxl_soulgripV10/realityBoundxl_soulgripV10.safetensors",
-        "flux/flux1-dev-fp8.safetensors"
+        "flux/flux1-dev-fp8.safetensors",
+        "flux/flux1-schnell-fp8-e4m3fn.safetensors",
+        "flux-klein/flux-2-klein-9b-fp8.safetensors",
+        "sd35/sd3.5_large_fp8_scaled.safetensors"
       ],
       "loras": [],
       "lora_options": [
@@ -83,135 +359,29 @@
           "cfg": 1.0,
           "clip_skip": 1,
           "guidance": 3.5
-        }
-      },
-      "width": 1152,
-      "height": 896,
-      "prompt": "waist-up portrait of a single {gender} {role}, centered and facing the viewer, wearing {colour} heraldry, {pose}, background: {background}, painted fantasy illustration, full bleed, detailed face",
-      "negative": "text, letters, words, caption, title, label, logo, watermark, signature, border, frame, card frame, trading card, playing card, game ui, icons, badges, numbers, multiple people, crowd, empty scene, landscape, gore",
-      "negative_by_family": {
-        "flux": ""
-      },
-      "variables": {
-        "role": [
-          "knight",
-          "ranger",
-          "sailor",
-          "elf",
-          "dark elf",
-          "wraith",
-          "centaur",
-          "cyborg",
-          "dwarf",
-          "human",
-          "orc",
-          "goblin",
-          "giant",
-          "dragon",
-          "wizard",
-          "priest"
-        ],
-        "gender": [
-          "male",
-          "female",
-          "non-binary"
-        ],
-        "colour": [
-          "crimson",
-          "azure",
-          "emerald",
-          "gold",
-          "silver",
-          "bronze",
-          "copper",
-          "iron",
-          "steel",
-          "obsidian",
-          "none"
-        ],
-        "pose": [
-          "standing",
-          "charging",
-          "on guard",
-          "kneeling",
-          "sitting",
-          "sleeping",
-          "dead",
-          "fighting",
-          "casting a spell",
-          "praying",
-          "drinking",
-          "eating",
-          "reading",
-          "writing",
-          "sewing",
-          "knitting",
-          "weaving",
-          "cooking",
-          "cleaning",
-          "gardening",
-          "fishing",
-          "hunting",
-          "gathering",
-          "building",
-          "repairing",
-          "chopping wood",
-          "mining"
-        ],
-        "background": [
-          "cave",
-          "castle",
-          "dungeon",
-          "forest",
-          "garden",
-          "library",
-          "laboratory",
-          "academy",
-          "temple",
-          "workshop",
-          "none"
-        ]
-      },
-      "max_attempts": 4
-    }
-  },
-  {
-    "hash": "0xeaecfccaa1aa9632720faaf393f1e7d2d9fbc6d2b589beaad2324f510595c5bd",
-    "file": "t3.yaml",
-    "combinations": 156816,
-    "template": {
-      "id": "example-portrait",
-      "version": 3,
-      "status": "draft",
-      "approved_by": null,
-      "approved_at": null,
-      "model": "sdxl/aureanuanceXL_v2/aureanuanceXL_v2.safetensors",
-      "models": [
-        "sdxl/aureanuanceXL_v2/aureanuanceXL_v2.safetensors",
-        "sdxl/bigLove_xl2/bigLove_xl2.safetensors",
-        "sdxl/cyberrealisticXL_desireV20/cyberrealisticXL_desireV20.safetensors",
-        "sdxl/epicrealismXL_pureFix/epicrealismXL_pureFix.safetensors",
-        "sdxl/eventHorizon_xlV60/eventHorizon_xlV60.safetensors",
-        "sdxl/juggernautXL_ragnarokBy/juggernautXL_ragnarokBy.safetensors",
-        "sdxl/realityBoundxl_soulgripV10/realityBoundxl_soulgripV10.safetensors",
-        "flux/flux1-dev-fp8.safetensors"
-      ],
-      "loras": [],
-      "lora_options": [],
-      "max_loras": 1,
-      "sampling": {
-        "sampler": "euler",
-        "scheduler": "normal",
-        "steps": 25,
-        "cfg": 6.0,
-        "clip_skip": 1,
-        "guidance": null
-      },
-      "sampling_by_family": {
-        "flux": {
+        },
+        "flux-klein": {
           "sampler": "euler",
           "scheduler": "simple",
-          "steps": 20,
+          "steps": 4,
+          "cfg": 1.0,
+          "clip_skip": 1,
+          "guidance": null
+        },
+        "sd35": {
+          "sampler": "euler",
+          "scheduler": "sgm_uniform",
+          "steps": 28,
+          "cfg": 4.0,
+          "clip_skip": 1,
+          "guidance": null
+        }
+      },
+      "sampling_by_model": {
+        "flux/flux1-schnell-fp8-e4m3fn.safetensors": {
+          "sampler": "euler",
+          "scheduler": "simple",
+          "steps": 4,
           "cfg": 1.0,
           "clip_skip": 1,
           "guidance": 3.5
@@ -219,10 +389,11 @@
       },
       "width": 1152,
       "height": 896,
-      "prompt": "waist-up portrait of a single {gender} {role}, centered and facing the viewer, wearing {colour} heraldry, {pose}, background: {background}, painted fantasy illustration, full bleed, detailed face",
-      "negative": "text, letters, words, caption, title, label, logo, watermark, signature, border, frame, card frame, trading card, playing card, game ui, icons, badges, numbers, multiple people, crowd, empty scene, landscape, gore, blurry",
+      "prompt": "waist-up portrait of a single {gender} {role}, centered and facing the viewer, fully clothed in a tunic bearing {colour} heraldry, {pose}, background: {background}, painted fantasy illustration, full bleed, detailed face, no lettering or writing anywhere in the image",
+      "negative": "nude, nudity, bare chest, topless, cleavage, text, letters, words, handwriting, script, caption, title, label, logo, watermark, signature, border, frame, card frame, trading card, playing card, game ui, icons, badges, numbers, multiple people, crowd, empty scene, landscape, gore",
       "negative_by_family": {
-        "flux": ""
+        "flux": "",
+        "flux-klein": ""
       },
       "variables": {
         "role": [
@@ -232,13 +403,13 @@
           "elf",
           "dark elf",
           "wraith",
-          "centaur",
-          "cyborg",
+          "centaur with a horse's body below the waist",
+          "cyborg with metal limbs and glowing implants",
           "dwarf",
           "human",
           "orc",
           "goblin",
-          "giant",
+          "huge broad-shouldered giant dwarfing the room",
           "dragon",
           "wizard",
           "priest"
@@ -259,7 +430,7 @@
           "iron",
           "steel",
           "obsidian",
-          "none"
+          "plain"
         ],
         "pose": [
           "standing",

@@ -1,0 +1,93 @@
+{
+ "width": 969,
+ "height": 1352,
+ "slots": {
+  "bio": {
+   "font": "fonts/CrimsonText-Italic.ttf",
+   "size": 38,
+   "ascent": 37,
+   "descent": 14,
+   "effects": {
+    "shadow": 2,
+    "outline": 2,
+    "glow": 7
+   },
+   "lines": [
+    {
+     "text": "Ember eyes glow in crimson cave, Ember Salamander",
+     "x": 108,
+     "y": 872
+    },
+    {
+     "text": "dozes, scales smoldering. Guards treasure, paws",
+     "x": 108,
+     "y": 928
+    },
+    {
+     "text": "kneading gold coins. Twitches when sunlight strikes",
+     "x": 108,
+     "y": 984
+    },
+    {
+     "text": "ruby facets.",
+     "x": 108,
+     "y": 1040
+    }
+   ]
+  },
+  "class": {
+   "font": "fonts/Cinzel.ttf",
+   "size": 30,
+   "ascent": 30,
+   "descent": 12,
+   "effects": {
+    "shadow": 2,
+    "outline": 2,
+    "glow": 5
+   },
+   "lines": [
+    {
+     "text": "Creature \u00b7 Crimson",
+     "x": 336,
+     "y": 772
+    }
+   ]
+  },
+  "name": {
+   "font": "fonts/Cinzel.ttf",
+   "size": 39,
+   "ascent": 39,
+   "descent": 15,
+   "effects": {
+    "shadow": 2,
+    "outline": 2,
+    "glow": 7
+   },
+   "lines": [
+    {
+     "text": "Ember Salamander",
+     "x": 295,
+     "y": 80
+    }
+   ]
+  },
+  "stats": {
+   "font": "fonts/CrimsonText-Bold.ttf",
+   "size": 34,
+   "ascent": 33,
+   "descent": 12,
+   "effects": {
+    "shadow": 2,
+    "outline": 2,
+    "glow": 6
+   },
+   "lines": [
+    {
+     "text": "No. 15",
+     "x": 764,
+     "y": 1221
+    }
+   ]
+  }
+ }
+}

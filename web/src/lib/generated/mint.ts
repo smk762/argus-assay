@@ -1,4 +1,4 @@
-// Generated from smk762/argus-mint@v0.2.0 schema/mint-wire.schema.json.
+// Generated from smk762/argus-mint@aba0d2fce88d9aef3dd0f0ba0407f944ffdd78bb schema/mint-wire.schema.json.
 // Do not edit: change schema/pins.json and run `npm run wire:pull`.
 
 export interface MintWire {
@@ -50,6 +50,7 @@ export interface MintWire {
   SlotLayout?: SlotLayout;
   SlotStyle?: SlotStyle;
   Template?: Template;
+  TemplateCheck?: TemplateCheck;
   TemplateInfo?: TemplateInfo;
   TextEdit?: TextEdit;
   TextSlot?: TextSlot;
@@ -120,6 +121,7 @@ export interface BioRef {
  */
 export interface Capabilities {
   auto_moderate?: boolean;
+  check_templates?: boolean;
   create_drafts: boolean;
   edit_text?: boolean;
   library?: boolean;
@@ -150,6 +152,9 @@ export interface CardDraft {
   frame?: FrameRef | null;
   image_sha256: string;
   library?: string | null;
+  made_with?: {
+    [k: string]: string;
+  };
   name: string;
   renderer: string;
   request: RenderRequest;
@@ -630,12 +635,27 @@ export interface Template {
   sampling_by_family?: {
     [k: string]: Sampling;
   };
+  sampling_by_model?: {
+    [k: string]: Sampling;
+  };
   status: "draft" | "approved" | "retired";
   variables: {
     [k: string]: string[];
   };
   version: number;
   width: number;
+}
+/**
+ * GET /templates/{id}/{version}/check: what would make darkroom refuse to render the template.
+ *
+ * Checked against darkroom's model list: checkpoints, LoRAs, sampler and scheduler exist, and a
+ * workflow renders each checkpoint with every LoRA count the template allows, taking what the
+ * template sends. Approving a template is refused while ``problems`` isn't empty.
+ */
+export interface TemplateCheck {
+  ok: boolean;
+  problems: string[];
+  template: Ref;
 }
 export interface TemplateInfo {
   combinations: number;

@@ -1,4 +1,7 @@
 import { mintUrl } from "./config";
+import { staticDemo, tapeBase } from "./demo";
+import { DemoMint, type DemoResponse } from "./demoMint";
+import { parseTape } from "./tape";
 import { getToken } from "./token";
 import type {
   CatalogueEntry,
@@ -15,7 +18,7 @@ import type {
   SampleJob,
   SampleJobList,
   SampleRequest,
-  TemplateInfo,
+  TemplateCheck, TemplateInfo,
   TextEdit,
   FrameLayout,
   LibraryListing,
@@ -37,14 +40,17 @@ export class CapabilityRefused extends ApiError {
   }
 }
 
+/** argus-mint's error `detail` as one line: a string, `{error}`, or the JSON of anything else. */
+function detailMessage(detail: unknown): string | null {
+  if (typeof detail === "string") return detail;
+  if (detail && typeof detail === "object" && "error" in detail) return String((detail as { error: unknown }).error);
+  return detail != null ? JSON.stringify(detail) : null;
+}
+
 export async function readError(response: Response): Promise<string> {
   try {
-    const body = (await response.json()) as { detail?: unknown };
-    if (typeof body.detail === "string") return body.detail;
-    if (body.detail && typeof body.detail === "object" && "error" in body.detail) {
-      return String((body.detail as { error: unknown }).error);
-    }
-    if (body.detail != null) return JSON.stringify(body.detail);
+    const message = detailMessage(((await response.json()) as { detail?: unknown }).detail);
+    if (message) return message;
   } catch {
     // A non-JSON error body still needs a readable message.
   }
@@ -67,13 +73,40 @@ function headers(json: boolean, auth: boolean): HeadersInit {
   return out;
 }
 
+// The static demo (lib/demo.ts): argus-mint answers from the tape, in this tab (lib/demoMint.ts).
+let demoLoading: Promise<DemoMint> | null = null;
+
+function demoMint(): Promise<DemoMint> {
+  if (!demoLoading) {
+    demoLoading = (async () => {
+      const response = await fetch(`${tapeBase()}/tape.json`);
+      if (!response.ok) throw new ApiError(`Could not read the data tape (HTTP ${response.status}).`, response.status);
+      return new DemoMint(parseTape(await response.json()));
+    })();
+    demoLoading.catch(() => {
+      demoLoading = null;
+    });
+  }
+  return demoLoading;
+}
+
+/** The static demo's tape: what it is and when it was recorded. */
+export const getDemoProvenance = async () => (await demoMint()).provenance();
+
+function demoAnswer<T>({ status, body }: DemoResponse): T {
+  if (status >= 300) throw new ApiError(detailMessage((body as { detail?: unknown } | null)?.detail) ?? `HTTP ${status}`, status);
+  return body as T;
+}
+
 async function getJson<T>(path: string): Promise<T> {
+  if (staticDemo()) return demoAnswer<T>((await demoMint()).get(path));
   const response = await fetch(`${mintUrl()}${path}`);
   if (!response.ok) throw new ApiError(await readError(response), response.status);
   return (await response.json()) as T;
 }
 
 async function post<T>(path: string, body: unknown, auth: boolean): Promise<T> {
+  if (staticDemo()) return demoAnswer<T>((await demoMint()).post(path, structuredClone(body) as Record<string, unknown>));
   const response = await fetch(`${mintUrl()}${path}`, {
     method: "POST",
     headers: headers(true, auth),
@@ -89,18 +122,34 @@ export async function getHealth(): Promise<Health> {
 }
 
 export const imageUrl = (path: string): string => `${mintUrl()}${path}`;
+/** A file beside the static demo's tape.json, under the fixture's own paths. */
+const tapeFile = (path: string): string => `${tapeBase()}/${path}`;
 /** `version` (the image's sha256) changes the URL when an edit redraws the card, so no stale copy is shown. */
 export const draftImage = (id: string, which: "image" | "art", version = ""): string =>
-  imageUrl(`/drafts/${encodeURIComponent(id)}/${which}${version ? `?v=${version.slice(0, 16)}` : ""}`);
+  staticDemo()
+    ? tapeFile(`drafts/${encodeURIComponent(id)}/${which}.png`)
+    : imageUrl(`/drafts/${encodeURIComponent(id)}/${which}${version ? `?v=${version.slice(0, 16)}` : ""}`);
 export const sampleImage = (id: string, n: number, which: "art" | "framed"): string =>
-  imageUrl(`/samples/${encodeURIComponent(id)}/${n}/${which}`);
+  staticDemo() ? tapeFile(`samples/${encodeURIComponent(id)}/${n}-${which}.png`) : imageUrl(`/samples/${encodeURIComponent(id)}/${n}/${which}`);
 export const frameOverlay = (id: string, version: number): string =>
-  imageUrl(`/frames/${encodeURIComponent(id)}/${version}/overlay`);
+  staticDemo() ? tapeFile(`frames/${encodeURIComponent(id)}/${version}/overlay.png`) : imageUrl(`/frames/${encodeURIComponent(id)}/${version}/overlay`);
 
 export const getTemplates = (): Promise<TemplateInfo[]> => getJson("/templates");
 export const getLibrary = (): Promise<LibraryListing> => getJson("/library");
+
+/**
+ * What would make darkroom refuse a template, as argus-mint finds it against darkroom's model list.
+ * Only asked where `/health` says the server can check (a darkroom is configured); argus-mint
+ * refuses to approve a template while `problems` isn't empty.
+ */
+export async function checkTemplate(id: string, version: number): Promise<TemplateCheck> {
+  await requireCapability("check_templates");
+  return getJson(`/templates/${encodeURIComponent(id)}/${version}/check`);
+}
 /** A library entry's image: the PNG, or with `thumb` a JPEG preview that wide. */
 export const libraryImage = (id: string, thumb = 0): string =>
+  // The tape holds one thumbnail per entry, which stands in for every size (as the mock's fixture does).
+  staticDemo() ? tapeFile(`library/${encodeURIComponent(id)}.jpg`) :
   imageUrl(`/library/${encodeURIComponent(id)}/image${thumb ? `?thumb=${thumb}` : ""}`);
 export const getFrames = (): Promise<FrameInfo[]> => getJson("/frames");
 export const getBios = (): Promise<BioInfo[]> => getJson("/bios");
@@ -159,8 +208,10 @@ export const frameLayout = (id: string, version: number, texts: Record<string, s
   post(`/frames/${encodeURIComponent(id)}/${version}/layout`, { texts }, false);
 
 /** A font the frame names, by the path the frame gives it. */
-export const frameFont = (id: string, version: number, font: string): string =>
-  imageUrl(`/frames/${encodeURIComponent(id)}/${version}/fonts/${font.split("/").map(encodeURIComponent).join("/")}`);
+export const frameFont = (id: string, version: number, font: string): string => {
+  const rel = `${encodeURIComponent(id)}/${version}/fonts/${font.split("/").map(encodeURIComponent).join("/")}`;
+  return staticDemo() ? tapeFile(`frames/${rel}`) : imageUrl(`/frames/${rel}`);
+};
 
 export async function publishDraft(id: string, price = 0): Promise<DraftDetail> {
   await requireCapability("publish");
@@ -194,6 +245,7 @@ export async function previewFrame(
   bio: string | null,
   texts: Record<string, string>,
 ): Promise<string> {
+  if (staticDemo()) throw new ApiError("The frame preview is drawn by a running argus-mint; it is not in this demo.", 503);
   const response = await fetch(`${mintUrl()}/frames/${encodeURIComponent(id)}/${version}/preview`, {
     method: "POST",
     headers: headers(true, false),

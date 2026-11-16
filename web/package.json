@@ -1,19 +1,22 @@
 {
   "name": "argus-assay",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "build:pages": "ASSAY_STATIC=1 next build && ASSAY_STATIC=1 node scripts/csp.mjs out && node scripts/check-static.mjs out",
     "start": "next start -H 0.0.0.0",
     "lint": "eslint",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "wire:types": "node scripts/wire-types.mjs",
     "wire:check": "node scripts/wire-types.mjs --check",
-    "wire:pull": "node scripts/wire-types.mjs --pull"
+    "wire:pull": "node scripts/wire-types.mjs --pull",
+    "docs:pull": "node scripts/docs-pull.mjs"
   },
   "dependencies": {
+    "marked": "18.1.0",
     "next": "16.4.5",
     "react": "19.2.4",
     "react-dom": "19.2.4"

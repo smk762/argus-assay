@@ -91,8 +91,34 @@ export function allowedModels(t: { model: string; models?: string[] }): string[]
   return [t.model, ...(t.models ?? []).filter((m) => m !== t.model)];
 }
 
-/** A checkpoint's family: its top folder ("sdxl", "flux"…), as argus-mint and darkroom name it. */
-export const modelFamily = (model: string): string => (model.includes("/") ? model.split("/", 1)[0] : "");
+/** A relative path with "." and ".." resolved and repeated slashes collapsed, like Python's posixpath.normpath. */
+function normPath(path: string): string {
+  const out: string[] = [];
+  for (const part of path.split("/")) {
+    if (part === "" || part === ".") continue;
+    if (part === ".." && out.length && out[out.length - 1] !== "..") out.pop();
+    else if (part !== ".." || !path.startsWith("/")) out.push(part);
+  }
+  return (path.startsWith("/") ? "/" : "") + out.join("/");
+}
+
+/**
+ * A checkpoint's family: its top folder ("sdxl", "flux"…), as argus-mint's `templates.family()` and
+ * darkroom name it. The path is normalised first, so "sdxl/../flux/f" is in "flux". "" at the top.
+ */
+export function modelFamily(model: string): string {
+  const path = normPath(model);
+  const cut = path.indexOf("/");
+  return cut > 0 ? path.slice(0, cut) : "";
+}
+
+/** The sampling a checkpoint renders with: its own, else its family's, else the template's (`Template.sampling_for`). */
+export function samplingFor(
+  t: { sampling?: Sampling | null; sampling_by_family?: Record<string, Sampling>; sampling_by_model?: Record<string, Sampling> },
+  model: string,
+): Sampling | null {
+  return t.sampling_by_model?.[model] ?? t.sampling_by_family?.[modelFamily(model)] ?? t.sampling ?? null;
+}
 
 /** Checkpoints grouped by family, families and checkpoints in the order given. */
 export function byFamily(models: string[]): { family: string; models: string[] }[] {
@@ -131,10 +157,40 @@ export function loraChoices(picked: Record<string, number>, t: LoraRules, model:
 export const loraText = (loras: { name: string; weight?: number | null }[]): string =>
   loras.map((l) => `${checkpointName(l.name)} @ ${l.weight ?? 1}`).join(", ");
 
+/** "Sampling: euler / simple, 4 steps…" for the checkpoint picked, or undefined when the template sets none. */
+export function samplingHint(t: Parameters<typeof samplingFor>[0], model: string): string | undefined {
+  const s = samplingFor(t, model);
+  return s ? `Sampling: ${samplingText(s)}` : undefined;
+}
+
 /** "euler / normal, 28 steps, cfg 6, clip skip 2, guidance 3.5". */
 export function samplingText(s: Sampling): string {
   const parts = [`${s.sampler} / ${s.scheduler}`, `${s.steps} steps`, `cfg ${s.cfg}`];
   if (s.clip_skip && s.clip_skip > 1) parts.push(`clip skip ${s.clip_skip}`);
   if (s.guidance != null) parts.push(`guidance ${s.guidance}`);
   return parts.join(", ");
+}
+
+/**
+ * The draft's "made with" line, read from its own record (`made_with`, wire 1.9), never from /health,
+ * which reports the server running now. `mint` is null for a draft made before argus-mint recorded it.
+ */
+export function madeWith(draft: {
+  made_with?: Record<string, string>;
+  renderer: string;
+  library?: string | null;
+  request: { template_id: string; template_version: number; seed: number };
+}): { mint: string | null; via: string; template: string; seed: number } {
+  const darkroom = draft.made_with?.darkroom;
+  const via = draft.library
+    ? "from the library (rendered earlier through darkroom)"
+    : draft.renderer === "darkroom"
+      ? `via darkroom${darkroom ? ` ${darkroom}` : ""}`
+      : `with ${draft.renderer} art`;
+  return {
+    mint: draft.made_with?.["argus-mint"] ?? null,
+    via,
+    template: `${draft.request.template_id} v${draft.request.template_version}`,
+    seed: draft.request.seed,
+  };
 }

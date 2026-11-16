@@ -25,13 +25,20 @@ Not checked out? Read https://github.com/smk762/argus-cortex/blob/main/SUITE.md
 ## Layout
 
 ```
-web/src/app/          routes: / (queue), drafts/[id], new, library, catalogue, catalogue/[kind]/[id]/[version], samples, samples/[id]
+web/src/app/          routes: / (queue), drafts/[id], new, library, catalogue, catalogue/[kind]/[id]/[version], samples, samples/[id], docs/[[...slug]]
 web/src/components/   Shell, MintProvider (/health poll + token state), Catalogue (DecisionPanel, SampleRunner), LibraryPicker, Checkpoints (CheckpointOptions, LoraPicker), Modal, bits, ui, icons
-web/src/proxy.ts      per-request CSP nonce (Next's Proxy, formerly middleware)
-web/src/lib/          api (fetch client + capability gate), config (mintUrl), token, wallet, status, slots, generated/mint.ts
-web/schema/           mint-wire.schema.json + pins.json (argus-mint repo, tag or commit, sha256)
+web/src/proxy.live.ts per-request CSP nonce (Next's Proxy, formerly middleware); live build only
+web/src/app/**/page.{live,static}.tsx  dynamic routes: on demand (live) or one page per tape id (static demo)
+web/src/lib/          api (fetch client + capability gate), config (mintUrl), token, wallet, status, slots, generated/mint.ts;
+                      demo, tape, demoMint, staticParams (the static demo), chain (explorer links for the Card contract only)
+web/vendor/dh/        Dragonhound shared layer (dh-shared 1.2.5), vendored unedited; `make shared-check`
+web/scripts/          csp.mjs + check-static.mjs (static demo post-build)
+web/schema/           mint-wire.schema.json + pins.json (argus-mint repo, `dev` commit, sha256, version, a sha256 per imported doc)
+web/docs/mint/        argus-mint's docs at the pinned commit (`make docs-pull`), rendered at /docs; lib/mintDocs.ts maps help topics to sections
+                      lib/sync.test.ts: pin, docs and fixture agree (offline); .github/workflows/mint-drift.yml flags mint `dev` moving on
 web/scripts/          wire-types.mjs (same as argus-studio's)
 scripts/mock_mint.mjs stand-in argus-mint over fixture/ for demo mode
+scripts/make_tape.mjs fixture/ -> web/public/data-tape/ for the static demo; refuses unlisted addresses and secrets
 fixture/              recorded responses from argus-mint's scripts/api_fixture.py (`make fixture`)
 ```
 
@@ -41,14 +48,16 @@ fixture/              recorded responses from argus-mint's scripts/api_fixture.p
 - **Tests cover `src/lib`** (node environment): status logic, slot geometry, the capability gate, wallet helpers.
 - **Wire bumps:**
   1. Change the pin in `web/schema/pins.json`, then run `npm run wire:pull` and fix what typecheck reports.
-  2. Run `make fixture` if responses changed shape.
-  3. The pin is an argus-mint release tag (`v0.2.0` or later). Pin a commit only to build against wire work argus-mint hasn't released, and move back to a tag at its next release.
+  2. Run `make docs-pull` (argus-mint's docs at that commit into `web/docs/mint/`, with a sha256 each) and set `mint.version` to the package version at that commit.
+  3. Run `make fixture` if responses changed shape.
+  4. The pin is argus-mint's `dev` HEAD, by full commit sha (the `tag` field takes a sha), not a release tag: wire types, imported docs and the recorded demo data all track the tip of `dev` together (argus-studio#169's sync rule, as argus-sightline does). Bump them together in one PR: `web/src/lib/sync.test.ts` fails `make check` when the fixture's recorded version (`health.json`, each draft's `made_with`) isn't the pin's `version`, or a doc no longer matches its hash. A re-record from the cache (`scripts/record_demo.py --no-render`, docs/demo-recording.md) needs no GPU; new renders still need the maintainer's approval first.
 - **Web platform:** the [Modern Web Guidance](https://developer.chrome.com/docs/modern-web-guidance) skill is the reference for HTML/CSS/client JS (install it locally as a Claude Code plugin, or `npx modern-web-guidance@latest install`; its files aren't committed). House exceptions:
   - **Overlays are `components/Modal.tsx`**, a native `<dialog>` opened with `showModal()`. Don't hand-roll `role="dialog"` overlays, focus traps or Esc handlers.
-  - **The CSP is nonce-based** (`src/proxy.ts`), so every page renders dynamically. An inline `<script>` needs the layout's `nonce`; anything else is refused. Only scripts, objects, `base`, forms and framing are restricted: argus-mint's origin is configurable and images arrive as `blob:` URLs.
-  - **Theme stays on `data-theme`** (shared with safelight), not the guide's `<meta>`-driven `:has()` selectors. The `color-scheme` meta is kept in step by the boot script and `lib/theme.ts` so the canvas is right before CSS loads.
+  - **The CSP is nonce-based** (`src/proxy.live.ts`), so every page renders dynamically. The static demo build instead gets a hash-based CSP per page (`web/scripts/csp.mjs`) and no proxy. An inline `<script>` needs the layout's `nonce`; anything else is refused. Only scripts, objects, `base`, forms and framing are restricted: argus-mint's origin is configurable and images arrive as `blob:` URLs.
+  - **Theme is the Dragonhound family's** `public/dh-theme.js` (a copy of `vendor/dh/dh-theme.js`): `data-theme` on `<html>` from the shared `dh-theme` cookie, set before first paint. Colours come from `vendor/dh/dh-tokens.css`, mapped onto the page's names in `globals.css`. Never edit `vendor/dh/`; re-sync it.
   - **Images:** the page's main image gets `fetchPriority="high"` and is never lazy; grids lazy-load all but the first.
 - **Ports:** argus-mint is on 8108 (the mock too), assay on 3108.
+- **Static demo** (`make pages`): `lib/demoMint.ts` mirrors `scripts/mock_mint.mjs` in the browser; change both together. The hosted demo never calls a wallet, and links only the Card contract on a block explorer (`lib/chain.ts`), never a wallet. A new address in the fixture must go on `make_tape.mjs`'s allowlist with its reason.
 
 ## Branches
 

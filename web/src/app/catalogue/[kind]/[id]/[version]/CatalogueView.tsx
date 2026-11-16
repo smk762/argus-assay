@@ -6,7 +6,7 @@ import { useParams, useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useState } from "react";
 
 import { DecisionPanel, SampleRunner, TemplateCheckPanel, useTemplateCheck } from "@/components/Catalogue";
-import { CatalogueBadge, Field, Hash, INPUT, PageTitle, useLoad } from "@/components/bits";
+import { CatalogueBadge, DocLink, Field, Hash, INPUT, PageTitle, useLoad } from "@/components/bits";
 import { Button, Card, Kv, Notice, SectionTitle, Spinner } from "@/components/ui";
 import { frameOverlay, getBios, getDrafts, getFrames, getSamples, getTemplates, previewFrame } from "@/lib/api";
 import { staticDemo } from "@/lib/demo";
@@ -157,6 +157,7 @@ function FrameView({ info }: { info: FrameInfo }) {
         <div className="flex gap-2">
           {url ? <Button small onClick={() => setUrl(null)}>Show the bare overlay</Button> : null}
           {!url ? <Button small onClick={() => setBoxes((v) => !v)}>{boxes ? "Hide boxes" : "Show boxes"}</Button> : null}
+          <DocLink topic="frames" className="self-center">The frame format: art window and text slots</DocLink>
         </div>
       </div>
       <div className="space-y-4">
@@ -267,7 +268,16 @@ function Detail() {
           ← Catalogue
         </Link>
       </p>
-      <PageTitle aside={<CatalogueBadge status={status} />}>
+      <PageTitle
+        aside={
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
+            <CatalogueBadge status={status} />
+            <DocLink topic={kind === "bio" ? "bios" : kind === "frame" ? "frames" : "templates"}>
+              {kind === "bio" ? "About bio templates" : kind === "frame" ? "About frames" : "About templates"}
+            </DocLink>
+          </div>
+        }
+      >
         {kind === "bio" ? "Bio template" : kind === "frame" ? "Frame" : "Template"} {id} v{version}
       </PageTitle>
       <div className="space-y-4">

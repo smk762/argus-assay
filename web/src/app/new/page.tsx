@@ -4,7 +4,7 @@
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useState } from "react";
 
-import { Field, INPUT, PageTitle, useLoad } from "@/components/bits";
+import { DocLink, Field, INPUT, PageTitle, useLoad } from "@/components/bits";
 import { CheckpointOptions, LoraPicker } from "@/components/Checkpoints";
 import { LibraryPicker } from "@/components/LibraryPicker";
 import { useMint } from "@/components/MintProvider";
@@ -89,7 +89,7 @@ function NewDraftForm() {
   if (!all.data) return <Spinner />;
   return (
     <>
-      <PageTitle>New draft</PageTitle>
+      <PageTitle aside={<DocLink topic="making-a-draft">How a draft is made</DocLink>}>New draft</PageTitle>
       <p className="mb-4 max-w-3xl text-small text-text-secondary">
         Makes a card from approved files into a draft for review. Nothing is pinned or signed until the moderator and the owner have both
         approved the image. Rendering and the bio take about half a minute{sources.library ? "; a library portrait is already rendered" : ""}.
@@ -126,7 +126,9 @@ function NewDraftForm() {
       >
         {sources.library ? (
           <fieldset>
-            <legend className="mb-1 text-small font-medium text-text-secondary">Art</legend>
+            <legend className="mb-1 flex flex-wrap items-baseline gap-x-3 text-small font-medium text-text-secondary">
+              Art <DocLink topic="attempts">How darkroom checks each render</DocLink>
+            </legend>
             <div className="grid gap-2 sm:grid-cols-2">
               {(
                 [

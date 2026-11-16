@@ -21,6 +21,7 @@ const NAV = [
   { href: "/library", label: "Library", match: (p: string) => p.startsWith("/library") },
   { href: "/catalogue", label: "Catalogue", match: (p: string) => p.startsWith("/catalogue") },
   { href: "/samples", label: "Samples", match: (p: string) => p.startsWith("/samples") },
+  { href: "/docs", label: "Docs", match: (p: string) => p.startsWith("/docs") },
 ];
 
 function HealthDot() {

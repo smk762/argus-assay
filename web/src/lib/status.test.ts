@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { allowedModels, awaitingText, byFamily, checkpointName, diffEdit, draftSources, isAutoReview, loraChoices, loraOptions, loraText, modelFamily, samplingFor, samplingHint, samplingText, canPublish, catalogueAction, moderatorCanReview, ownerCanReview, shortHash, wireCompatible } from "./status";
+import { allowedModels, awaitingText, madeWith, byFamily, checkpointName, diffEdit, draftSources, isAutoReview, loraChoices, loraOptions, loraText, modelFamily, samplingFor, samplingHint, samplingText, canPublish, catalogueAction, moderatorCanReview, ownerCanReview, shortHash, wireCompatible } from "./status";
 import type { Health } from "./types";
 
 const health = (publish: boolean) => ({ capabilities: { publish } }) as unknown as Health;
@@ -125,5 +125,25 @@ describe("families and LoRAs", () => {
     expect(loraText([{ name: "sdxl/detail.safetensors", weight: 0.8 }, { name: "any.safetensors" }])).toBe("detail @ 0.8, any @ 1");
     expect(samplingText({ sampler: "euler", scheduler: "simple", steps: 20, cfg: 1, guidance: 3.5 })).toBe("euler / simple, 20 steps, cfg 1, guidance 3.5");
     expect(samplingText({ sampler: "dpmpp_2m", scheduler: "karras", steps: 30, cfg: 6, clip_skip: 2 })).toBe("dpmpp_2m / karras, 30 steps, cfg 6, clip skip 2");
+  });
+});
+
+describe("madeWith", () => {
+  const request = { template_id: "example-portrait", template_version: 3, seed: 8510 };
+  it("reads the versions from the draft's record", () => {
+    expect(madeWith({ made_with: { "argus-mint": "0.2.2", darkroom: "0.4.0" }, renderer: "darkroom", request })).toEqual({
+      mint: "0.2.2",
+      via: "via darkroom 0.4.0",
+      template: "example-portrait v3",
+      seed: 8510,
+    });
+  });
+  it("says where library and supplied art came from, and leaves out a version it doesn't have", () => {
+    expect(madeWith({ made_with: { "argus-mint": "0.2.2" }, renderer: "darkroom", library: "047-x", request }).via).toBe(
+      "from the library (rendered earlier through darkroom)",
+    );
+    expect(madeWith({ made_with: { "argus-mint": "0.2.2" }, renderer: "darkroom", request }).via).toBe("via darkroom");
+    expect(madeWith({ renderer: "supplied", request }).via).toBe("with supplied art");
+    expect(madeWith({ made_with: {}, renderer: "darkroom", request }).mint).toBeNull();
   });
 });

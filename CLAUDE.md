@@ -25,7 +25,7 @@ Not checked out? Read https://github.com/smk762/argus-cortex/blob/main/SUITE.md
 ## Layout
 
 ```
-web/src/app/          routes: / (queue), drafts/[id], new, library, catalogue, catalogue/[kind]/[id]/[version], samples, samples/[id]
+web/src/app/          routes: / (queue), drafts/[id], new, library, catalogue, catalogue/[kind]/[id]/[version], samples, samples/[id], docs/[[...slug]]
 web/src/components/   Shell, MintProvider (/health poll + token state), Catalogue (DecisionPanel, SampleRunner), LibraryPicker, Checkpoints (CheckpointOptions, LoraPicker), Modal, bits, ui, icons
 web/src/proxy.live.ts per-request CSP nonce (Next's Proxy, formerly middleware); live build only
 web/src/app/**/page.{live,static}.tsx  dynamic routes: on demand (live) or one page per tape id (static demo)
@@ -33,7 +33,9 @@ web/src/lib/          api (fetch client + capability gate), config (mintUrl), to
                       demo, tape, demoMint, staticParams (the static demo), chain (explorer links for the Card contract only)
 web/vendor/dh/        Dragonhound shared layer (dh-shared 1.2.5), vendored unedited; `make shared-check`
 web/scripts/          csp.mjs + check-static.mjs (static demo post-build)
-web/schema/           mint-wire.schema.json + pins.json (argus-mint repo, `dev` commit, sha256)
+web/schema/           mint-wire.schema.json + pins.json (argus-mint repo, `dev` commit, sha256, version, a sha256 per imported doc)
+web/docs/mint/        argus-mint's docs at the pinned commit (`make docs-pull`), rendered at /docs; lib/mintDocs.ts maps help topics to sections
+                      lib/sync.test.ts: pin, docs and fixture agree (offline); .github/workflows/mint-drift.yml flags mint `dev` moving on
 web/scripts/          wire-types.mjs (same as argus-studio's)
 scripts/mock_mint.mjs stand-in argus-mint over fixture/ for demo mode
 scripts/make_tape.mjs fixture/ -> web/public/data-tape/ for the static demo; refuses unlisted addresses and secrets
@@ -46,8 +48,9 @@ fixture/              recorded responses from argus-mint's scripts/api_fixture.p
 - **Tests cover `src/lib`** (node environment): status logic, slot geometry, the capability gate, wallet helpers.
 - **Wire bumps:**
   1. Change the pin in `web/schema/pins.json`, then run `npm run wire:pull` and fix what typecheck reports.
-  2. Run `make fixture` if responses changed shape.
-  3. The pin is argus-mint's `dev` HEAD, by full commit sha (the `tag` field takes a sha), not a release tag: wire types, imported docs and the recorded demo data all track the tip of `dev` together (argus-studio#169's sync rule, as argus-sightline does). Bump them together; when the demo data needs a GPU re-record (`scripts/record_demo.py`), it may follow in the next PR.
+  2. Run `make docs-pull` (argus-mint's docs at that commit into `web/docs/mint/`, with a sha256 each) and set `mint.version` to the package version at that commit.
+  3. Run `make fixture` if responses changed shape.
+  4. The pin is argus-mint's `dev` HEAD, by full commit sha (the `tag` field takes a sha), not a release tag: wire types, imported docs and the recorded demo data all track the tip of `dev` together (argus-studio#169's sync rule, as argus-sightline does). Bump them together in one PR: `web/src/lib/sync.test.ts` fails `make check` when the fixture's recorded version (`health.json`, each draft's `made_with`) isn't the pin's `version`, or a doc no longer matches its hash. A re-record from the cache (`scripts/record_demo.py --no-render`, docs/demo-recording.md) needs no GPU; new renders still need the maintainer's approval first.
 - **Web platform:** the [Modern Web Guidance](https://developer.chrome.com/docs/modern-web-guidance) skill is the reference for HTML/CSS/client JS (install it locally as a Claude Code plugin, or `npx modern-web-guidance@latest install`; its files aren't committed). House exceptions:
   - **Overlays are `components/Modal.tsx`**, a native `<dialog>` opened with `showModal()`. Don't hand-roll `role="dialog"` overlays, focus traps or Esc handlers.
   - **The CSP is nonce-based** (`src/proxy.live.ts`), so every page renders dynamically. The static demo build instead gets a hash-based CSP per page (`web/scripts/csp.mjs`) and no proxy. An inline `<script>` needs the layout's `nonce`; anything else is refused. Only scripts, objects, `base`, forms and framing are restricted: argus-mint's origin is configurable and images arrive as `blob:` URLs.

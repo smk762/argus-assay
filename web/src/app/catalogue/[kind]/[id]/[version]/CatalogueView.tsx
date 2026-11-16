@@ -47,6 +47,11 @@ function TemplateView({ info }: { info: TemplateInfo }) {
             {samplingText(s)}
           </Kv>
         ))}
+        {Object.entries(t.sampling_by_model ?? {}).map(([model, s]) => (
+          <Kv key={model} label={`Sampling (${checkpointName(model)})`} title={model}>
+            {samplingText(s)}
+          </Kv>
+        ))}
         {t.loras?.length ? <Kv label="LoRAs, always applied">{loraText(t.loras)}</Kv> : null}
         {t.lora_options?.length ? (
           <Kv label={`LoRA options (up to ${t.max_loras ?? 1} per card)`}>

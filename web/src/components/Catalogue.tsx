@@ -5,7 +5,7 @@ import { useState } from "react";
 
 import { decide, startSamples } from "@/lib/api";
 import { readReviewer, saveReviewer } from "@/lib/reviewer";
-import { allowedModels, catalogueAction, loraChoices } from "@/lib/status";
+import { allowedModels, catalogueAction, loraChoices, samplingHint } from "@/lib/status";
 import { displaySlots } from "@/lib/slots";
 import type { BioInfo, CatalogueKind, CatalogueStatus, FrameInfo, TemplateInfo } from "@/lib/types";
 
@@ -159,7 +159,7 @@ export function SampleRunner({
       </div>
       {t ? (
         <div className="mt-3 grid gap-3 sm:grid-cols-3">
-          <Field label="Checkpoint">
+          <Field label="Checkpoint" hint={samplingHint(t, modelValue || t.model)}>
             <select className={INPUT} value={modelValue} onChange={(e) => setModel(e.target.value)}>
               <CheckpointOptions models={allowedModels(t)} defaultModel={t.model} />
             </select>

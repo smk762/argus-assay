@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { Suspense, useState } from "react";
 
-import { DraftBadge, PageTitle, useLoad } from "@/components/bits";
+import { DocLink, DraftBadge, PageTitle, useLoad } from "@/components/bits";
 import { ExpandIcon } from "@/components/icons";
 import { Lightbox } from "@/components/Lightbox";
 import { Button, Notice, Spinner } from "@/components/ui";
@@ -34,7 +34,19 @@ function Queue() {
   const [big, setBig] = useState<number | null>(null);
   return (
     <>
-      <PageTitle aside={<Button small onClick={reload}>Refresh</Button>}>Review queue</PageTitle>
+      <PageTitle
+        aside={
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
+            <DocLink topic="draft-status">What the statuses mean</DocLink>
+            <DocLink topic="review">Who approves what</DocLink>
+            <Button small onClick={reload}>
+              Refresh
+            </Button>
+          </div>
+        }
+      >
+        Review queue
+      </PageTitle>
       <div role="tablist" aria-label="Filter drafts" className="mb-4 flex flex-wrap gap-1">
         {FILTERS.map((f) => {
           const count = (data?.items ?? []).filter((d) => matches(d, f.key)).length;

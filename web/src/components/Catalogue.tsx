@@ -9,7 +9,7 @@ import { allowedModels, catalogueAction, loraChoices, samplingHint } from "@/lib
 import { displaySlots } from "@/lib/slots";
 import type { BioInfo, CatalogueKind, CatalogueStatus, FrameInfo, TemplateCheck, TemplateInfo } from "@/lib/types";
 
-import { Field, INPUT, useLoad } from "./bits";
+import { DocLink, Field, INPUT, useLoad } from "./bits";
 import { CheckpointOptions, LoraPicker } from "./Checkpoints";
 import { useMint } from "./MintProvider";
 import { Button, Card, Notice, SectionTitle, Spinner } from "./ui";
@@ -34,7 +34,10 @@ export function TemplateCheckPanel({ check }: { check: TemplateCheckState }) {
   return (
     <Card>
       <div className="mb-2 flex items-center justify-between gap-2">
-        <SectionTitle>Check against darkroom</SectionTitle>
+        <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+          <SectionTitle>Check against darkroom</SectionTitle>
+          <DocLink topic="darkroom-check">What it checks</DocLink>
+        </div>
         {capable ? (
           <Button small onClick={check.reload} disabled={!check.data && !check.error}>
             Check again
@@ -108,7 +111,10 @@ export function DecisionPanel({
       : "No new cards can use it. Cards already made keep their hash.";
   return (
     <Card>
-      <SectionTitle className="mb-2">Decision</SectionTitle>
+      <div className="mb-2 flex flex-wrap items-baseline justify-between gap-2">
+        <SectionTitle>Decision</SectionTitle>
+        <DocLink topic="catalogue-review">How the catalogue is reviewed</DocLink>
+      </div>
       <p className="mb-2 text-small text-text-secondary">
         {consequence} argus-mint records <code>status</code>, <code>approved_by</code> and <code>approved_at</code> in the file. Commit that
         change to the repo the server serves from.

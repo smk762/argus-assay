@@ -10,7 +10,7 @@ PORT ?= 3108
 MOCK_PORT ?= 8108
 MINT ?= ../argus-mint
 
-.PHONY: help install dev mock fixture wire build test lint check clean tape pages shared-check sample-fixture record-dry record
+.PHONY: help install dev mock fixture wire docs-pull build test lint check clean tape pages shared-check sample-fixture record-dry record
 
 help:  ## Show this help
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[36m%-10s\033[0m %s\n", $$1, $$2}'
@@ -29,6 +29,9 @@ fixture:  ## Copy the recorded API fixture from argus-mint (MINT=../argus-mint)
 
 wire:  ## Regenerate the wire types from the pinned schema (web/schema/pins.json)
 	cd web && $(NPM) run wire:types
+
+docs-pull:  ## Import argus-mint's docs at the pinned commit into web/docs/mint/ and record their hashes
+	cd web && $(NPM) run docs:pull
 
 build:  ## next build
 	cd web && $(NPM) run build

@@ -2,6 +2,7 @@
 
 import { useEffect, useState, type ReactNode } from "react";
 
+import { docsUrl, type DocsTopic } from "@/lib/mintDocs";
 import { CATALOGUE_STATUS, DRAFT_STATUS, shortHash, type Tone } from "@/lib/status";
 import type { CatalogueStatus, DraftStatus } from "@/lib/types";
 
@@ -91,3 +92,22 @@ export function Field({ label, hint, children }: { label: string; hint?: string;
 
 export const INPUT =
   "w-full rounded-md border border-base-600 bg-base-900 px-2.5 py-1.5 text-small text-text-primary placeholder:text-text-muted focus:border-interactive";
+
+/**
+ * In-context help: a small link to the section of argus-mint's imported docs (/docs) that explains
+ * what it sits next to. It opens in a new tab, so a half-written note or an open review keeps its place.
+ */
+export function DocLink({ topic, children = "How this works", className = "" }: { topic: DocsTopic; children?: ReactNode; className?: string }) {
+  return (
+    <a
+      href={docsUrl(topic)}
+      target="_blank"
+      rel="noopener"
+      className={`text-caption font-normal normal-case tracking-normal text-text-muted underline decoration-base-600 underline-offset-2 hover:text-text-secondary ${className}`}
+    >
+      {children}
+      <span aria-hidden="true"> ↗</span>
+      <span className="sr-only"> (argus-mint docs, opens in new tab)</span>
+    </a>
+  );
+}

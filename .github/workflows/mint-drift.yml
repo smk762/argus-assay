@@ -1,0 +1,50 @@
+name: Mint drift
+
+# The offline half of the sync rule is `make check` (web/src/lib/sync.test.ts): the wire pin, the
+# imported docs and the recorded demo fixture describe the same argus-mint commit. This is the
+# networked half: it flags when argus-mint's dev HEAD moves past the pin (argus-assay#16).
+
+on:
+  schedule:
+    - cron: "23 6 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  drift:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Compare the pin with argus-mint dev HEAD
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          pinned=$(jq -r .mint.tag web/schema/pins.json)
+          head=$(gh api repos/smk762/argus-mint/commits/dev --jq .sha)
+          echo "pinned ${pinned}, mint dev ${head}"
+          if [ "$pinned" = "$head" ]; then exit 0; fi
+
+          title="Sync to argus-mint dev (pin is behind)"
+          body=$(cat <<BODY
+          argus-mint \`dev\` is at \`${head}\`; this repo is synced to \`${pinned}\`.
+          Changes: https://github.com/smk762/argus-mint/compare/${pinned}...${head}
+
+          Re-sync in one PR (CLAUDE.md, "Wire bumps"):
+
+          1. Set \`mint.tag\` in \`web/schema/pins.json\` to \`${head}\` and \`mint.version\` to the package version there; \`npm run wire:pull\`, then fix what \`make lint\` reports.
+          2. \`make docs-pull\` (imports mint's docs at that commit into \`web/docs/mint/\` and records their hashes).
+          3. Re-record the demo fixture at that commit (docs/demo-recording.md; \`--no-render\` from the cache needs no GPU).
+          4. \`make check\` and \`make pages\` must pass.
+
+          Opened by .github/workflows/mint-drift.yml; it updates this issue while the pin stays behind.
+          BODY
+          )
+          existing=$(gh issue list --repo "$GITHUB_REPOSITORY" --state open --search "in:title \"${title}\"" --json number --jq '.[0].number // empty')
+          if [ -n "$existing" ]; then
+            gh issue edit "$existing" --repo "$GITHUB_REPOSITORY" --body "$body"
+          else
+            gh issue create --repo "$GITHUB_REPOSITORY" --title "$title" --body "$body"
+          fi

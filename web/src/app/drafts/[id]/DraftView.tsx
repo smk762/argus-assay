@@ -4,13 +4,13 @@
 import { useParams, useSearchParams } from "next/navigation";
 import { Suspense, useState } from "react";
 
-import { DraftBadge, Hash, INPUT, PageTitle, useLoad } from "@/components/bits";
+import { DocLink, DraftBadge, Hash, INPUT, PageTitle, useLoad } from "@/components/bits";
 import { CardEditor } from "@/components/CardEditor";
 import { StepNav } from "@/components/StepNav";
 import { useMint } from "@/components/MintProvider";
 import { Button, Card, Collapsible, Kv, Notice, SectionTitle, Spinner } from "@/components/ui";
 import { draftImage, getDraft, getDrafts, getFrames, moderatorReview, ownerChallenge, ownerReview, publishDraft } from "@/lib/api";
-import { awaitingText, canPublish, checkpointName, isAutoReview, loraText, moderatorCanReview, ownerCanReview, shortAddress } from "@/lib/status";
+import { awaitingText, canPublish, checkpointName, isAutoReview, loraText, madeWith, moderatorCanReview, ownerCanReview, shortAddress } from "@/lib/status";
 import { cardContractUrl } from "@/lib/chain";
 import { draftHref, FILTERS, parseFilter, queuePosition } from "@/lib/queue";
 import { staticDemo } from "@/lib/demo";
@@ -41,7 +41,10 @@ function ModeratorPanel({ d, onDone }: { d: DraftDetail; onDone: (d: DraftDetail
   };
   return (
     <Card>
-      <SectionTitle className="mb-2">Moderator</SectionTitle>
+      <div className="mb-2 flex flex-wrap items-baseline justify-between gap-2">
+        <SectionTitle>Moderator</SectionTitle>
+        <DocLink topic="review">Who approves what</DocLink>
+      </div>
       {off ? <p className="text-small text-text-muted">{off}</p> : null}
       <div className="space-y-2">
         <input className={INPUT} placeholder="Your name or id" value={by} onChange={(e) => setBy(e.target.value)} disabled={!!off} />
@@ -89,7 +92,10 @@ function OwnerPanel({ d, onDone }: { d: DraftDetail; onDone: (d: DraftDetail) =>
   };
   return (
     <Card>
-      <SectionTitle className="mb-2">Owner</SectionTitle>
+      <div className="mb-2 flex flex-wrap items-baseline justify-between gap-2">
+        <SectionTitle>Owner</SectionTitle>
+        <DocLink topic="owner-sign-in">The signed message</DocLink>
+      </div>
       <p className="mb-2 text-small text-text-secondary">
         The owner, <code title={d.draft.to}>{shortAddress(d.draft.to)}</code>, approves by signing a message with that wallet. It names this draft,
         the decision and the image&apos;s hash, and works once.
@@ -163,7 +169,10 @@ function PublishPanel({ d, onDone }: { d: DraftDetail; onDone: (d: DraftDetail) 
   const off = !canPublish(d.status, health) ? "This server can't publish (no IPFS, signer or Card address)." : !hasToken ? "Set the moderator token to publish." : null;
   return (
     <Card>
-      <SectionTitle className="mb-2">Publish</SectionTitle>
+      <div className="mb-2 flex flex-wrap items-baseline justify-between gap-2">
+        <SectionTitle>Publish</SectionTitle>
+        <DocLink topic="publishing">What publishing does</DocLink>
+      </div>
       <p className="mb-2 text-small text-text-secondary">Pins the art, the card image and the metadata to IPFS, and signs the mint voucher.</p>
       {off ? <p className="mb-2 text-small text-text-muted">{off}</p> : null}
       <Button
@@ -185,6 +194,18 @@ function PublishPanel({ d, onDone }: { d: DraftDetail; onDone: (d: DraftDetail) 
       </Button>
       {error ? <Notice tone="error" className="mt-2">{error}</Notice> : null}
     </Card>
+  );
+}
+
+/** "Rendered by argus-mint <version> via darkroom, template <id> v<n>, seed <seed>": from the draft's own record. */
+function MadeWith({ draft }: { draft: DraftDetail["draft"] }) {
+  const m = madeWith(draft);
+  return (
+    <p className="mb-2 text-small text-text-secondary">
+      Rendered by <strong className="font-semibold text-text-primary">argus-mint{m.mint ? ` ${m.mint}` : ""}</strong> {m.via}, template{" "}
+      <code>{m.template}</code>, seed <code>{m.seed}</code>.
+      {m.mint ? null : <span className="text-text-muted"> This draft predates argus-mint recording its version.</span>}
+    </p>
   );
 }
 
@@ -220,6 +241,7 @@ function Draft() {
         aside={
           <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
             <DraftBadge status={d.status} />
+            <DocLink topic="draft-status">What the statuses mean</DocLink>
             {pos ? (
               <StepNav
                 label={`Drafts: ${FILTERS.find((f) => f.key === pos.filter)?.label ?? "All"}`}
@@ -282,7 +304,9 @@ function Draft() {
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <div>
                   <SectionTitle>Owner</SectionTitle>
-                  <p className="text-small text-text-secondary">The owner can change the text and colours, then sign to bake a new image.</p>
+                  <p className="text-small text-text-secondary">
+                    The owner can change the text and colours, then sign to bake a new image. <DocLink topic="owner-edits">Edits restart the review</DocLink>
+                  </p>
                 </div>
                 <Button onClick={() => setEditing(true)} disabled={!frameInfo}>
                   Customise card
@@ -292,7 +316,10 @@ function Draft() {
           ) : null}
           {draft.reviews?.length ? (
             <Card>
-              <SectionTitle className="mb-2">Reviews</SectionTitle>
+              <div className="mb-2 flex flex-wrap items-baseline justify-between gap-2">
+                <SectionTitle>Reviews</SectionTitle>
+                <DocLink topic="review-image">Each review is bound to the image</DocLink>
+              </div>
               <ul className="space-y-2 text-small">
                 {draft.reviews.map((r) => {
                   const current = r.image_sha256 === draft.image_sha256;
@@ -344,7 +371,11 @@ function Draft() {
             </Card>
           ) : null}
           <Card>
-            <SectionTitle className="mb-2">How it was made</SectionTitle>
+            <div className="mb-2 flex flex-wrap items-baseline justify-between gap-2">
+              <SectionTitle>How it was made</SectionTitle>
+              <DocLink topic="draft-record">What a draft records</DocLink>
+            </div>
+            <MadeWith draft={draft} />
             <dl>
               <Kv label="Template">
                 {draft.request.template_id} v{draft.request.template_version} <Hash value={draft.request.template_hash} />

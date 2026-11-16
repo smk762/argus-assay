@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 
-import { CatalogueBadge, Hash, PageTitle, useLoad } from "@/components/bits";
+import { CatalogueBadge, DocLink, Hash, PageTitle, useLoad } from "@/components/bits";
 import { Card, Notice, SectionTitle, Spinner } from "@/components/ui";
 import { getBios, getFrames, getTemplates } from "@/lib/api";
 import type { CatalogueStatus } from "@/lib/types";
@@ -29,7 +29,7 @@ export default function CataloguePage() {
   const [templates, frames, bios] = all.data;
   return (
     <>
-      <PageTitle>Catalogue</PageTitle>
+      <PageTitle aside={<DocLink topic="catalogue-review">How the catalogue is reviewed</DocLink>}>Catalogue</PageTitle>
       <p className="mb-4 max-w-3xl text-small text-text-secondary">
         Templates, frames and bio templates are reviewed before any card uses them. Open a draft to render samples, preview it, and approve
         it. Approved ones can be retired; cards already made with them keep their hash.

@@ -170,3 +170,27 @@ export function samplingText(s: Sampling): string {
   if (s.guidance != null) parts.push(`guidance ${s.guidance}`);
   return parts.join(", ");
 }
+
+/**
+ * The draft's "made with" line, read from its own record (`made_with`, wire 1.9), never from /health,
+ * which reports the server running now. `mint` is null for a draft made before argus-mint recorded it.
+ */
+export function madeWith(draft: {
+  made_with?: Record<string, string>;
+  renderer: string;
+  library?: string | null;
+  request: { template_id: string; template_version: number; seed: number };
+}): { mint: string | null; via: string; template: string; seed: number } {
+  const darkroom = draft.made_with?.darkroom;
+  const via = draft.library
+    ? "from the library (rendered earlier through darkroom)"
+    : draft.renderer === "darkroom"
+      ? `via darkroom${darkroom ? ` ${darkroom}` : ""}`
+      : `with ${draft.renderer} art`;
+  return {
+    mint: draft.made_with?.["argus-mint"] ?? null,
+    via,
+    template: `${draft.request.template_id} v${draft.request.template_version}`,
+    seed: draft.request.seed,
+  };
+}

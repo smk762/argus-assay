@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { allowedModels, awaitingText, byFamily, checkpointName, diffEdit, draftSources, isAutoReview, loraChoices, loraOptions, loraText, modelFamily, samplingText, canPublish, catalogueAction, moderatorCanReview, ownerCanReview, shortHash, wireCompatible } from "./status";
+import { allowedModels, awaitingText, byFamily, checkpointName, diffEdit, draftSources, isAutoReview, loraChoices, loraOptions, loraText, modelFamily, samplingFor, samplingHint, samplingText, canPublish, catalogueAction, moderatorCanReview, ownerCanReview, shortHash, wireCompatible } from "./status";
 import type { Health } from "./types";
 
 const health = (publish: boolean) => ({ capabilities: { publish } }) as unknown as Health;
@@ -84,6 +84,10 @@ describe("families and LoRAs", () => {
   it("groups checkpoints by their top folder, in the order given", () => {
     expect(modelFamily(sdxl)).toBe("sdxl");
     expect(modelFamily("loose.safetensors")).toBe("");
+    // Normalised first, as argus-mint does.
+    expect(modelFamily("sdxl/../flux/f.safetensors")).toBe("flux");
+    expect(modelFamily("./sd35//l.safetensors")).toBe("sd35");
+    expect(modelFamily("x/../loose.safetensors")).toBe("");
     expect(byFamily([sdxl, flux, "sdxl/b.safetensors"])).toEqual([
       { family: "sdxl", models: [sdxl, "sdxl/b.safetensors"] },
       { family: "flux", models: [flux] },
@@ -104,6 +108,18 @@ describe("families and LoRAs", () => {
     expect(loraChoices(picked, { ...t, max_loras: 1 }, sdxl)).toHaveLength(1);
     expect(loraChoices(picked, { lora_options: t.lora_options }, flux)).toEqual([{ name: "flux/glow.safetensors", weight: 1 }]);
     expect(loraChoices({}, t, sdxl)).toEqual([]);
+  });
+  it("resolves sampling per checkpoint, then family, then the default", () => {
+    const base = { sampler: "dpmpp_2m", scheduler: "karras", steps: 30, cfg: 6 };
+    const fluxS = { sampler: "euler", scheduler: "simple", steps: 20, cfg: 1, guidance: 3.5 };
+    const schnell = { ...fluxS, steps: 4 };
+    const tt = { sampling: base, sampling_by_family: { flux: fluxS }, sampling_by_model: { "flux/schnell.safetensors": schnell } };
+    expect(samplingFor(tt, "flux/schnell.safetensors")).toBe(schnell);
+    expect(samplingFor(tt, flux)).toBe(fluxS);
+    expect(samplingFor(tt, sdxl)).toBe(base);
+    expect(samplingFor({}, sdxl)).toBeNull();
+    expect(samplingHint(tt, "flux/schnell.safetensors")).toBe("Sampling: euler / simple, 4 steps, cfg 1, guidance 3.5");
+    expect(samplingHint({}, sdxl)).toBeUndefined();
   });
   it("writes LoRAs and sampling for the record", () => {
     expect(loraText([{ name: "sdxl/detail.safetensors", weight: 0.8 }, { name: "any.safetensors" }])).toBe("detail @ 0.8, any @ 1");

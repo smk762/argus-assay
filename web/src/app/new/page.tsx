@@ -12,7 +12,7 @@ import { Card, Kv, Notice, SectionTitle, Spinner } from "@/components/ui";
 import { createDraft, getBios, getFrames, getLibrary, getTemplates, libraryImage } from "@/lib/api";
 import { OFF, staticDemo } from "@/lib/demo";
 import { displaySlots } from "@/lib/slots";
-import { allowedModels, checkpointName, draftSources, loraChoices } from "@/lib/status";
+import { allowedModels, checkpointName, draftSources, loraChoices, samplingHint } from "@/lib/status";
 
 type Source = "render" | "library";
 
@@ -231,7 +231,7 @@ function NewDraftForm() {
           <Card>
             <SectionTitle className="mb-2">Variables</SectionTitle>
             <div className="grid gap-3 sm:grid-cols-3">
-              <Field label="Checkpoint">
+              <Field label="Checkpoint" hint={samplingHint(t, modelValue || t.model)}>
                 <select className={INPUT} value={modelValue} onChange={(e) => setModel(e.target.value)}>
                   <CheckpointOptions models={models} defaultModel={t.model} />
                 </select>

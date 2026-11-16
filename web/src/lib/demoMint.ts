@@ -86,11 +86,12 @@ export class DemoMint {
     this.now = options.now ?? (() => new Date().toISOString());
     this.hex = options.randomHex ?? defaultHex;
     // Nothing here renders, so the demo says so in the capabilities: the page and the client's own
-    // gate (api.ts requireCapability) both keep those writes off.
+    // gate (api.ts requireCapability) both keep those writes off. Nor is there a darkroom to check a
+    // template against (scripts/mock_mint.mjs says the same).
     this.health = {
       ...structuredClone(tape.health),
       mock: true,
-      capabilities: { ...tape.health.capabilities, create_drafts: false, sample: false },
+      capabilities: { ...tape.health.capabilities, create_drafts: false, sample: false, check_templates: false },
     } as Health;
     for (const d of this.tape.drafts) this.drafts.set(d.id, d);
     for (const layout of Object.values(tape.layouts)) {

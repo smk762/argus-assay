@@ -23,7 +23,8 @@ const png = (rel) => readFileSync(join(root, rel));
 const library = existsSync(join(root, "library.json")) ? read("library.json") : null;
 const libraryEntry = (id) => library?.items.find((i) => i.id === id);
 const health = { ...read("health.json"), mock: true };
-health.capabilities = { ...health.capabilities, library: Boolean(library?.items.length) };
+// No darkroom behind the mock, so no template check (web/src/lib/demoMint.ts says the same).
+health.capabilities = { ...health.capabilities, library: Boolean(library?.items.length), check_templates: false };
 const templates = read("templates.json");
 const frames = read("frames.json");
 const bios = read("bios.json");

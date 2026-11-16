@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { notFound } from "next/navigation";
 import { readFile } from "node:fs/promises";
 import { join } from "node:path";
@@ -62,13 +61,14 @@ export default async function MintDocsPage({ params }: { params: Params }) {
             const current = p.slug === page.slug;
             return (
               <li key={p.file}>
-                <Link
+                {/* A full page load: a client render of the article's innerHTML is refused by the static demo's Trusted Types. */}
+                <a
                   href={pagePath(p.slug)}
                   aria-current={current ? "page" : undefined}
                   className={`block rounded-md px-2.5 py-1.5 ${current ? "bg-base-700 text-text-primary" : "text-text-secondary hover:bg-base-700 hover:text-text-primary"}`}
                 >
                   {p.label}
-                </Link>
+                </a>
               </li>
             );
           })}

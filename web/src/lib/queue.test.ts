@@ -20,7 +20,7 @@ describe("stepping through the queue from a draft's page", () => {
     expect(parseFilter("rejected")).toBe("rejected");
     expect(parseFilter("nonsense")).toBe("all");
     expect(parseFilter(null, "moderator")).toBe("moderator");
-    expect(draftHref("a", "pending")).toBe("/drafts/a/?status=pending");
-    expect(draftHref("a", "all")).toBe("/drafts/a/");
+    expect(draftHref("a", "pending")).toBe("/drafts/a?status=pending");
+    expect(draftHref("a", "all")).toBe("/drafts/a");
   });
 });

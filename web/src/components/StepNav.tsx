@@ -16,10 +16,11 @@ const LINK = "inline-flex h-8 items-center rounded-md border border-base-600 px-
  * Previous and Next for a detail page, through the list the user came from (wrapping at both ends): two links,
  * "n of N", and the arrow keys (ignored while focus is in a field or a dialog is open).
  */
-export function StepNav({ prev, next, n, total, label }: { prev: string; next: string; n: number; total: number; label: string }) {
+export function StepNav({ prev, next, n, total, label, keys = true }: { prev: string; next: string; n: number; total: number; label: string; keys?: boolean }) {
   const router = useRouter();
   useEffect(() => {
-    if (total < 2) return;
+    // `keys` is off while the page holds unsaved work (the card editor), so an arrow can't discard it.
+    if (total < 2 || !keys) return;
     const onKey = (e: KeyboardEvent) => {
       const by = keyStep(e);
       if (!by || e.defaultPrevented || typing(e.target) || document.querySelector("dialog[open]")) return;
@@ -28,7 +29,7 @@ export function StepNav({ prev, next, n, total, label }: { prev: string; next: s
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [router, prev, next, total]);
+  }, [router, prev, next, total, keys]);
   return (
     <nav aria-label={label} className="flex items-center gap-1.5">
       {total > 1 ? (

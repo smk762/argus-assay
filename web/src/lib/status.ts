@@ -157,13 +157,13 @@ export function loraChoices(picked: Record<string, number>, t: LoraRules, model:
 export const loraText = (loras: { name: string; weight?: number | null }[]): string =>
   loras.map((l) => `${checkpointName(l.name)} @ ${l.weight ?? 1}`).join(", ");
 
-/** "euler / normal, 28 steps, cfg 6, clip skip 2, guidance 3.5". */
 /** "Sampling: euler / simple, 4 steps…" for the checkpoint picked, or undefined when the template sets none. */
 export function samplingHint(t: Parameters<typeof samplingFor>[0], model: string): string | undefined {
   const s = samplingFor(t, model);
   return s ? `Sampling: ${samplingText(s)}` : undefined;
 }
 
+/** "euler / normal, 28 steps, cfg 6, clip skip 2, guidance 3.5". */
 export function samplingText(s: Sampling): string {
   const parts = [`${s.sampler} / ${s.scheduler}`, `${s.steps} steps`, `cfg ${s.cfg}`];
   if (s.clip_skip && s.clip_skip > 1) parts.push(`clip skip ${s.clip_skip}`);

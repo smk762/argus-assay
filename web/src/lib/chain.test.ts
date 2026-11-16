@@ -1,8 +1,17 @@
 import { describe, expect, it } from "vitest";
 
-import { cardContractUrl } from "./chain";
+import { cardContractUrl, networkFor } from "./chain";
 
 const CARD = "0xCAa3573b5550870A5e15C47c650b8700D70a8fA7";
+
+describe("networkFor", () => {
+  it("names Base and Base Sepolia by chain id, and nothing else", () => {
+    expect(networkFor(8453)).toBe("base");
+    expect(networkFor(84532)).toBe("base_sepolia");
+    expect(networkFor(31337)).toBeNull();
+    expect(networkFor(undefined)).toBeNull();
+  });
+});
 
 describe("cardContractUrl", () => {
   it("links the Card contract on the network's explorer", () => {

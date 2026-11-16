@@ -6,6 +6,7 @@ import type { ReactNode } from "react";
 
 import { getDemoProvenance } from "@/lib/api";
 import { MINT_PYPI_URL, MINT_REPO_URL, REPO_URL, staticDemo } from "@/lib/demo";
+import { pagePath } from "@/lib/mintDocs";
 import { wireCompatible } from "@/lib/status";
 import { WIRE_MAJOR } from "@/lib/types";
 
@@ -21,7 +22,9 @@ const NAV = [
   { href: "/library", label: "Library", match: (p: string) => p.startsWith("/library") },
   { href: "/catalogue", label: "Catalogue", match: (p: string) => p.startsWith("/catalogue") },
   { href: "/samples", label: "Samples", match: (p: string) => p.startsWith("/samples") },
-  { href: "/docs", label: "Docs", match: (p: string) => p.startsWith("/docs") },
+  // A full page load, not a client navigation: the docs page sets its article with innerHTML, which the
+  // static demo's Trusted Types policy (scripts/csp.mjs) refuses on a client render.
+  { href: "/docs", label: "Docs", match: (p: string) => p.startsWith("/docs"), reload: true },
 ];
 
 function HealthDot() {
@@ -45,11 +48,19 @@ function HealthDot() {
 
 /** The static demo's stand-in for the health dot: what the page is showing, and from what. */
 function DemoBadge() {
-  const { data } = useLoad(() => getDemoProvenance());
-  const sample = data?.kind !== "recorded";
+  const { data, error } = useLoad(() => getDemoProvenance());
+  if (error) {
+    return (
+      <span role="status" className="dh-badge dh-badge--sample">
+        Demo data didn&apos;t load
+      </span>
+    );
+  }
+  if (!data) return null;
+  const sample = data.kind !== "recorded";
   const label = sample
     ? "Sample data: argus-mint's recorded API fixture, with stand-in renders, local CIDs and a throwaway wallet. Nothing here was pinned or minted."
-    : `Recorded from argus-mint ${data?.mint_version ?? ""} on ${data?.recorded_at.slice(0, 10) ?? ""}.`;
+    : `Recorded from argus-mint ${data.mint_version ?? ""} on ${data.recorded_at.slice(0, 10)}.`;
   return (
     <Tip label={label}>
       <span role="status" aria-label={label} className={sample ? "dh-badge dh-badge--sample" : "dh-badge"}>
@@ -80,13 +91,13 @@ export function Shell({ children }: { children: ReactNode }) {
         <nav aria-label="Pages" className="flex flex-wrap items-center gap-1">
           {NAV.map((item) => {
             const active = item.match(pathname);
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                aria-current={active ? "page" : undefined}
-                className={`rounded-md px-2.5 py-1.5 text-small ${active ? "bg-base-700 text-text-primary" : "text-text-secondary hover:bg-base-700 hover:text-text-primary"}`}
-              >
+            const className = `rounded-md px-2.5 py-1.5 text-small ${active ? "bg-base-700 text-text-primary" : "text-text-secondary hover:bg-base-700 hover:text-text-primary"}`;
+            return "reload" in item ? (
+              <a key={item.href} href={pagePath("")} aria-current={active ? "page" : undefined} className={className}>
+                {item.label}
+              </a>
+            ) : (
+              <Link key={item.href} href={item.href} aria-current={active ? "page" : undefined} className={className}>
                 {item.label}
               </Link>
             );

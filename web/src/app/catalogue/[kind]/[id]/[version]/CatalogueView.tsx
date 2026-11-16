@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useParams, useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useState } from "react";
 
-import { DecisionPanel, SampleRunner } from "@/components/Catalogue";
+import { DecisionPanel, SampleRunner, TemplateCheckPanel } from "@/components/Catalogue";
 import { CatalogueBadge, Field, Hash, INPUT, PageTitle, useLoad } from "@/components/bits";
 import { Button, Card, Kv, Notice, SectionTitle, Spinner } from "@/components/ui";
 import { frameOverlay, getBios, getDrafts, getFrames, getSamples, getTemplates, previewFrame } from "@/lib/api";
@@ -279,6 +279,7 @@ function Detail() {
           fixed={kind === "template" ? { template: k } : kind === "frame" ? { frame: k } : { bio: k }}
         />
         )}
+        {t && status !== "retired" ? <TemplateCheckPanel id={id} version={v} /> : null}
         <DecisionPanel kind={kind as "template" | "frame" | "bio"} id={id} version={v} status={status} onDone={all.reload} />
       </div>
     </>

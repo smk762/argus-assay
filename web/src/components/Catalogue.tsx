@@ -3,18 +3,65 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
-import { decide, startSamples } from "@/lib/api";
+import { checkTemplate, decide, startSamples } from "@/lib/api";
 import { readReviewer, saveReviewer } from "@/lib/reviewer";
 import { allowedModels, catalogueAction, loraChoices, samplingHint } from "@/lib/status";
 import { displaySlots } from "@/lib/slots";
 import type { BioInfo, CatalogueKind, CatalogueStatus, FrameInfo, TemplateInfo } from "@/lib/types";
 
-import { Field, INPUT } from "./bits";
+import { Field, INPUT, useLoad } from "./bits";
 import { CheckpointOptions, LoraPicker } from "./Checkpoints";
 import { useMint } from "./MintProvider";
 import { Button, Card, Notice, SectionTitle, Spinner } from "./ui";
 
 /** Approve a draft or retire an approved file. argus-mint writes it into the file. */
+/**
+ * argus-mint's check of a template against darkroom's model list: checkpoints, LoRAs, sampler and
+ * scheduler exist, and a workflow renders every checkpoint with each LoRA count allowed. Shown as
+ * reported; argus-mint refuses to approve while it finds problems.
+ */
+export function TemplateCheckPanel({ id, version }: { id: string; version: number }) {
+  const { health } = useMint();
+  const capable = Boolean(health?.capabilities.check_templates);
+  const check = useLoad(() => (capable ? checkTemplate(id, version) : Promise.resolve(null)), [id, version, capable]);
+  return (
+    <Card>
+      <div className="mb-2 flex items-center justify-between gap-2">
+        <SectionTitle>Check against darkroom</SectionTitle>
+        {capable ? (
+          <Button small onClick={check.reload} disabled={!check.data && !check.error}>
+            Check again
+          </Button>
+        ) : null}
+      </div>
+      {!capable ? (
+        <p className="text-small text-text-muted">This server can&apos;t check templates: no darkroom is configured for it to ask.</p>
+      ) : check.error ? (
+        <Notice tone="error">{check.error}</Notice>
+      ) : !check.data ? (
+        <Spinner />
+      ) : check.data.ok ? (
+        <p className="text-small">
+          <span className="font-semibold text-success">✓ Renders:</span> darkroom has every checkpoint, LoRA, sampler and scheduler this template names,
+          and a workflow for each checkpoint at every LoRA count it allows.
+        </p>
+      ) : (
+        <>
+          <p className="mb-1 text-small">
+            <span className="font-semibold text-error">✕ Won&apos;t render:</span> {check.data.problems.length} problem
+            {check.data.problems.length === 1 ? "" : "s"}. argus-mint refuses to approve it until they&apos;re fixed.
+          </p>
+          <ul className="list-disc space-y-0.5 pl-5 text-small text-text-secondary">
+            {check.data.problems.map((p) => (
+              <li key={p}>{p}</li>
+            ))}
+          </ul>
+        </>
+      )}
+    </Card>
+  );
+}
+
 export function DecisionPanel({
   kind,
   id,

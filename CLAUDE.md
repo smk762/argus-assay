@@ -33,7 +33,7 @@ web/src/lib/          api (fetch client + capability gate), config (mintUrl), to
                       demo, tape, demoMint, staticParams (the static demo), chain (explorer links for the Card contract only)
 web/vendor/dh/        Dragonhound shared layer (dh-shared 1.2.5), vendored unedited; `make shared-check`
 web/scripts/          csp.mjs + check-static.mjs (static demo post-build)
-web/schema/           mint-wire.schema.json + pins.json (argus-mint repo, tag or commit, sha256)
+web/schema/           mint-wire.schema.json + pins.json (argus-mint repo, `dev` commit, sha256)
 web/scripts/          wire-types.mjs (same as argus-studio's)
 scripts/mock_mint.mjs stand-in argus-mint over fixture/ for demo mode
 scripts/make_tape.mjs fixture/ -> web/public/data-tape/ for the static demo; refuses unlisted addresses and secrets
@@ -47,7 +47,7 @@ fixture/              recorded responses from argus-mint's scripts/api_fixture.p
 - **Wire bumps:**
   1. Change the pin in `web/schema/pins.json`, then run `npm run wire:pull` and fix what typecheck reports.
   2. Run `make fixture` if responses changed shape.
-  3. The pin is an argus-mint release tag (`v0.2.0` or later). Pin a commit only to build against wire work argus-mint hasn't released, and move back to a tag at its next release.
+  3. The pin is argus-mint's `dev` HEAD, by full commit sha (the `tag` field takes a sha), not a release tag: wire types, imported docs and the recorded demo data all track the tip of `dev` together (argus-studio#169's sync rule, as argus-sightline does). Bump them together; when the demo data needs a GPU re-record (`scripts/record_demo.py`), it may follow in the next PR.
 - **Web platform:** the [Modern Web Guidance](https://developer.chrome.com/docs/modern-web-guidance) skill is the reference for HTML/CSS/client JS (install it locally as a Claude Code plugin, or `npx modern-web-guidance@latest install`; its files aren't committed). House exceptions:
   - **Overlays are `components/Modal.tsx`**, a native `<dialog>` opened with `showModal()`. Don't hand-roll `role="dialog"` overlays, focus traps or Esc handlers.
   - **The CSP is nonce-based** (`src/proxy.live.ts`), so every page renders dynamically. The static demo build instead gets a hash-based CSP per page (`web/scripts/csp.mjs`) and no proxy. An inline `<script>` needs the layout's `nonce`; anything else is refused. Only scripts, objects, `base`, forms and framing are restricted: argus-mint's origin is configurable and images arrive as `blob:` URLs.

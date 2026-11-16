@@ -1,4 +1,4 @@
-import type { CatalogueStatus, DraftStatus, Health, LoraChoice, LoraOption, Sampling } from "./types";
+import type { CatalogueStatus, DraftStatus, Health, LoraChoice, LoraOption, SampleJob, Sampling } from "./types";
 
 export type Tone = "ok" | "warning" | "error" | "muted" | "info";
 
@@ -15,6 +15,16 @@ export const CATALOGUE_STATUS: Record<CatalogueStatus, { label: string; mark: st
   approved: { label: "Approved", mark: "✓", tone: "ok" },
   retired: { label: "Retired", mark: "–", tone: "muted" },
 };
+
+export const SAMPLE_STATUS: Record<SampleJob["status"], { label: string; mark: string; tone: Tone }> = {
+  queued: { label: "Queued", mark: "…", tone: "muted" },
+  running: { label: "Running", mark: "▶", tone: "info" },
+  done: { label: "Done", mark: "✓", tone: "ok" },
+  failed: { label: "Failed", mark: "✕", tone: "error" },
+};
+
+/** "✓ Approved": a status as plain text (an <option>, a caption), still with its mark and word (rule 7). */
+export const statusText = (s: { label: string; mark: string }): string => `${s.mark} ${s.label}`;
 
 const ROLE_LABEL: Record<string, string> = { moderator: "the moderator", owner: "the owner" };
 

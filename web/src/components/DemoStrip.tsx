@@ -1,5 +1,5 @@
 // The Dragonhound Labs family bar, rendered natively from the vendored source (vendor/dh/dh-strip.mjs,
-// dh-shared 1.2.5): links, labels and mark come from there, so a re-sync updates it with no hand copy.
+// dh-shared 1.2.8): links, labels and mark come from there, so a re-sync updates it with no hand copy.
 // Styles are vendor/dh/dh-strip.css (imported by globals.css). No JS. src/lib/shared.test.ts checks the
 // rendered markup against the module's own stripHtml(). Only the static demo build carries it.
 //
@@ -8,7 +8,7 @@
 // pasted strip's every-suffix-plus-`hidden` form doesn't work here, since Tailwind's preflight makes
 // [hidden] display:none !important. src/app/layout.tsx also sets data-dh-label on <html>, as the family does.
 //
-// dh-shared 1.2.5 lists Assay, so its link is marked current. On phones the link list scrolls sideways;
+// dh-shared lists Assay (since 1.2.5), so its link is marked current. On phones the link list scrolls sideways;
 // dh-theme.js (added to the static build by scripts/csp.mjs) scrolls the current link into view.
 import { strip } from "../../vendor/dh/dh-strip.mjs";
 

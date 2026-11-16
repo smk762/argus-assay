@@ -7,23 +7,30 @@ import { checkTemplate, decide, startSamples } from "@/lib/api";
 import { readReviewer, saveReviewer } from "@/lib/reviewer";
 import { allowedModels, catalogueAction, loraChoices, samplingHint } from "@/lib/status";
 import { displaySlots } from "@/lib/slots";
-import type { BioInfo, CatalogueKind, CatalogueStatus, FrameInfo, TemplateInfo } from "@/lib/types";
+import type { BioInfo, CatalogueKind, CatalogueStatus, FrameInfo, TemplateCheck, TemplateInfo } from "@/lib/types";
 
 import { Field, INPUT, useLoad } from "./bits";
 import { CheckpointOptions, LoraPicker } from "./Checkpoints";
 import { useMint } from "./MintProvider";
 import { Button, Card, Notice, SectionTitle, Spinner } from "./ui";
 
-/** Approve a draft or retire an approved file. argus-mint writes it into the file. */
+export type TemplateCheckState = { capable: boolean; data: TemplateCheck | null; error: string | null; reload: () => void };
+
 /**
  * argus-mint's check of a template against darkroom's model list: checkpoints, LoRAs, sampler and
- * scheduler exist, and a workflow renders every checkpoint with each LoRA count allowed. Shown as
- * reported; argus-mint refuses to approve while it finds problems.
+ * scheduler exist, and a workflow renders every checkpoint with each LoRA count allowed. Asked only
+ * where `/health` says the server can check. One result feeds both the panel and the decision.
  */
-export function TemplateCheckPanel({ id, version }: { id: string; version: number }) {
+export function useTemplateCheck(id: string, version: number, enabled: boolean): TemplateCheckState {
   const { health } = useMint();
-  const capable = Boolean(health?.capabilities.check_templates);
+  const capable = enabled && Boolean(health?.capabilities.check_templates);
   const check = useLoad(() => (capable ? checkTemplate(id, version) : Promise.resolve(null)), [id, version, capable]);
+  return { capable, ...check };
+}
+
+/** The check as argus-mint reports it; argus-mint refuses to approve while it finds problems. */
+export function TemplateCheckPanel({ check }: { check: TemplateCheckState }) {
+  const { capable } = check;
   return (
     <Card>
       <div className="mb-2 flex items-center justify-between gap-2">
@@ -62,18 +69,22 @@ export function TemplateCheckPanel({ id, version }: { id: string; version: numbe
   );
 }
 
+/** Approve a draft or retire an approved file. argus-mint writes it into the file. */
 export function DecisionPanel({
   kind,
   id,
   version,
   status,
   onDone,
+  warning,
 }: {
   kind: CatalogueKind;
   id: string;
   version: number;
   status: CatalogueStatus;
   onDone: () => void;
+  /** Something argus-mint has reported that it will refuse on; shown, never used to disable the decision. */
+  warning?: string | null;
 }) {
   const { health, hasToken } = useMint();
   const [by, setBy] = useState(readReviewer);
@@ -103,6 +114,11 @@ export function DecisionPanel({
         change to the repo the server serves from.
       </p>
       {off ? <p className="mb-2 text-small text-text-muted">{off}</p> : null}
+      {warning && action === "approve" ? (
+        <Notice tone="warning" className="mb-2">
+          {warning}
+        </Notice>
+      ) : null}
       <div className="flex flex-wrap items-center gap-2">
         <input className={`${INPUT} max-w-60`} placeholder="Your name" value={by} onChange={(e) => setBy(e.target.value)} disabled={!!off} />
         <Button

@@ -2,6 +2,7 @@
 //
 //   - no page references argus-mint's port or the live build's /mint proxy
 //   - every page carries the hash-based CSP <meta>, and _headers is there for the host
+//   - every page's strip says "runs in your browser", not "recorded output" (and data-dh-label="browser" on <html>)
 //   - every draft, sample job and catalogue file on the tape has its exported page
 //   - the tape is in the export, with every image and font it lists
 //
@@ -20,6 +21,8 @@ const pages = files.filter((f) => f.endsWith(".html"));
 for (const file of pages) {
   const html = readFileSync(file, "utf8");
   if (!html.includes('http-equiv="Content-Security-Policy"')) problems.push(`${file} has no CSP <meta>`);
+  if (!/<html [^>]*data-dh-label="browser"/.test(html)) problems.push(`${file} has no data-dh-label="browser" on <html>`);
+  if (!html.includes("· runs in your browser</span>") || html.includes("recorded output")) problems.push(`${file}: the strip doesn't say "runs in your browser"`);
   if (/:8108|localhost|"\/mint\//.test(html)) problems.push(`${file} references a live argus-mint`);
 }
 if (!existsSync(join(out, "_headers"))) problems.push("no _headers file");

@@ -59,6 +59,7 @@ The render templates are `scripts/demo-portrait-v1.yaml`, for the first four dra
 - The owner's card editor: the live SVG preview, with recorded text layouts or an approximate one for new text. "Bake" records the edit as argus-mint would, but can't redraw the PNG, so the image stays the same.
 - Publishing: it shows the tape's recorded publish result (local CIDs, the fixture's voucher).
 - Catalogue approve and retire.
+- Prev and Next on a draft's page (buttons and the arrow keys, wrapping, "n of N"), through the queue in the grid's order under the filter it was opened from, carried as `?status=` (a query on the one exported page per draft, so the static export serves it); none means All. The queue reads `?status=` back, and a sample job's page steps through the jobs the same way. The keys are ignored while focus is in a field or a dialog is open.
 - Enlarged views: the queue's cards (through the current filter), the sample cards and the library's portraits (through the role filter) open in a viewer with Prev and Next buttons and the arrow keys. It wraps at both ends, so the buttons stay enabled and keep focus.
 
 All of it stays in the tab until a reload.

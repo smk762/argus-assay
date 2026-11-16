@@ -2,32 +2,33 @@
 
 /* eslint-disable @next/next/no-img-element -- images come from argus-mint, not the Next image pipeline */
 import Link from "next/link";
-import { useState } from "react";
+import { useSearchParams } from "next/navigation";
+import { Suspense, useState } from "react";
 
 import { DraftBadge, PageTitle, useLoad } from "@/components/bits";
 import { ExpandIcon } from "@/components/icons";
 import { Lightbox } from "@/components/Lightbox";
 import { Button, Notice, Spinner } from "@/components/ui";
 import { draftImage, getDrafts } from "@/lib/api";
+import { draftHref, type Filter, FILTERS, matches, parseFilter } from "@/lib/queue";
 import { awaitingText, shortAddress } from "@/lib/status";
 import { when } from "@/lib/time";
-import type { DraftStatus, DraftSummary } from "@/lib/types";
 
-type Filter = "moderator" | DraftStatus | "all";
-const FILTERS: { key: Filter; label: string }[] = [
-  { key: "moderator", label: "Needs the moderator" },
-  { key: "pending", label: "Pending" },
-  { key: "approved", label: "Approved" },
-  { key: "rejected", label: "Rejected" },
-  { key: "published", label: "Published" },
-  { key: "all", label: "All" },
-];
+/** The queue; `?status=` picks the filter (so a draft's Back returns to it), and reading the query needs a Suspense boundary. */
+export default function QueuePage() {
+  return (
+    <Suspense fallback={<Spinner />}>
+      <Queue />
+    </Suspense>
+  );
+}
 
-const matches = (d: DraftSummary, f: Filter) =>
-  f === "all" ? true : f === "moderator" ? d.status === "pending" && d.awaiting.includes("moderator") : d.status === f;
-
-export default function Queue() {
-  const [filter, setFilter] = useState<Filter>("moderator");
+function Queue() {
+  const [filter, setFilterState] = useState<Filter>(parseFilter(useSearchParams().get("status"), "moderator"));
+  const setFilter = (f: Filter) => {
+    setFilterState(f);
+    window.history.replaceState(null, "", f === "moderator" ? window.location.pathname : `?status=${f}`);
+  };
   const { data, error, reload } = useLoad(() => getDrafts());
   const items = (data?.items ?? []).filter((d) => matches(d, filter));
   const [big, setBig] = useState<number | null>(null);
@@ -59,7 +60,7 @@ export default function Queue() {
       <ul className="grid grid-cols-[repeat(auto-fill,minmax(210px,1fr))] gap-4">
         {items.map((d, i) => (
           <li key={d.id} className="relative">
-            <Link href={`/drafts/${d.id}`} className="block overflow-hidden rounded-lg border border-base-600/60 bg-base-800 hover:border-interactive">
+            <Link href={draftHref(d.id, filter)} className="block overflow-hidden rounded-lg border border-base-600/60 bg-base-800 hover:border-interactive">
               <img src={draftImage(d.id, "image", d.image_sha256)} alt={`Card image of ${d.name}`} {...(i === 0 ? { fetchPriority: "high" as const } : { loading: "lazy" as const })} className="aspect-[5/7] w-full bg-base-900 object-contain" />
               <div className="space-y-1 p-3">
                 {/* The name gets the full width: beside a two-line badge it was cut to a few letters. */}
@@ -100,7 +101,7 @@ export default function Queue() {
             </>
           ),
           actions: (
-            <Link href={`/drafts/${d.id}`} className="underline">
+            <Link href={draftHref(d.id, filter)} className="underline">
               Open the draft
             </Link>
           ),

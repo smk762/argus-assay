@@ -1,16 +1,18 @@
 "use client";
 
 /* eslint-disable @next/next/no-img-element -- images come from argus-mint, not the Next image pipeline */
-import { useParams } from "next/navigation";
-import { useState } from "react";
+import { useParams, useSearchParams } from "next/navigation";
+import { Suspense, useState } from "react";
 
 import { DraftBadge, Hash, INPUT, PageTitle, useLoad } from "@/components/bits";
 import { CardEditor } from "@/components/CardEditor";
+import { StepNav } from "@/components/StepNav";
 import { useMint } from "@/components/MintProvider";
 import { Button, Card, Collapsible, Kv, Notice, SectionTitle, Spinner } from "@/components/ui";
-import { draftImage, getDraft, getFrames, moderatorReview, ownerChallenge, ownerReview, publishDraft } from "@/lib/api";
+import { draftImage, getDraft, getDrafts, getFrames, moderatorReview, ownerChallenge, ownerReview, publishDraft } from "@/lib/api";
 import { awaitingText, canPublish, checkpointName, isAutoReview, loraText, moderatorCanReview, ownerCanReview, shortAddress } from "@/lib/status";
 import { cardContractUrl } from "@/lib/chain";
+import { draftHref, FILTERS, parseFilter, queuePosition } from "@/lib/queue";
 import { staticDemo } from "@/lib/demo";
 import { readReviewer, saveReviewer } from "@/lib/reviewer";
 import { when } from "@/lib/time";
@@ -186,9 +188,21 @@ function PublishPanel({ d, onDone }: { d: DraftDetail; onDone: (d: DraftDetail) 
   );
 }
 
+/** One draft; `?status=` is the queue filter it was opened from, which Prev and Next step through. */
 export default function DraftView() {
+  return (
+    <Suspense fallback={<Spinner />}>
+      <Draft />
+    </Suspense>
+  );
+}
+
+function Draft() {
   const { id } = useParams<{ id: string }>();
+  const filter = parseFilter(useSearchParams().get("status"));
   const { data, error } = useLoad(() => getDraft(id), [id]);
+  const queue = useLoad(() => getDrafts(), [id]);
+  const pos = queue.data ? queuePosition(queue.data.items, id, filter) : null;
   const frames = useLoad(() => getFrames());
   const [updated, setUpdated] = useState<DraftDetail | null>(null);
   const [showArt, setShowArt] = useState(false);
@@ -202,7 +216,24 @@ export default function DraftView() {
   const frameInfo = frames.data?.find((f) => f.frame.id === draft.frame?.id && f.frame.version === draft.frame?.version);
   return (
     <>
-      <PageTitle aside={<DraftBadge status={d.status} />}>{draft.name}</PageTitle>
+      <PageTitle
+        aside={
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
+            <DraftBadge status={d.status} />
+            {pos ? (
+              <StepNav
+                label={`Drafts: ${FILTERS.find((f) => f.key === pos.filter)?.label ?? "All"}`}
+                prev={draftHref(pos.prev, pos.filter)}
+                next={draftHref(pos.next, pos.filter)}
+                n={pos.n}
+                total={pos.total}
+              />
+            ) : null}
+          </div>
+        }
+      >
+        {draft.name}
+      </PageTitle>
       {editing && frameInfo ? (
         <CardEditor
           key={draft.image_sha256}

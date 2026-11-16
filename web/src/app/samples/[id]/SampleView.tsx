@@ -5,11 +5,13 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
-import { PageTitle } from "@/components/bits";
+import { PageTitle, useLoad } from "@/components/bits";
 import { ExpandIcon } from "@/components/icons";
 import { Lightbox } from "@/components/Lightbox";
+import { StepNav } from "@/components/StepNav";
 import { Card, Collapsible, Notice, Spinner } from "@/components/ui";
-import { getSample, sampleImage } from "@/lib/api";
+import { getSample, getSamples, sampleImage } from "@/lib/api";
+import { step } from "@/lib/step";
 import { checkpointName, loraText } from "@/lib/status";
 import type { SampleJob } from "@/lib/types";
 
@@ -18,6 +20,8 @@ export default function SampleView() {
   const [job, setJob] = useState<SampleJob | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [big, setBig] = useState<number | null>(null);
+  // Prev and Next through the sample jobs, in the Samples page's order.
+  const jobs = useLoad(() => getSamples(), [id]);
   useEffect(() => {
     let live = true;
     let timer: ReturnType<typeof setTimeout>;
@@ -42,12 +46,25 @@ export default function SampleView() {
     };
   }, [id]);
   if (!job) return error ? <Notice tone="error">{error}</Notice> : <Spinner />;
+  const ids = jobs.data?.items.map((j) => j.id) ?? [];
+  const at = ids.indexOf(job.id);
+  const nav =
+    at < 0 ? null : (
+      <StepNav label="Sample jobs" prev={`/samples/${ids[step(at, -1, ids.length)!]}/`} next={`/samples/${ids[step(at, 1, ids.length)!]}/`} n={at + 1} total={ids.length} />
+    );
   const r = job.request;
   const running = job.status === "queued" || job.status === "running";
   const shown = (job.items ?? []).filter((item) => item.framed || item.art);
   return (
     <>
-      <PageTitle aside={running ? <Spinner /> : null}>
+      <PageTitle
+        aside={
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
+            {running ? <Spinner /> : null}
+            {nav}
+          </div>
+        }
+      >
         Samples of {r.template.id} v{r.template.version}
       </PageTitle>
       <p className="mb-4 text-small text-text-secondary">

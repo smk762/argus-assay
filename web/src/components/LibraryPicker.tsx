@@ -28,9 +28,14 @@ export function LibraryPicker({ library, selected, onSelect }: { library: Librar
         {names.map((n) => (
           <select key={n} className={INPUT} value={filters[n] ?? ""} onChange={(e) => setFilters({ ...filters, [n]: e.target.value })} aria-label={n}>
             <option value="">Any {n}</option>
-            {Array.from(new Set(library.items.map((i) => i.variables[n]))).sort().map((v) => (
-              <option key={v}>{v}</option>
-            ))}
+            {/* `names` is every variable any item has, so an item can lack this one: leave its gap out of the list. */}
+            {Array.from(new Set(library.items.map((i) => i.variables[n]).filter((v): v is string => v != null && v !== "")))
+              .sort()
+              .map((v) => (
+                <option key={v} value={v}>
+                  {v}
+                </option>
+              ))}
           </select>
         ))}
       </div>

@@ -175,6 +175,15 @@ describe("the in-browser argus-mint", () => {
     expect(m.post("/samples", {}).status).toBe(503);
     expect(m.post("/frames/card-green/1/preview", {}).status).toBe(503);
   });
+
+  it("refuses a catalogue decision that isn't approve or retire, and changes nothing (pack-argus-assay-4f0b55d668)", () => {
+    const m = mint();
+    const draft = tape().templates.find((e) => e.template.status === "draft")!.template;
+    for (const decision of [undefined, "reject", "Approve", ""]) {
+      expect(m.post(`/templates/${draft.id}/${draft.version}/review`, { decision, by: "me" }).status, String(decision)).toBe(422);
+    }
+    expect((m.get("/templates").body as { template: { version: number; status: string } }[]).find((e) => e.template.version === draft.version)?.template.status).toBe("draft");
+  });
 });
 
 describe("the client's static branch", () => {

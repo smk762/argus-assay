@@ -36,5 +36,9 @@ export const serverScheme = (): Scheme => "light";
 
 /** Calls `listener` when the effective scheme changes (toggle, system, another subdomain). */
 export function subscribeScheme(listener: () => void): () => void {
-  return window.dhTheme?.subscribe(listener) ?? (() => {});
+  if (window.dhTheme) return window.dhTheme.subscribe(listener);
+  // Without dh-theme.js the scheme is the system's (effectiveScheme), so follow the system's changes.
+  const mq = matchMedia("(prefers-color-scheme: dark)");
+  mq.addEventListener("change", listener);
+  return () => mq.removeEventListener("change", listener);
 }

@@ -12,7 +12,10 @@ const familyOf = (frameId: string, version: number, font: string) => `assay-${fr
 function useFrameFonts(frame: FrameInfo["frame"]): boolean {
   const fonts = Array.from(new Set(Object.values(frame.texts ?? {}).map((s) => s.font).filter(Boolean) as string[]));
   const key = fonts.join("|");
-  const [ready, setReady] = useState(false);
+  // Ready for one frame and font set: another frame's preview waits for its own fonts rather than drawing in
+  // the fallback face while they load.
+  const want = `${frame.id}@${frame.version}|${key}`;
+  const [readyFor, setReadyFor] = useState<string | null>(null);
   useEffect(() => {
     let live = true;
     Promise.all(
@@ -23,15 +26,15 @@ function useFrameFonts(frame: FrameInfo["frame"]): boolean {
         document.fonts.add(await face.load());
       }),
     ).then(
-      () => live && setReady(true),
-      () => live && setReady(true),
+      () => live && setReadyFor(want),
+      () => live && setReadyFor(want),
     );
     return () => {
       live = false;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [frame.id, frame.version, key]);
-  return ready;
+  return readyFor === want;
 }
 
 /**

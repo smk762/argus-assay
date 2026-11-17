@@ -92,7 +92,8 @@ export function CardEditor({ d, frame, onDone, onClose }: { d: DraftDetail; fram
   };
 
   const textEdit = diffEdit({ name: draft.name, bio: draft.bio?.text ?? null, texts: draft.texts ?? {} }, { name, bio: draft.bio ? bio : null, texts });
-  const styleChanged = !sameStyle(draft.style, style);
+  // A locked frame's look is fixed: no style goes in an edit, whatever the state holds.
+  const styleChanged = !locked && !sameStyle(draft.style, style);
   const edit = textEdit || styleChanged ? { ...(textEdit ?? {}), ...(styleChanged ? { style: normalise(style) } : {}) } : null;
 
   const bake = async (demo: boolean) => {
@@ -271,9 +272,11 @@ export function CardEditor({ d, frame, onDone, onClose }: { d: DraftDetail; fram
                 Bake as demo owner
               </Button>
             ) : null}
-            <Button disabled={busy} onClick={() => setStyle({ slots: {} })}>
-              Plain style
-            </Button>
+            {locked ? null : (
+              <Button disabled={busy} onClick={() => setStyle({ slots: {} })}>
+                Plain style
+              </Button>
+            )}
             <Button disabled={busy} onClick={onClose}>
               Cancel
             </Button>

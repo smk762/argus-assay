@@ -263,6 +263,8 @@ createServer(async (req, res) => {
       const [list, kind] = catalogue[p[0]];
       const entry = list.find((e) => e[kind].id === p[1] && e[kind].version === Number(p[2]));
       if (!entry) return fail(res, 404, `no ${kind}`);
+      // As argus-mint's wire: "approve" or "retire", nothing else (lib/demoMint.ts says the same).
+      if (b.decision !== "approve" && b.decision !== "retire") return fail(res, 422, 'decision must be "approve" or "retire"');
       const obj = entry[kind];
       if (b.decision === "approve" && obj.status !== "draft") return fail(res, 409, "only a draft can be approved");
       if (b.decision === "retire" && obj.status !== "approved") return fail(res, 409, "only an approved file can be retired");

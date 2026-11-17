@@ -50,9 +50,12 @@ export function Modal({
     const closed = () => onCloseRef.current();
     dialog.addEventListener("close", closed);
     // closedby="any" is missing in Safari: close on a press and release both outside the box.
-    // Test the pointer position, not the target: the dialog is also the target for its own padding.
+    // Test the pointer position, not the target: the dialog is also the target for its own padding. But only for
+    // a press on this dialog: a nested Modal renders inside it, so its presses (and its backdrop's) bubble up
+    // here, and natively only the topmost dialog is light-dismissed.
     let pressedOutside = false;
     const outside = (e: PointerEvent) => {
+      if ((e.target as Element | null)?.closest?.("dialog") !== dialog) return false;
       const r = dialog.getBoundingClientRect();
       return e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom;
     };

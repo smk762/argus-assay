@@ -254,6 +254,8 @@ export class DemoMint {
       return obj.id === id && obj.version === version;
     });
     if (!entry) return fail(404, `no ${kind}`);
+    // As argus-mint's wire: "approve" or "retire", nothing else. Anything else would otherwise fall through to "retired".
+    if (b.decision !== "approve" && b.decision !== "retire") return fail(422, 'decision must be "approve" or "retire"');
     const obj = entry[kind] as { id: string; version: number; status: string; approved_by?: string | null; approved_at?: string | null };
     if (b.decision === "approve" && obj.status !== "draft") return fail(409, "only a draft can be approved");
     if (b.decision === "retire" && obj.status !== "approved") return fail(409, "only an approved file can be retired");

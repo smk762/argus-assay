@@ -81,7 +81,8 @@ export function diffEdit(
   if (current.bio !== null && next.bio !== null && para(next.bio) !== para(current.bio)) edit.bio = para(next.bio);
   const texts: Record<string, string> = {};
   for (const slot of new Set([...Object.keys(current.texts), ...Object.keys(next.texts)])) {
-    const before = current.texts[slot] ?? "";
+    // Both sides trimmed: stored text with a stray space is not "changed" by being left alone.
+    const before = (current.texts[slot] ?? "").trim();
     const after = (next.texts[slot] ?? "").trim();
     if (before !== after) texts[slot] = after;
   }

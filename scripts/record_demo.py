@@ -353,7 +353,12 @@ class CachedWriter:
 
     def __init__(self, inner, path: Path | None, guard: FitGuard, fresh: set[str]):
         self.inner, self.path, self.guard, self.fresh = inner, path, guard, fresh
-        self.kept = json.loads(path.read_text()) if path and path.is_file() else {}
+        self.kept: dict[str, str] = {}
+        if path and path.is_file():
+            try:
+                self.kept = json.loads(path.read_text())
+            except ValueError as e:  # a file torn by an earlier crash: start again rather than refuse to run
+                print(f"  {path} is unreadable ({e}); starting with no kept bios", file=sys.stderr)
         self.offered: set[str] = set()
         self.key = ""
         guard.on_keep = self.keep
@@ -370,7 +375,10 @@ class CachedWriter:
         if self.path and self.key:
             self.kept[self.key] = text
             self.path.parent.mkdir(parents=True, exist_ok=True)
-            self.path.write_text(json.dumps(self.kept, indent=1, ensure_ascii=False))
+            # Written beside it and moved into place, so an interrupted run leaves the old file whole.
+            tmp = self.path.with_name(f".{self.path.name}.tmp")
+            tmp.write_text(json.dumps(self.kept, indent=1, ensure_ascii=False))
+            os.replace(tmp, self.path)
 
     def __getattr__(self, attr):
         return getattr(self.inner, attr)
@@ -454,9 +462,15 @@ def landscape(data: bytes) -> bytes:
     """Cropped and scaled to 1152x896, the shape template v2 renders."""
     im = Image.open(io.BytesIO(data)).convert("RGB")
     w, h = im.size
-    crop_h = round(w * 896 / 1152)
-    top = max(0, (h - crop_h) // 2)
-    im = im.crop((0, top, w, top + crop_h)).resize((1152, 896), Image.Resampling.LANCZOS)
+    if w * 896 > h * 1152:  # wider than 1152:896 (3:2, 16:9): crop the sides, or the bottom comes out black
+        crop_w = round(h * 1152 / 896)
+        left = (w - crop_w) // 2
+        box = (left, 0, left + crop_w, h)
+    else:  # taller: crop top and bottom
+        crop_h = round(w * 896 / 1152)
+        top = (h - crop_h) // 2
+        box = (0, top, w, top + crop_h)
+    im = im.crop(box).resize((1152, 896), Image.Resampling.LANCZOS)
     buf = io.BytesIO()
     im.save(buf, format="PNG")
     return buf.getvalue()
@@ -595,7 +609,12 @@ def reachable(darkroom: str, ollama: str, model: str) -> None:
         tags = httpx.get(f"{ollama.rstrip('/')}/api/tags", timeout=10).json()
     except (httpx.HTTPError, ValueError) as e:
         sys.exit(f"the GPU host isn't ready: {e}")
-    if model not in {m.get("name") for m in tags.get("models", [])}:
+    # Ollama lists "name:tag" and serves an untagged name as ":latest", so compare both sides tagged.
+    def tagged(name: str) -> str:
+        return name if ":" in name.rsplit("/", 1)[-1] else f"{name}:latest"
+
+    have = {tagged(n) for m in tags.get("models", []) for n in (m.get("name"), m.get("model")) if n}
+    if tagged(model) not in have:
         sys.exit(f"Ollama doesn't have {model} (ollama pull {model})")
 
 
@@ -771,71 +790,76 @@ def main(a: argparse.Namespace) -> None:
             sys.exit(f"sample job {job_id} ended {job['status']}: {job.get('error') or 'argus-mint gave no reason'}")
 
         stage = Path(tempfile.mkdtemp(dir=out.parent, prefix=f".{out.name}-"))
-        (stage / "drafts").mkdir()
+        # Removed again unless it becomes OUT, so a failed run leaves no hidden .OUT-XXXX directory behind.
+        try:
+            (stage / "drafts").mkdir()
 
-        def dump(rel: str, path: str) -> object:
-            data = c.get(path).json()
-            (stage / rel).write_text(json.dumps(data, indent=2, ensure_ascii=False) + "\n")
-            return data
+            def dump(rel: str, path: str) -> object:
+                data = c.get(path).json()
+                (stage / rel).write_text(json.dumps(data, indent=2, ensure_ascii=False) + "\n")
+                return data
 
-        dump("health.json", "/health")
-        dump("templates.json", "/templates")
-        frames = dump("frames.json", "/frames")
-        dump("bios.json", "/bios")
-        listing = dump("drafts.json", "/drafts")
-        for item in listing["items"]:  # type: ignore[index]
-            dump(f"drafts/{item['id']}.json", f"/drafts/{item['id']}")
-            (stage / "drafts" / item["id"]).mkdir()
-            for which in ("image", "art"):
-                png = preview(c.get(f"/drafts/{item['id']}/{which}").content)
-                (stage / "drafts" / item["id"] / f"{which}.png").write_bytes(png)
-            d = c.get(f"/drafts/{item['id']}").json()["draft"]
-            if d["frame"]:  # where the card's text sits, for the style editor's preview
-                texts = {"name": d["name"], **({"bio": d["bio"]["text"]} if d["bio"] else {}), **d["texts"]}
-                lay = c.post(f"/frames/{d['frame']['id']}/{d['frame']['version']}/layout", json={"texts": texts})
-                (stage / "drafts" / item["id"] / "layout.json").write_text(json.dumps(lay.json(), indent=1) + "\n")
-        jobs = dump("samples.json", "/samples")
-        (stage / "samples").mkdir()
-        for job in jobs["items"]:  # type: ignore[index]
-            dump(f"samples/{job['id']}.json", f"/samples/{job['id']}")
-            (stage / "samples" / job["id"]).mkdir()
-            for item in job["items"]:
-                for which in ("art", "framed"):
-                    if item[which]:
-                        png = preview(c.get(f"/samples/{job['id']}/{item['n']}/{which}").content)
-                        (stage / "samples" / job["id"] / f"{item['n']}-{which}.png").write_bytes(png)
-        dump("library.json", "/library")
-        (stage / "library").mkdir()
-        for e in entries:
-            if a.library is None:  # the previews are the images: keep their bytes
-                (stage / "library" / f"{e.id}.jpg").write_bytes(images[e.id])
-            else:
-                thumb = c.get(f"/library/{e.id}/image", params={"thumb": THUMB})
-                thumb.raise_for_status()
-                (stage / "library" / f"{e.id}.jpg").write_bytes(thumb.content)
-        for f in frames:  # type: ignore[union-attr]
-            fid, ver = f["frame"]["id"], f["frame"]["version"]
-            (stage / "frames" / fid / str(ver)).mkdir(parents=True)
-            (stage / "frames" / fid / str(ver) / "overlay.png").write_bytes(c.get(f"/frames/{fid}/{ver}/overlay").content)
-            for font in sorted({s["font"] for s in f["frame"]["texts"].values() if s.get("font")}):
-                dest = stage / "frames" / fid / str(ver) / "fonts" / font
-                dest.parent.mkdir(parents=True, exist_ok=True)
-                dest.write_bytes(c.get(f"/frames/{fid}/{ver}/fonts/{font}").content)
-        kind = "recorded" if a.real else "sample"
-        note = (
-            "Recorded from argus-mint with real backends: renders and text checks by argus-darkroom, bios by "
-            "Ollama. Pins are local (non-IPFS) CIDs; the voucher is signed with a public test key for Base "
-            "Sepolia's demo Card contract. Nothing was pinned or minted."
-            if a.real
-            else "argus-mint's real server with stand-in backends: art from the portrait library, hand-written bios, "
-            "local (non-IPFS) CIDs, a public test-key owner and Base Sepolia's chain id. Nothing was pinned or minted."
-        )
-        provenance = {"kind": kind, "source": "argus-assay scripts/record_demo.py", "note": note}
-        (stage / "provenance.json").write_text(json.dumps(provenance, indent=2) + "\n")
-        (stage / "README.md").write_text(README.format(kind=kind, note=note, library_template=f"{t.id} v{t.version}"))
-        if out.exists():
-            shutil.rmtree(out)
-        stage.rename(out)
+            dump("health.json", "/health")
+            dump("templates.json", "/templates")
+            frames = dump("frames.json", "/frames")
+            dump("bios.json", "/bios")
+            listing = dump("drafts.json", "/drafts")
+            for item in listing["items"]:  # type: ignore[index]
+                dump(f"drafts/{item['id']}.json", f"/drafts/{item['id']}")
+                (stage / "drafts" / item["id"]).mkdir()
+                for which in ("image", "art"):
+                    png = preview(c.get(f"/drafts/{item['id']}/{which}").content)
+                    (stage / "drafts" / item["id"] / f"{which}.png").write_bytes(png)
+                d = c.get(f"/drafts/{item['id']}").json()["draft"]
+                if d["frame"]:  # where the card's text sits, for the style editor's preview
+                    texts = {"name": d["name"], **({"bio": d["bio"]["text"]} if d["bio"] else {}), **d["texts"]}
+                    lay = c.post(f"/frames/{d['frame']['id']}/{d['frame']['version']}/layout", json={"texts": texts})
+                    (stage / "drafts" / item["id"] / "layout.json").write_text(json.dumps(lay.json(), indent=1) + "\n")
+            jobs = dump("samples.json", "/samples")
+            (stage / "samples").mkdir()
+            for job in jobs["items"]:  # type: ignore[index]
+                dump(f"samples/{job['id']}.json", f"/samples/{job['id']}")
+                (stage / "samples" / job["id"]).mkdir()
+                for item in job["items"]:
+                    for which in ("art", "framed"):
+                        if item[which]:
+                            png = preview(c.get(f"/samples/{job['id']}/{item['n']}/{which}").content)
+                            (stage / "samples" / job["id"] / f"{item['n']}-{which}.png").write_bytes(png)
+            dump("library.json", "/library")
+            (stage / "library").mkdir()
+            for e in entries:
+                if a.library is None:  # the previews are the images: keep their bytes
+                    (stage / "library" / f"{e.id}.jpg").write_bytes(images[e.id])
+                else:
+                    thumb = c.get(f"/library/{e.id}/image", params={"thumb": THUMB})
+                    thumb.raise_for_status()
+                    (stage / "library" / f"{e.id}.jpg").write_bytes(thumb.content)
+            for f in frames:  # type: ignore[union-attr]
+                fid, ver = f["frame"]["id"], f["frame"]["version"]
+                (stage / "frames" / fid / str(ver)).mkdir(parents=True)
+                (stage / "frames" / fid / str(ver) / "overlay.png").write_bytes(c.get(f"/frames/{fid}/{ver}/overlay").content)
+                for font in sorted({s["font"] for s in f["frame"]["texts"].values() if s.get("font")}):
+                    dest = stage / "frames" / fid / str(ver) / "fonts" / font
+                    dest.parent.mkdir(parents=True, exist_ok=True)
+                    dest.write_bytes(c.get(f"/frames/{fid}/{ver}/fonts/{font}").content)
+            kind = "recorded" if a.real else "sample"
+            note = (
+                "Recorded from argus-mint with real backends: renders and text checks by argus-darkroom, bios by "
+                "Ollama. Pins are local (non-IPFS) CIDs; the voucher is signed with a public test key for Base "
+                "Sepolia's demo Card contract. Nothing was pinned or minted."
+                if a.real
+                else "argus-mint's real server with stand-in backends: art from the portrait library, hand-written bios, "
+                "local (non-IPFS) CIDs, a public test-key owner and Base Sepolia's chain id. Nothing was pinned or minted."
+            )
+            provenance = {"kind": kind, "source": "argus-assay scripts/record_demo.py", "note": note}
+            (stage / "provenance.json").write_text(json.dumps(provenance, indent=2) + "\n")
+            (stage / "README.md").write_text(README.format(kind=kind, note=note, library_template=f"{t.id} v{t.version}"))
+            if out.exists():
+                shutil.rmtree(out)
+            stage.rename(out)
+        except BaseException:  # sys.exit too
+            shutil.rmtree(stage, ignore_errors=True)
+            raise
     if refused:
         print(f"darkroom refused {len(refused)} render(s); purge each: {' '.join(refused)}", file=sys.stderr)
     calls = OllamaWriter.calls if a.real else StandInWriter.calls

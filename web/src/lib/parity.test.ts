@@ -64,6 +64,14 @@ async function same(m: DemoMint, method: "GET" | "POST", path: string, body?: Re
   return a.body as unknown;
 }
 
+/** Like `same`, and both must refuse it: a 4xx, not merely the same answer (two wrong 200s would agree). */
+async function refused(m: DemoMint, path: string, body: Record<string, unknown>) {
+  const [a, b] = [await fromMock("POST", path, body), fromDemo(m, "POST", path, body)];
+  expect(b.status, `POST ${path}: status`).toBe(a.status);
+  expect(a.status, `POST ${path}: refused`).toBeGreaterThanOrEqual(400);
+  expect(a.status, `POST ${path}: refused, not failed`).toBeLessThan(500);
+}
+
 describe("the in-browser argus-mint and the mock answer alike", { timeout: 20_000 }, () => {
   it("report the same /health, apart from what the static demo can't do", async () => {
     const a = (await fromMock("GET", "/health")).body as { capabilities: Record<string, boolean> };
@@ -94,14 +102,17 @@ describe("the in-browser argus-mint and the mock answer alike", { timeout: 20_00
       awaiting: string[];
     };
     expect(after.awaiting).not.toContain("moderator");
-    // A second moderator review of the same image is refused by both.
-    await same(m, "POST", `/drafts/${pending!.id}/review`, { role: "moderator", approve: true, by: "parity", note: "" });
-    await same(m, "POST", "/drafts/nope/review", { role: "moderator", approve: true, by: "parity", note: "" });
+    // A second moderator review of the same image, and a review of no draft, are refused by both.
+    await refused(m, `/drafts/${pending!.id}/review`, { role: "moderator", approve: true, by: "parity", note: "" });
+    await refused(m, "/drafts/nope/review", { role: "moderator", approve: true, by: "parity", note: "" });
 
+    // A decision that is neither approve nor retire is refused, and leaves the draft template a draft.
+    for (const decision of [undefined, "reject"]) await refused(m, "/templates/demo-portrait/2/review", { decision, by: "parity" });
+    await same(m, "GET", "/templates");
     // A draft template approved, an approved frame retired, and the lists agree afterwards.
     await same(m, "POST", "/templates/demo-portrait/2/review", { decision: "approve", by: "parity" });
     await same(m, "POST", "/frames/card-green/1/review", { decision: "retire", by: "parity" });
-    await same(m, "POST", "/templates/nope/1/review", { decision: "approve", by: "parity" });
+    await refused(m, "/templates/nope/1/review", { decision: "approve", by: "parity" });
     for (const path of ["/templates", "/frames", "/drafts"]) await same(m, "GET", path);
   });
 });

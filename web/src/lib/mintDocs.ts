@@ -100,8 +100,10 @@ export const githubAnchor = (heading: string): string =>
     .replace(/[^\p{L}\p{N}_\- ]/gu, "")
     .replace(/ /g, "-");
 
-const MINT_BLOB = /^https:\/\/github\.com\/smk762\/argus-mint\/blob\/[^/]+\/([^#?]+)(#.*)?$/;
-const MINT_TREE = /^https:\/\/github\.com\/smk762\/argus-mint\/tree\/[^/]+\/([^#?]*)$/;
+// mint's own GitHub links on any ref: the path after the ref (optional for a tree, the repo root), a query
+// (`?plain=1`) and a fragment are all kept; only the ref is replaced by the pinned commit.
+const MINT_BLOB = /^https:\/\/github\.com\/smk762\/argus-mint\/blob\/[^/#?]+\/([^#?]+)(\?[^#]*)?(#.*)?$/;
+const MINT_TREE = /^https:\/\/github\.com\/smk762\/argus-mint\/tree\/[^/#?]+(?:\/([^#?]*))?(\?[^#]*)?(#.*)?$/;
 
 /** Join a relative link onto the directory of the file it appears in (mint paths, posix). */
 function resolvePath(from: string, rel: string): string | null {
@@ -135,9 +137,19 @@ export function resolveDocLink(href: string, from: string, sync: SyncRecord = MI
     return { href: url, external: !url.startsWith(DOCS_ROOT) };
   };
   const blob = MINT_BLOB.exec(href);
-  if (blob) return local(blob[1], (blob[2] ?? "").slice(1));
+  if (blob) {
+    const [, file, query = "", hash = ""] = blob;
+    const to = local(file, hash.slice(1));
+    // An imported file opens here, where a query means nothing; on GitHub the query stays (before the anchor).
+    if (!to.external || !query) return to;
+    const cut = to.href.indexOf("#");
+    return { href: cut < 0 ? `${to.href}${query}` : `${to.href.slice(0, cut)}${query}${to.href.slice(cut)}`, external: true };
+  }
   const tree = MINT_TREE.exec(href);
-  if (tree) return { href: `https://github.com/${sync.repo}/tree/${sync.commit}/${tree[1]}`, external: true };
+  if (tree) {
+    const [, path = "", query = "", hash = ""] = tree;
+    return { href: `https://github.com/${sync.repo}/tree/${sync.commit}${path ? `/${path}` : ""}${query}${hash}`, external: true };
+  }
   if (/^(?:https?:|mailto:)/i.test(href)) return { href, external: true };
   if (/^[a-z][a-z\d+.-]*:/i.test(href) || href.startsWith("//")) return null;
   const cut = href.indexOf("#");

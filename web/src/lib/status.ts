@@ -74,7 +74,11 @@ export function diffEdit(
 ): { name?: string; bio?: string; texts?: Record<string, string> } | null {
   const edit: { name?: string; bio?: string; texts?: Record<string, string> } = {};
   if (next.name.trim() && next.name.trim() !== current.name) edit.name = next.name.trim();
-  if (current.bio !== null && next.bio !== null && next.bio.trim().replace(/\s+/g, " ") !== current.bio) edit.bio = next.bio.trim();
+  // One paragraph either way: argus-mint draws a bio with its whitespace collapsed, so both sides are compared
+  // (and the edit sent) in that form. A stored bio with a line break isn't "changed" by being left alone, and a
+  // change of whitespace alone changes nothing on the card.
+  const para = (text: string) => text.trim().replace(/\s+/g, " ");
+  if (current.bio !== null && next.bio !== null && para(next.bio) !== para(current.bio)) edit.bio = para(next.bio);
   const texts: Record<string, string> = {};
   for (const slot of new Set([...Object.keys(current.texts), ...Object.keys(next.texts)])) {
     const before = current.texts[slot] ?? "";

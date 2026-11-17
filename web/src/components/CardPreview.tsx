@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useId, useState } from "react";
 
 import { frameFont, frameOverlay } from "@/lib/api";
 import { svgMatrix, type CardStyle } from "@/lib/style";
@@ -45,7 +45,9 @@ export function CardPreview({ frame, artUrl, layout, style }: { frame: FrameInfo
   const W = frame.width;
   const H = frame.height;
   const slots = style.slots ?? {};
-  const uid = `${f.id}-${f.version}`;
+  // `url(#id)` resolves across the whole document, so two previews of one frame (side by side, or a list)
+  // would share the first one's filters: each instance gets its own ids. Only [\w-] is kept for url().
+  const uid = `${f.id}-${f.version}-${useId()}`.replace(/[^\w-]/g, "");
   return (
     <svg viewBox={`0 0 ${W} ${H}`} className="w-full rounded-lg bg-[repeating-conic-gradient(#8884_0_25%,transparent_0_50%)] bg-[length:16px_16px]" role="img" aria-label="Preview of the styled card">
       <defs>

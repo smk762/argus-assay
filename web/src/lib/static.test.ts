@@ -88,6 +88,26 @@ describe("the tape", () => {
   it("rejects a tape whose paths climb out of it", () => {
     expect(() => parseTape({ ...tape(), files: ["../secret.png"] })).toThrow(/not a tape path/);
   });
+
+  it("allows only plain relative paths: no URL, backslash or encoded dot gets out (pack-argus-assay-e8b12991fe)", () => {
+    for (const f of [
+      "https://evil.example/x.png",
+      "//evil.example/x.png",
+      "javascript:alert(1)",
+      "..\\..\\secret",
+      "drafts\\..\\..\\secret",
+      "%2e%2e/x",
+      ".%2e/x",
+      "drafts/%2E%2E/x.png",
+      "drafts/./x.png",
+      "drafts/../x.png",
+      "",
+    ]) {
+      expect(() => parseTape({ ...tape(), files: [...tape().files, f] }), JSON.stringify(f)).toThrow(/not a tape path/);
+    }
+    // Every path the recorded fixture makes still passes.
+    expect(() => parseTape(tape())).not.toThrow();
+  });
 });
 
 describe("the in-browser argus-mint", () => {

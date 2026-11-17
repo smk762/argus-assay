@@ -765,6 +765,10 @@ def main(a: argparse.Namespace) -> None:
         for item in job["items"]:
             if item.get("error") or item.get("bio_error"):
                 sys.exit(f"sample item {item['n']}: {item.get('error') or item.get('bio_error')}")
+        # A job can fail as a whole (its template or frame didn't resolve, or the worker raised) with no
+        # item carrying the error, or no items at all: that is a failed recording, not a demo to write.
+        if job["status"] != "done":
+            sys.exit(f"sample job {job_id} ended {job['status']}: {job.get('error') or 'argus-mint gave no reason'}")
 
         stage = Path(tempfile.mkdtemp(dir=out.parent, prefix=f".{out.name}-"))
         (stage / "drafts").mkdir()

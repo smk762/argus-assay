@@ -46,6 +46,8 @@ function fail(problem: string): never {
 const isObject = (v: unknown): v is Record<string, unknown> => v != null && typeof v === "object" && !Array.isArray(v);
 
 /** Check tape.json enough that the page can trust its shape; throws with the first problem. */
+const TAPE_PATH = /^[A-Za-z0-9_-]+(?:\/[A-Za-z0-9_.-]+)*$/;
+
 export function parseTape(raw: unknown): Tape {
   if (!isObject(raw)) fail("tape.json must be an object");
   if (raw.format !== TAPE_FORMAT) fail(`format is ${JSON.stringify(raw.format)}, not ${TAPE_FORMAT}`);
@@ -60,8 +62,12 @@ export function parseTape(raw: unknown): Tape {
   if (!isObject(raw.layouts)) fail("layouts must be an object");
   const files = new Set(raw.files as unknown[]);
   for (const f of files) {
-    // Paths become URLs under the tape: no climbing out of it.
-    if (typeof f !== "string" || f.startsWith("/") || f.split("/").includes("..")) fail(`file ${JSON.stringify(f)} is not a tape path`);
+    // A tape path names a file under the tape, so it is allowed only in a plain form: letters, digits, `_`, `-`
+    // and `.` in `/`-separated segments, never `.` or `..` alone. That shuts out absolute URLs and schemes
+    // (`https:`, `javascript:`), backslashes (a URL parser reads `\` as `/`) and percent-encoded dots (`%2e%2e`).
+    if (typeof f !== "string" || !TAPE_PATH.test(f) || f.split("/").some((seg) => seg === "." || seg === "..")) {
+      fail(`file ${JSON.stringify(f)} is not a tape path`);
+    }
   }
   for (const d of raw.drafts as unknown[]) {
     if (!isObject(d) || typeof d.id !== "string" || !/^[0-9a-f]{8,32}$/.test(d.id)) fail("a draft has no usable id");

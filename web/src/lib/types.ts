@@ -35,6 +35,13 @@ export type {
   AutoCheck,
   Edit,
   TextSlot,
+  ProjectChecks,
+  ProjectDetail,
+  ProjectFile,
+  ProjectList,
+  ProjectSummary,
+  SavedProjectFile,
+  TextCheck,
 } from "./generated/mint";
 
 export type DraftStatus = "pending" | "approved" | "rejected" | "published";

@@ -342,7 +342,7 @@ class StandInDarkroom:
         self.n += 1
         return GenResult.ok(self.images[(self.n - 1) % len(self.images)], ref=f"stand-in-{self.n}")
 
-    def check_text(self, text: str) -> tuple[bool, str]:
+    def check_text(self, text: str, policy: str | None = None) -> tuple[bool, str]:
         return True, ""
 
 
@@ -590,6 +590,34 @@ def reject_note(c: TestClient, draft_id: str, name: str, notes: Path | None) -> 
     return txt.read_text().strip()
 
 
+PROJECT = "example-teasers"  # argus-mint's neutral example project; the only one the demo carries
+REVIEW_KEYS = ("status", "approved_by", "approved_at", "guard")  # written by argus-mint, never sent
+# Approved in the recording, so the page shows both statuses: the project, the embodied identity, its scene and
+# its line. The rest (the viewpoint identity, its scene and line, and the teaser links) stay drafts.
+PROJECT_APPROVE = [("project", PROJECT), ("identity", "keeper"), ("scene", "lamp-room"), ("line", "keep-it-lit")]
+
+
+def author_project(c: TestClient, src: Path, by: str) -> None:
+    """Author argus-mint's example teaser project over HTTP, as the moderator does from assay's editors: each
+    file is saved as a draft (argus-mint checks it and SingGuard judges its texts under the project's policy),
+    then a few are approved. No spoiler list is configured, so nothing is held; the page shows a hold as
+    "held by spoiler rule N" only. Nothing renders from a project file here."""
+    files = [("project", src / "project.yaml")]
+    for kind, sub in (("identity", "identities"), ("scene", "scenes"), ("line", "lines"), ("teasers", "teasers")):
+        files += [(kind, f) for f in sorted((src / sub).iterdir()) if f.suffix in (".yaml", ".json")]
+    print(f"project {PROJECT}: {len(files)} files", file=sys.stderr)
+    for kind, f in files:
+        doc = json.loads(f.read_text()) if f.suffix == ".json" else yaml.safe_load(f.read_text())
+        doc = {k: v for k, v in doc.items() if k not in REVIEW_KEYS}
+        r = c.post(f"/projects/{PROJECT}/files/{kind}/{doc['id']}/{doc['version']}", headers=AUTH, json={"doc": doc})
+        if r.status_code >= 400:
+            sys.exit(f"saving {kind} {doc['id']}: {r.status_code} {r.text}")
+    for kind, item in PROJECT_APPROVE:
+        r = c.post(f"/projects/{PROJECT}/files/{kind}/{item}/1/review", headers=AUTH, json={"decision": "approve", "by": by})
+        # A refusal (SingGuard, say) is part of the record: the file stays a draft and the page shows why.
+        print(f"  approve {kind} {item}: {r.status_code}{'' if r.status_code < 300 else ' ' + r.text}", file=sys.stderr)
+
+
 def plan(real: bool) -> str:
     renders = len(CARDS) + SAMPLE["count"]
     bios = renders + 1
@@ -598,7 +626,8 @@ def plan(real: bool) -> str:
         f"checkpoint, 1152x896, 25 steps, plus a retry if darkroom's image check refuses one; with --cache, "
         f"only those not made before), {bios} bios on "
         f"{yaml.safe_load((HERE / 'demo-bio-v1.yaml').read_text())['model']} (each rewritten until it fits; "
-        f"16 tries a round, {BIO_ROUNDS} rounds for a draft), and darkroom's text check on every try."
+        f"16 tries a round, {BIO_ROUNDS} rounds for a draft), and darkroom's text check on every try; then "
+        f"darkroom's text check on each text of the example teaser project ({PROJECT}) as it is saved."
     )
 
 
@@ -629,7 +658,7 @@ def main(a: argparse.Namespace) -> None:
     by = "maintainer" if a.real else "fixture"
     with tempfile.TemporaryDirectory() as tmp:
         work = Path(tmp)
-        for d in ("templates", "frames", "bios"):
+        for d in ("templates", "frames", "bios", "projects"):
             (work / d).mkdir()
         tid, tv = library_template(src_fixture, a.library)
         src = mint / "templates" / f"{tid}-v{tv}.yaml"
@@ -697,8 +726,10 @@ def main(a: argparse.Namespace) -> None:
                     time.sleep(60)
                 return r
 
-            def check_text(self, text):
-                return guard.check_text(text)
+            def check_text(self, text, policy=None):
+                # A bio (no policy) goes through the demo's fit checks first; a teaser project's text
+                # (under the project's policy) straight to darkroom's text pre-flight.
+                return guard.check_text(text) if policy is None else darkroom.check_text(text, policy=policy)
 
             def __getattr__(self, attr):  # anything else argus-mint asks of darkroom
                 return getattr(darkroom, attr)
@@ -706,6 +737,7 @@ def main(a: argparse.Namespace) -> None:
         cfg = Settings(
             drafts_dir=work / "drafts", samples_dir=work / "samples", library_dir=work / "library",
             templates_dir=work / "templates", frames_dir=work / "frames", bios_dir=work / "bios",
+            projects_dir=work / "projects",
             darkroom_url="http://darkroom:8106", writer_url="http://writer:9150", ipfs_api="http://kubo:5001",
             network="base-sepolia", card=CARD, moderator_token=TOKEN, siwe_domain="localhost:3108",
         )  # fmt: skip
@@ -789,6 +821,8 @@ def main(a: argparse.Namespace) -> None:
         if job["status"] != "done":
             sys.exit(f"sample job {job_id} ended {job['status']}: {job.get('error') or 'argus-mint gave no reason'}")
 
+        author_project(c, mint / "projects" / PROJECT, by)
+
         stage = Path(tempfile.mkdtemp(dir=out.parent, prefix=f".{out.name}-"))
         # Removed again unless it becomes OUT, so a failed run leaves no hidden .OUT-XXXX directory behind.
         try:
@@ -826,6 +860,9 @@ def main(a: argparse.Namespace) -> None:
                             png = preview(c.get(f"/samples/{job['id']}/{item['n']}/{which}").content)
                             (stage / "samples" / job["id"] / f"{item['n']}-{which}.png").write_bytes(png)
             dump("library.json", "/library")
+            (stage / "projects").mkdir()
+            for p in dump("projects.json", "/projects")["projects"]:  # type: ignore[index]
+                dump(f"projects/{p['id']}.json", f"/projects/{p['id']}")
             (stage / "library").mkdir()
             for e in entries:
                 if a.library is None:  # the previews are the images: keep their bytes
@@ -853,7 +890,7 @@ def main(a: argparse.Namespace) -> None:
             )
             provenance = {"kind": kind, "source": "argus-assay scripts/record_demo.py", "note": note}
             (stage / "provenance.json").write_text(json.dumps(provenance, indent=2) + "\n")
-            (stage / "README.md").write_text(README.format(kind=kind, note=note, library_template=f"{t.id} v{t.version}"))
+            (stage / "README.md").write_text(README.format(kind=kind, note=note, library_template=f"{t.id} v{t.version}", project=PROJECT))
             if out.exists():
                 shutil.rmtree(out)
             stage.rename(out)
@@ -891,6 +928,9 @@ docs/demo-recording.md.
   simile (scripts/bio_fit.json; checked as each is written and again by `make tape`).
 - `drafts/<id>/layout.json` is where each line of the card's text sits, and `frames/<id>/<v>/fonts/`
   holds the fonts the frame names (SIL OFL), for the style editor's preview.
+- `projects.json` and `projects/<id>.json` are `GET /projects` and `GET /projects/<id>` for argus-mint's
+  neutral example teaser project ({project}) only, authored over HTTP as the moderator (each text judged by
+  SingGuard as it was saved), with the project, one identity, its scene and its line approved.
 - `library.json` is `GET /library` for six whole groups of the portrait library (one entry per
   checkpoint); `library/<id>.jpg` is each entry's 640 px preview.
 - Images are half-size, 256-colour previews to keep the fixture small, so their sha256 differs

@@ -11,14 +11,15 @@ import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
 import { buildTape } from "../../../scripts/make_tape.mjs";
 import { DemoMint } from "./demoMint";
+import { saveDoc } from "./projects";
 import { parseTape } from "./tape";
-import type { DraftList, SampleJobList } from "./types";
+import type { DraftList, ProjectDetail, ProjectFile, ProjectList, SampleJobList, SavedProjectFile } from "./types";
 
 const FIXTURE = fileURLToPath(new URL("../../../fixture", import.meta.url));
 const MOCK = fileURLToPath(new URL("../../../scripts/mock_mint.mjs", import.meta.url));
 
-/** What the static demo turns off on purpose: it renders nothing, so it can't make drafts or samples. */
-const STATIC_ONLY = { create_drafts: false, sample: false };
+/** What the static demo turns off on purpose: it renders nothing, so it can't make drafts or samples, and it writes no project file. */
+const STATIC_ONLY = { create_drafts: false, sample: false, author_catalogue: false };
 
 let mock: ChildProcess;
 let base = "";
@@ -88,9 +89,15 @@ describe("the in-browser argus-mint and the mock answer alike", { timeout: 20_00
     for (const s of samples.items) await same(m, "GET", `/samples/${s.id}`);
   });
 
+  it("serve the same teaser projects, as recorded", async () => {
+    const m = demo();
+    const list = (await same(m, "GET", "/projects")) as ProjectList;
+    for (const p of list.projects) await same(m, "GET", `/projects/${p.id}`);
+  });
+
   it("answer the same for what isn't there", async () => {
     const m = demo();
-    for (const path of ["/drafts/nope", "/samples/nope", "/nope", "/templates/demo-portrait/1/check"]) await same(m, "GET", path);
+    for (const path of ["/drafts/nope", "/samples/nope", "/nope", "/templates/demo-portrait/1/check", "/projects/nope"]) await same(m, "GET", path);
   });
 
   it("walk a moderator review and a catalogue decision the same way", async () => {
@@ -114,5 +121,67 @@ describe("the in-browser argus-mint and the mock answer alike", { timeout: 20_00
     await same(m, "POST", "/frames/card-green/1/review", { decision: "retire", by: "parity" });
     await refused(m, "/templates/nope/1/review", { decision: "approve", by: "parity" });
     for (const path of ["/templates", "/frames", "/drafts"]) await same(m, "GET", path);
+  });
+});
+
+describe("teaser project authoring: the mock keeps it in memory, the hosted demo has none", { timeout: 20_000 }, () => {
+  const file = (kind: string, id: string, version = 1) => `/projects/parity-project/files/${kind}/${id}/${version}`;
+
+  it("refuses every project write in the hosted demo, which says it can't author", () => {
+    const m = demo();
+    expect((m.get("/health").body as { capabilities: Record<string, boolean> }).capabilities.author_catalogue).toBe(false);
+    expect(m.post(file("project", "parity-project"), { doc: { title: "Parity" } }).status).toBe(503);
+    expect(m.post(`${file("project", "parity-project")}/review`, { decision: "approve", by: "parity" }).status).toBe(503);
+  });
+
+  it("saves drafts, refuses what argus-mint refuses, and keeps reviews until it restarts", async () => {
+    expect(((await fromMock("GET", "/health")).body as { capabilities: Record<string, boolean> }).capabilities.author_catalogue).toBe(true);
+    // A file before its project, review keys in a save, an id that isn't the project's: all refused.
+    expect((await fromMock("POST", file("line", "a"), { doc: { voice: "v", text: "Hello.", source: "s" } })).status).toBe(404);
+    expect((await fromMock("POST", file("project", "parity-project"), { doc: { title: "Parity", status: "approved" } })).status).toBe(422);
+    expect((await fromMock("POST", file("project", "other"), { doc: { title: "Parity" } })).status).toBe(422);
+
+    const saved = (await fromMock("POST", file("project", "parity-project"), { doc: { title: "Parity" } })).body as SavedProjectFile;
+    expect(saved.file).toMatchObject({ kind: "project", id: "parity-project", version: 1, status: "draft", file: "project.yaml" });
+    expect(saved.file.doc).toMatchObject({ policy: "default", family: "sdxl", generated_label: true });
+    expect(saved.checks.guard_ran).toBe(false);
+    const ident = { voice: "keeper", presence: "embodied", prompt: "an old keeper" };
+    expect((await fromMock("POST", file("identity", "keeper"), { doc: { ...ident, presence: "viewpoint" } })).status).toBe(422);
+    expect((await fromMock("POST", file("identity", "keeper"), { doc: ident })).status).toBe(200);
+
+    const list = (await fromMock("GET", "/projects")).body as ProjectList;
+    expect(list.projects).toContainEqual({ id: "parity-project", title: "Parity", status: "draft" });
+    const detail = (await fromMock("GET", "/projects/parity-project")).body as ProjectDetail;
+    expect(detail.files.map((f) => `${f.kind} ${f.id} v${f.version}`)).toEqual(["project parity-project v1", "identity keeper v1"]);
+
+    // No darkroom behind the mock: SingGuard judged nothing, so argus-mint's refusal for that is the answer.
+    const refusal = await fromMock("POST", `${file("project", "parity-project")}/review`, { decision: "approve", by: "parity" });
+    expect(refusal.status).toBe(409);
+    expect((refusal.body as { detail: string }).detail).toMatch(/SingGuard can't check this text/);
+    expect((await fromMock("POST", `${file("project", "parity-project")}/review`, { decision: "reject", by: "parity" })).status).toBe(422);
+    expect((await fromMock("POST", `${file("project", "parity-project")}/review`, { decision: "retire", by: "parity" })).status).toBe(409);
+    expect((await fromMock("POST", `${file("scene", "nope")}/review`, { decision: "approve", by: "parity" })).status).toBe(404);
+  });
+
+  it("approves a recorded draft whose verdicts still hold, and then refuses to change it", async () => {
+    const list = (await fromMock("GET", "/projects")).body as ProjectList;
+    const recorded = list.projects.find((p) => p.id !== "parity-project");
+    if (!recorded) return; // a fixture recorded before teaser projects has none
+    const detail = (await fromMock("GET", `/projects/${recorded.id}`)).body as ProjectDetail;
+    const passing = (f: ProjectFile) => {
+      const prefix = `${f.kind} ${f.id} v${f.version}: `;
+      const mine = detail.checks.guard.filter((c) => c.field.startsWith(prefix));
+      return mine.length > 0 && mine.every((c) => c.passed);
+    };
+    const draft = detail.files.find((f) => f.status === "draft" && f.kind !== "teasers" && passing(f));
+    if (!draft) return;
+    const path = `/projects/${recorded.id}/files/${draft.kind}/${draft.id}/${draft.version}`;
+    const approved = (await fromMock("POST", `${path}/review`, { decision: "approve", by: "parity" })).body as ProjectFile;
+    expect(approved.status).toBe("approved");
+    expect(approved.doc).toMatchObject({ status: "approved", approved_by: "parity" });
+    // An approved file never changes: saving it again is refused (a change is a new version).
+    expect((await fromMock("POST", path, { doc: saveDoc(approved.doc) })).status).toBe(409);
+    const after = (await fromMock("GET", `/projects/${recorded.id}`)).body as ProjectDetail;
+    expect(after.files.find((f) => f.kind === draft.kind && f.id === draft.id)?.status).toBe("approved");
   });
 });

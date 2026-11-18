@@ -9,6 +9,7 @@ import { join, relative, sep } from "node:path";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { CATALOGUE_STATUS, DRAFT_STATUS, SAMPLE_STATUS } from "./status";
+import { spoilerText } from "./projects";
 import { getToken, setToken } from "./token";
 import type { CreateDraft, SampleRequest } from "./types";
 
@@ -44,7 +45,10 @@ describe("every write is gated on /health before it reaches the wire (rule 2)", 
 
   it("finds the writers", () => {
     expect(writers.map(([name]) => name)).toEqual(
-      expect.arrayContaining(["createDraft", "decide", "moderatorReview", "ownerChallenge", "ownerReview", "ownerEditChallenge", "ownerEdit", "publishDraft", "startSamples"]),
+      expect.arrayContaining([
+        "createDraft", "decide", "moderatorReview", "ownerChallenge", "ownerReview", "ownerEditChallenge", "ownerEdit", "publishDraft", "startSamples",
+        "saveProjectFile", "reviewProjectFile",
+      ]),
     );
   });
 
@@ -53,6 +57,18 @@ describe("every write is gated on /health before it reaches the wire (rule 2)", 
       const gate = body.indexOf("await requireCapability(");
       expect(gate, `${name} posts without requireCapability`).toBeGreaterThanOrEqual(0);
       expect(gate, `${name} posts before requireCapability`).toBeLessThan(body.search(POST));
+    }
+  });
+
+  it("gates every project write on author_catalogue, before it posts", () => {
+    // A writer whose request goes under /projects (its own path, or the helper that builds one) is authoring or
+    // reviewing a teaser project's files: its first gate is author_catalogue, never another capability.
+    const projectWriters = writers.filter(([, body]) => /\/projects\b|projectFilePath\(/.test(body));
+    expect(projectWriters.map(([name]) => name).sort()).toEqual(["reviewProjectFile", "saveProjectFile"]);
+    for (const [name, body] of projectWriters) {
+      const gate = body.match(/await requireCapability\("(\w+)"\)/);
+      expect(gate?.[1], `${name}'s first gate`).toBe("author_catalogue");
+      expect(body.indexOf(gate![0]), `${name} posts before requireCapability`).toBeLessThan(body.search(POST));
     }
   });
 
@@ -95,7 +111,16 @@ describe("the moderator token stays in the tab (rule 4)", () => {
   });
 });
 
-describe("no free-text prompts (rule 3)", () => {
+describe("no free-text prompts outside catalogue authoring (rule 3)", () => {
+  /**
+   * The only module with text fields for prompt text: the teaser project editors (moderator only). What they
+   * hold reaches argus-mint by one call, saveProjectFile, which argus-mint checks on save and renders nothing
+   * from until the file is approved. Adding a file here widens rule 3, so it needs the same review as CLAUDE.md.
+   */
+  const AUTHORING = ["components/ProjectEditors.tsx"];
+  const TEXT_FIELD = /<(input|textarea)\b[^>]*>/g;
+  const PROMPTISH = /variable|prompt|negative/i;
+
   it("has no prompt field to send in a draft or a sample request", () => {
     // tsc fails here if argus-mint's wire ever grows one: then the UI must not fill it from a text box.
     const draftHasNone: "prompt" | "negative" | "negative_prompt" extends keyof CreateDraft ? false : true = true;
@@ -103,12 +128,55 @@ describe("no free-text prompts (rule 3)", () => {
     expect([draftHasNone, sampleHasNone]).toEqual([true, true]);
   });
 
-  it("picks every template variable from a list, never a text box", () => {
-    for (const file of ["app/new/page.tsx", "components/Catalogue.tsx"]) {
+  it("picks every template variable from a list, and types no prompt, outside the authoring module", () => {
+    for (const file of sources.filter((f) => f.endsWith(".tsx") && !AUTHORING.includes(f))) {
       const text = read(file);
-      // A variable's value is only ever set from a <select> of the template's list: no text field names one.
-      for (const m of text.matchAll(/<(input|textarea)\b[^>]*>/g)) expect(m[0], `${file}: ${m[0].slice(0, 80)}`).not.toMatch(/variable|prompt/i);
+      // A variable's value is only ever set from a <select> of the template's list: no text field names one or a prompt.
+      for (const m of text.matchAll(TEXT_FIELD)) expect(m[0], `${file}: ${m[0].slice(0, 80)}`).not.toMatch(PROMPTISH);
+      // Nor does a field component get one passed in by label (AuthoredText, say).
+      expect(text, `${file} renders the authoring module's text fields`).not.toMatch(/<AuthoredText\b/);
     }
+  });
+
+  it("sends the authoring module's text only through saveProjectFile", () => {
+    for (const file of AUTHORING) {
+      const text = read(file);
+      const imported = [...text.matchAll(/import\s*\{([^}]*)\}\s*from\s*"@\/lib\/api"/g)].flatMap((m) => m[1].split(",").map((x) => x.trim()).filter(Boolean));
+      expect(imported, `${file} imports from lib/api.ts`).toEqual(["saveProjectFile"]);
+      expect(text, `${file} talks to argus-mint itself`).not.toMatch(/\bfetch\(|XMLHttpRequest|sendBeacon/);
+    }
+    // In the client, prompt text is named in one writer's request only: the project-file save, whose body is {doc}.
+    const fns = exportsOf(read("lib/api.ts"));
+    const save = fns.get("saveProjectFile")!;
+    expect(save).toMatch(/post\(projectFilePath\(project, kind, item, version\), \{ doc \}, true\)/);
+    for (const [name, body] of fns) if (name !== "saveProjectFile") expect(body, `${name} names a prompt`).not.toMatch(/\bprompt\b|\bnegative\b/);
+  });
+
+  it("has nothing outside the authoring module import its editors", () => {
+    const importers = sources.filter((f) => /from "@\/components\/ProjectEditors"/.test(read(f)));
+    expect(importers.sort()).toEqual(["app/projects/[id]/ProjectView.tsx", "app/projects/page.tsx"]);
+  });
+});
+
+describe("spoiler terms never appear: a hold is a rule number (projects)", () => {
+  it("reads nothing about spoilers but argus-mint's rule numbers", () => {
+    for (const file of sources) {
+      const text = read(file);
+      // Property names only: prose may say "the spoiler list". The wire's one spoiler field is spoiler_rules.
+      for (const m of text.matchAll(/\.\s*(\w*spoil\w*)/gi)) expect(m[1], `${file}: .${m[1]}`).toBe("spoiler_rules");
+    }
+  });
+
+  it("shows each hold through spoilerText, which says the number and nothing else", () => {
+    const shown = sources.filter((f) => f.endsWith(".tsx") && /spoiler_rules/.test(read(f)));
+    expect(shown.length).toBeGreaterThan(0);
+    for (const file of shown) {
+      for (const m of read(file).matchAll(/spoiler_rules\.map\(\((\w+)\)\s*=>([\s\S]{0,120})/g)) {
+        expect(m[2], `${file} renders a spoiler rule`).toMatch(new RegExp(`spoilerText\\(${m[1]}\\)`));
+      }
+      expect(read(file), `${file} renders spoiler_rules other than by .map(spoilerText)`).not.toMatch(/\{[\w.?]*spoiler_rules[^.]/);
+    }
+    expect(spoilerText(3)).toBe("Held by spoiler rule 3");
   });
 });
 

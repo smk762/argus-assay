@@ -22,6 +22,7 @@ const NAV = [
   { href: "/library", label: "Library", match: (p: string) => p.startsWith("/library") },
   { href: "/catalogue", label: "Catalogue", match: (p: string) => p.startsWith("/catalogue") },
   { href: "/samples", label: "Samples", match: (p: string) => p.startsWith("/samples") },
+  { href: "/projects", label: "Projects", match: (p: string) => p.startsWith("/projects") },
   // A full page load, not a client navigation: the docs page sets its article with innerHTML, which the
   // static demo's Trusted Types policy (scripts/csp.mjs) refuses on a client render.
   { href: "/docs", label: "Docs", match: (p: string) => p.startsWith("/docs"), reload: true },

@@ -17,6 +17,14 @@ The hosted demo (`make pages`, for assay.dragonhound.dev) replays a **data tape*
 - **Dropped:** a mushroom-sprite card, after darkroom's age check flagged its first render; the concept went, not just the seed. (Its value is still in demo-cast's role list, unused; removing it changes the template and so every cast render.)
 - **Purged:** every render darkroom refused or sent to review in these runs, one record at a time (the dragon's first attempt on each run, two candidate seeds, and the sprite).
 
+## Teaser projects (from argus-mint 0.2.3.dev18, wire 1.11)
+
+`scripts/record_demo.py` authors argus-mint's neutral example project, `example-teasers` (a lighthouse on a stormy coast, from argus-mint's `projects/`), over HTTP as the moderator would from the project page: each of its 8 files is saved as a draft, so argus-mint checks it and SingGuard (darkroom's text pre-flight, under the project's `default` policy) judges its texts as it is saved: the title, both prompts of the scenes, the embodied identity's prompt, each line's text and published wording, and each teaser's alt text (9 texts). Then the project, the `keeper` identity, the `lamp-room` scene and the `keep-it-lit` line are approved; the rest stay drafts, so the teaser links can't be approved yet and the page shows argus-mint's refusal. No spoiler list is configured, so nothing is held. The fixture holds `projects.json` and `projects/example-teasers.json` and no other project, ever.
+
+A real (`--real`) run sends those 9 texts to darkroom's text check on the GPU host, besides the bios'. With stand-ins (`make record-dry`), the stand-in passes every text, so its verdicts are not SingGuard's and never go in the committed fixture.
+
+**Not yet re-recorded at the pin.** `web/schema/pins.json` pins argus-mint `c294ed4` (0.2.3.dev18), and `fixture/` is still the 0.2.2 recording below, without projects, so `sync.test.ts` fails until the re-record. `--real --no-render --cache` from the record cache has every card's render and all 22 bios, but not the sample job's two renders (seeds 121 and 122, demo-portrait v2), and every bio and project text goes through darkroom's text check: that needs the maintainer's approval.
+
 ## What the sample tape is
 
 `make sample-fixture` (no GPU, no network):

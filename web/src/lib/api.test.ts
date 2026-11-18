@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import { CapabilityRefused, checkTemplate, createDraft, decide, moderatorReview, readError, resetHealthMemo } from "./api";
+import { ApiError, CapabilityRefused, checkTemplate, createDraft, decide, moderatorReview, readError, resetHealthMemo, reviewProjectFile, saveProjectFile } from "./api";
 import type { Health } from "./types";
 
 const health = (caps: Partial<Health["capabilities"]>) =>
@@ -37,6 +37,36 @@ describe("writes are gated on /health before they reach the wire", () => {
     expect(url).toMatch(/\/frames\/card-green\/1\/review$/);
     expect((init.headers as Record<string, string>).Authorization).toBe("Bearer tok");
     expect(JSON.parse(init.body as string)).toEqual({ decision: "approve", by: "me" });
+  });
+});
+
+describe("teaser project writes are gated on author_catalogue", () => {
+  it("sends neither a save nor a review where the server can't author, even with every other capability", async () => {
+    const fetch = vi.fn();
+    vi.stubGlobal("fetch", fetch);
+    resetHealthMemo(health({ moderate: true, review_catalogue: true, create_drafts: true, author_catalogue: false }));
+    await expect(saveProjectFile("p", "line", "a", 1, { text: "x" })).rejects.toBeInstanceOf(CapabilityRefused);
+    await expect(reviewProjectFile("p", "line", "a", 1, "approve", "me")).rejects.toBeInstanceOf(CapabilityRefused);
+    expect(fetch).not.toHaveBeenCalled();
+  });
+  it("saves {doc} with the moderator token, to the file's path", async () => {
+    const fetch = vi.fn(async () => new Response(JSON.stringify({ file: {}, checks: {} }), { status: 200 }));
+    vi.stubGlobal("fetch", fetch);
+    vi.stubGlobal("sessionStorage", { getItem: () => "tok", setItem: () => {}, removeItem: () => {} });
+    resetHealthMemo(health({ author_catalogue: true }));
+    await saveProjectFile("example-teasers", "scene", "lamp-room", 2, { prompt: "a lamp room" });
+    const [url, init] = fetch.mock.calls[0] as unknown as [string, RequestInit];
+    expect(url).toMatch(/\/projects\/example-teasers\/files\/scene\/lamp-room\/2$/);
+    expect((init.headers as Record<string, string>).Authorization).toBe("Bearer tok");
+    expect(JSON.parse(init.body as string)).toEqual({ doc: { prompt: "a lamp room" } });
+  });
+  it("shows an approval refusal as argus-mint's message, word for word", async () => {
+    const detail = "teasers link files that aren't approved: identity lamp v1, line every-boat v1";
+    vi.stubGlobal("fetch", vi.fn(async () => new Response(JSON.stringify({ detail }), { status: 409 })));
+    resetHealthMemo(health({ author_catalogue: true }));
+    const refusal = reviewProjectFile("example-teasers", "teasers", "example-teasers", 1, "approve", "me");
+    await expect(refusal).rejects.toBeInstanceOf(ApiError);
+    await expect(refusal).rejects.toMatchObject({ message: detail, status: 409 });
   });
 });
 

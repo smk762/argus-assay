@@ -5,8 +5,9 @@
  *   - the owner's edit changes the record as argus-mint's would, but can't redraw: the image stays
  *   - publishing reuses the tape's recorded publish result (local CIDs, the fixture's voucher)
  *   - catalogue decisions stick
- * Nothing that needs a GPU or the server's files runs here: making drafts and samples, and the
- * frame preview, answer 503 (the page keeps those controls off or hidden before that).
+ *   - the teaser projects on the tape can be read, as recorded
+ * Nothing that needs a GPU or the server's files runs here: making drafts and samples, the frame
+ * preview, and authoring or reviewing a teaser project's files answer 503 (the page keeps those controls off or hidden before that).
  * It checks no token and no signature, like the mock. Its /health says `mock: true`, which offers
  * "Approve as demo owner" in place of a wallet.
  *
@@ -91,7 +92,7 @@ export class DemoMint {
     this.health = {
       ...structuredClone(tape.health),
       mock: true,
-      capabilities: { ...tape.health.capabilities, create_drafts: false, sample: false, check_templates: false },
+      capabilities: { ...tape.health.capabilities, create_drafts: false, sample: false, check_templates: false, author_catalogue: false },
     } as Health;
     for (const d of this.tape.drafts) this.drafts.set(d.id, d);
     for (const layout of Object.values(tape.layouts)) {
@@ -143,6 +144,11 @@ export class DemoMint {
       const items = [...this.tape.samples].reverse();
       return ok({ items, total: items.length });
     }
+    if (url.pathname === "/projects") return ok(this.tape.projects);
+    if (p[0] === "projects" && p.length === 2) {
+      const project = this.tape.project_details.find((d) => d.id === p[1]);
+      return project ? ok(project) : fail(404, `no project ${p[1]}`);
+    }
     if (p[0] === "samples" && p.length === 2) {
       const job = this.tape.samples.find((s) => s.id === p[1]);
       return job ? ok(job) : fail(404, "no sample job");
@@ -162,6 +168,7 @@ export class DemoMint {
     const cat = p.length === 4 && p[3] === "review" ? this.catalogue(p[0]) : null;
     if (cat) return this.decide(cat.list, cat.kind, p[1], Number(p[2]), b);
     if ((p[0] === "drafts" || p[0] === "samples") && p.length === 1) return fail(503, `${p[0] === "drafts" ? "Making a draft" : "Rendering samples"} needs a running argus-mint and a GPU`);
+    if (p[0] === "projects" && p[2] === "files") return fail(503, "Authoring and reviewing a teaser project need a running argus-mint");
     if (p[0] === "frames" && p[3] === "preview") return fail(503, "The frame preview is drawn by a running argus-mint");
     return fail(404, "not found");
   }

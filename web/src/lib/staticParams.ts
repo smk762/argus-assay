@@ -30,3 +30,13 @@ export function catalogueParams(): { kind: string; id: string; version: string }
     ...t.bios.map((e) => ({ kind: "bio", id: e.bio.id, version: String(e.bio.version) })),
   ];
 }
+
+/**
+ * A static export refuses a dynamic route with no params, so a tape recorded before teaser projects
+ * (none on it) still exports the neutral example's page, which then says the project isn't there.
+ */
+export function projectParams(): { id: string }[] {
+  if (!staticDemo()) return [];
+  const ids = tape().project_details.map((p) => ({ id: p.id }));
+  return ids.length ? ids : [{ id: "example-teasers" }];
+}

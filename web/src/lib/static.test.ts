@@ -4,7 +4,7 @@ import { fileURLToPath } from "node:url";
 
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import { BIO_FIT, buildTape, checkBios, checkPublic } from "../../../scripts/make_tape.mjs";
+import { BIO_FIT, buildTape, checkBios, checkPublic, checkSpoilers } from "../../../scripts/make_tape.mjs";
 import { DemoMint } from "./demoMint";
 import { parseTape, type Tape } from "./tape";
 import type { DraftDetail, DraftList } from "./types";
@@ -22,6 +22,24 @@ describe("the tape", () => {
     // At least five behind every status filter, so none of the queue's views is a near-empty page.
     for (const status of ["pending", "approved", "rejected", "published"]) expect(t.drafts.filter((d) => d.status === status).length, status).toBeGreaterThanOrEqual(5);
     for (const d of t.drafts) expect(t.files).toContain(`drafts/${d.id}/image.png`);
+  });
+
+  it("carries a spoiler hold as a rule number only, never a term", () => {
+    expect(checkSpoilers({ checks: { spoiler_rules: [1, 3] } }, "x")).toEqual([]);
+    expect(checkSpoilers({ checks: { spoiler_rules: ["the twist"] } }, "x")[0]).toMatch(/rule numbers only/);
+    expect(checkSpoilers({ files: [{ doc: { spoiler_terms: ["x"] } }] }, "x")[0]).toMatch(/files\[0\]\.doc\.spoiler_terms names a spoiler/);
+    expect(checkSpoilers({ spoilers: "x" }, "x")).toHaveLength(1);
+    // The recorded fixture passes, so every hold it carries (if any) is a number.
+    const t = tape();
+    expect(checkSpoilers(t, "tape")).toEqual([]);
+  });
+
+  it("holds each recorded project's detail, and only the neutral example", () => {
+    const t = tape();
+    expect(t.project_details.map((p) => p.id)).toEqual(t.projects.projects.map((p) => p.id));
+    for (const p of t.projects.projects) expect(p.id).toBe("example-teasers");
+    expect(parseTape({ ...buildTape(FIXTURE), projects: undefined, project_details: undefined }).project_details).toEqual([]);
+    expect(() => parseTape({ ...buildTape(FIXTURE), project_details: [{ id: "../x", files: [], checks: {} }] })).toThrow(/no usable id/);
   });
 
   it("refuses an address that isn't on the allowlist, and secrets by name", () => {
@@ -183,6 +201,17 @@ describe("the in-browser argus-mint", () => {
       expect(m.post(`/templates/${draft.id}/${draft.version}/review`, { decision, by: "me" }).status, String(decision)).toBe(422);
     }
     expect((m.get("/templates").body as { template: { version: number; status: string } }[]).find((e) => e.template.version === draft.version)?.template.status).toBe("draft");
+  });
+});
+
+describe("teaser projects in the static demo", () => {
+  it("serves the recorded projects to read, and writes none of their files", () => {
+    const m = mint();
+    expect((m.get("/projects").body as { projects: unknown[] }).projects).toEqual(tape().projects.projects);
+    for (const p of tape().project_details) expect(m.get(`/projects/${p.id}`).body).toEqual(p);
+    expect(m.get("/projects/nope").status).toBe(404);
+    expect(m.post("/projects/example-teasers/files/line/x/1", { doc: {} }).status).toBe(503);
+    expect(m.post("/projects/example-teasers/files/line/x/1/review", { decision: "approve", by: "me" }).status).toBe(503);
   });
 });
 

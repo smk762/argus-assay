@@ -4,6 +4,7 @@
 // clicked through without a GPU, darkroom, IPFS or a wallet:
 //   reviews change a draft's status, catalogue decisions stick, samples "render" after a delay,
 //   creating a draft clones the fixture's pending one, publishing reuses the published result.
+//   teaser project files are saved and reviewed in memory (mock_projects.mjs).
 // The pre-rendered library is served when the fixture has one (library.json and library/<id>.jpg,
 // thumbnails of a subset). A draft from it records the entry, but keeps the pending draft's image.
 // It checks no token and no signature, and composites nothing (a frame preview returns a
@@ -13,6 +14,7 @@ import { readFileSync, readdirSync, existsSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { randomBytes } from "node:crypto";
+import { MockProjects } from "./mock_projects.mjs";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..", "fixture");
 const port = Number(process.env.MOCK_PORT ?? 8108);
@@ -24,10 +26,12 @@ const library = existsSync(join(root, "library.json")) ? read("library.json") : 
 const libraryEntry = (id) => library?.items.find((i) => i.id === id);
 const health = { ...read("health.json"), mock: true };
 // No darkroom behind the mock, so no template check (web/src/lib/demoMint.ts says the same).
-health.capabilities = { ...health.capabilities, library: Boolean(library?.items.length), check_templates: false };
+// It keeps teaser project saves and reviews in memory (mock_projects.mjs), so the moderator can author here.
+health.capabilities = { ...health.capabilities, library: Boolean(library?.items.length), check_templates: false, author_catalogue: true };
 const templates = read("templates.json");
 const frames = read("frames.json");
 const bios = read("bios.json");
+const projects = new MockProjects(root, frames);
 const drafts = new Map(); // id -> detail
 const images = new Map(); // id -> { image, art }
 // Kept oldest first (drafts.json is newest first), so a draft made here goes last and the list, reversed, is
@@ -170,9 +174,13 @@ createServer(async (req, res) => {
         const img = sampleImages.get(`${p[1]}/${p[2]}/${p[3]}`);
         return img ? send(res, 200, img, "image/png") : fail(res, 404, "no image");
       }
+      const project = projects.get(url.pathname);
+      if (project) return send(res, project.status, project.body);
       return fail(res, 404, "not found");
     }
     const b = await body(req);
+    const authored = projects.post(url.pathname, b);
+    if (authored) return send(res, authored.status, authored.body);
     if (url.pathname === "/drafts") {
       // A library entry brings its variables, seed and checkpoint, as in argus-mint.
       const entry = b.library == null ? null : libraryEntry(b.library);

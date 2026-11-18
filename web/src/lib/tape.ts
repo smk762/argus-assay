@@ -3,7 +3,7 @@
  * recorded API responses). One JSON file holds every response; the images and fonts sit beside it
  * under the paths argus-mint's fixture uses. Pure: parsing and checks only.
  */
-import type { BioInfo, DraftDetail, FrameInfo, FrameLayout, Health, LibraryListing, SampleJob, TemplateInfo } from "./types";
+import type { BioInfo, DraftDetail, FrameInfo, FrameLayout, Health, LibraryListing, ProjectDetail, ProjectList, SampleJob, TemplateInfo } from "./types";
 
 export const TAPE_FORMAT = "argus-assay-tape";
 export const TAPE_VERSION = 1;
@@ -35,6 +35,10 @@ export interface Tape {
   layouts: Record<string, FrameLayout>;
   /** Each sample job's `GET /samples/{id}`, oldest first. */
   samples: SampleJob[];
+  /** `GET /projects`: the teaser projects (the neutral example only). */
+  projects: ProjectList;
+  /** Each project's `GET /projects/{id}`, in the list's order. */
+  project_details: ProjectDetail[];
   /** Every image and font beside tape.json, by path. */
   files: string[];
 }
@@ -60,6 +64,16 @@ export function parseTape(raw: unknown): Tape {
     if (!Array.isArray(raw[key])) fail(`${key} must be a list`);
   }
   if (!isObject(raw.layouts)) fail("layouts must be an object");
+  // A tape recorded before argus-mint had teaser projects carries none: the pages then list none.
+  raw.projects ??= { projects: [] };
+  raw.project_details ??= [];
+  if (!isObject(raw.projects) || !Array.isArray(raw.projects.projects)) fail("projects must be {projects: [...]}");
+  if (!Array.isArray(raw.project_details)) fail("project_details must be a list");
+  for (const p of raw.project_details as unknown[]) {
+    if (!isObject(p) || typeof p.id !== "string" || !/^[a-z0-9][a-z0-9-]{0,63}$/.test(p.id) || !Array.isArray(p.files) || !isObject(p.checks)) {
+      fail("a project has no usable id, files or checks");
+    }
+  }
   const files = new Set(raw.files as unknown[]);
   for (const f of files) {
     // A tape path names a file under the tape, so it is allowed only in a plain form: letters, digits, `_`, `-`

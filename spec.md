@@ -59,9 +59,16 @@ The standalone review UI for [argus-mint](https://github.com/smk762/argus-mint),
    - **Decision:** approve a draft or retire an approved file. argus-mint writes `status`, `approved_by` and `approved_at` into the file. A retired file keeps its hash.
 6. **Samples** (`/samples`, `/samples/{id}`). The jobs, polled until done. Each sample shows its framed image, variables, bio, and render and bio attempts, with a link to preview its frame on that art. Samples are never pinned, signed or minted.
 
+7. **Teaser projects** (`/projects`, `/projects/{id}`). The files behind image + quote teasers (argus-mint's docs/projects.md), and their review. No tracker yet.
+   - **Each kind in its own section:** the project, identities, scenes, lines and teaser links. Each file shows its status (mark and word), hash, path, who approved it and when, and its content laid out to read (and as sent).
+   - **Checks, as argus-mint reports them:** problems as its sentences; a spoiler hold only as "Held by spoiler rule N"; SingGuard's verdicts per file and field, with the policy, when each was checked and whether argus-mint still counts it. When no darkroom is configured, the page says nothing can be approved.
+   - **Editors (moderator token, `capabilities.author_catalogue`):** structured fields per kind. Free text only for the authored texts (prompt, negative, a line's text, published wording and source, the title, attribution, alt text). Presence, provenance, a line's voice, frames, checkpoints, samplers and the files a teaser links (by id and version) are picked from lists; ids and labels are typed only as identifiers. A draft is saved over itself; an approved or retired file is saved as the next version.
+   - **Decision:** approve a draft file or retire an approved one, gated the same way. A refusal (409) is shown as argus-mint's message, word for word.
+   - **Nothing is worked out here:** no status, verdict or readiness is derived or counted.
+
 ## What it does not do
 
-- **No free-text prompts.**
+- **No free-text prompts**, except catalogue authoring of a teaser project's files (moderator only, checked by argus-mint on save, nothing rendered until approved).
 - **No stats.** Display text is the consumer's; argus-mint draws it and doesn't store it as stats.
 - **No marketplace, payouts or minting.** The owner's wallet sends the voucher with the consumer's app or `argus-mint submit`.
 - **No storing the moderator token beyond the tab** (sessionStorage).
@@ -75,11 +82,12 @@ The standalone review UI for [argus-mint](https://github.com/smk762/argus-mint),
 
 `scripts/mock_mint.mjs` serves `fixture/` (recorded by `scripts/record_demo.py`, a copy of argus-mint's `scripts/api_fixture.py`) as an argus-mint on :8108, with state in memory:
 - reviews, catalogue decisions and publishing stick until it restarts
+- teaser project files are saved and reviewed in memory (`scripts/mock_projects.mjs`); with no darkroom behind it, SingGuard judges nothing, so a file without a verdict that still holds can't be approved
 - samples "render" one every `MOCK_STEP_MS`
 - the library is served when the fixture has one (`library.json` and `library/<id>.jpg` thumbnails); a draft from it records the entry, but keeps the fixture's image
 - "Approve as demo owner" stands in for the wallet; the mock checks no signature
 
 **Hosted demo** (`make pages`, static). The same behaviour runs in the browser (`lib/demoMint.ts`) over a tape made from `fixture/` (`scripts/make_tape.mjs`). There is no server and no token, and state lasts until reload.
-- **Off:** drafts and samples can't be made (they need a GPU), and the frame preview is hidden (argus-mint composites it).
+- **Off:** drafts and samples can't be made (they need a GPU), the frame preview is hidden (argus-mint composites it), and teaser project files can't be saved or reviewed (the recorded example project is there to read).
 - **No wallet:** the demo owner signs instead, and wallet buttons are hidden.
 - **Label:** the header says Sample data or Recorded, from the tape. [docs/demo-recording.md](docs/demo-recording.md) covers what a real recording needs.

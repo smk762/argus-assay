@@ -22,6 +22,10 @@ import type {
   TextEdit,
   FrameLayout,
   LibraryListing,
+  ProjectDetail,
+  ProjectFile,
+  ProjectList,
+  SavedProjectFile,
 } from "./types";
 
 export class ApiError extends Error {
@@ -234,6 +238,41 @@ export async function decide(
 ): Promise<CatalogueEntry> {
   await requireCapability("review_catalogue");
   return post(`/${PLURAL[kind]}/${encodeURIComponent(id)}/${version}/review`, { decision, by }, true);
+}
+
+export const getProjects = (): Promise<ProjectList> => getJson("/projects");
+export const getProject = (id: string): Promise<ProjectDetail> => getJson(`/projects/${encodeURIComponent(id)}`);
+
+const projectFilePath = (project: string, kind: ProjectFile["kind"], item: string, version: number): string =>
+  `/projects/${encodeURIComponent(project)}/files/${encodeURIComponent(kind)}/${encodeURIComponent(item)}/${version}`;
+
+/**
+ * Save a draft project file (moderator token). The only request that carries prompt text: catalogue
+ * authoring, which argus-mint checks on save (schema, SingGuard under the project's policy, the private
+ * spoiler list) and renders nothing from until the file is approved (CLAUDE.md rule 3).
+ */
+export async function saveProjectFile(
+  project: string,
+  kind: ProjectFile["kind"],
+  item: string,
+  version: number,
+  doc: Record<string, unknown>,
+): Promise<SavedProjectFile> {
+  await requireCapability("author_catalogue");
+  return post(projectFilePath(project, kind, item, version), { doc }, true);
+}
+
+/** Approve a draft project file or retire an approved one (moderator token). A refusal is argus-mint's message, as sent. */
+export async function reviewProjectFile(
+  project: string,
+  kind: ProjectFile["kind"],
+  item: string,
+  version: number,
+  decision: "approve" | "retire",
+  by: string,
+): Promise<ProjectFile> {
+  await requireCapability("author_catalogue");
+  return post(`${projectFilePath(project, kind, item, version)}/review`, { decision, by }, true);
 }
 
 /** A frame (any status) on existing art, as an object URL for an <img>. Revoke it when done. */

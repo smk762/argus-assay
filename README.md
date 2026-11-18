@@ -43,6 +43,9 @@ Assay is where people do that reviewing. **The server is the product:** assay sh
   ![A frame in the catalogue, with its art window and text slots drawn on the overlay](docs/images/frame-slots.png)
 
 - **Samples.** Sample jobs as they render; never pinned, signed or minted.
+- **Teaser projects.** The reviewed files behind image + quote teasers: the project, identities, scenes, lines and teaser links.
+  - Each file with its status, hash and content, and argus-mint's checks: problems, spoiler holds (by rule number only) and SingGuard's verdicts.
+  - The moderator writes draft files in structured editors (the one place prompt text is typed; argus-mint checks every save) and approves or retires them.
 
 The full spec is in [spec.md](spec.md).
 
@@ -81,7 +84,7 @@ make pages     # the fixture as a data tape, exported to web/out/: pure static f
 
 The static build (`ASSAY_STATIC=1`) needs no argus-mint. The page answers its own calls from the tape (`web/public/data-tape/`, made from `fixture/` by `scripts/make_tape.mjs`) in the browser:
 - Reviews, the owner's card editor, publishing (the recorded result) and catalogue decisions work, in the tab until reload.
-- Making drafts and samples needs a GPU, so it is off.
+- Making drafts and samples needs a GPU, so it is off. The example teaser project is there to read; authoring it needs a running argus-mint.
 
 Today's tape is labelled Recorded: real renders and model-written bios, recorded on 2026-11-15. `fixture/` is recorded by `scripts/record_demo.py` (argus-mint's real server; stand-in backends for the sample, the GPU host's darkroom and Ollama for `make record`). [docs/demo-recording.md](docs/demo-recording.md) says what each is, how full and how distinct the card bios must be, and how to record.
 

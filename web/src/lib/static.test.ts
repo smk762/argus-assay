@@ -13,7 +13,11 @@ const FIXTURE = fileURLToPath(new URL("../../../fixture", import.meta.url));
 const tape = (): Tape => parseTape(buildTape(FIXTURE));
 let clock = 0;
 const mint = () => new DemoMint(tape(), { now: () => new Date(Date.UTC(2026, 10, 15, 0, 0, clock++)).toISOString(), randomHex: (n) => "ab".repeat(n) });
-const draftIn = (m: DemoMint, status: string) => (m.get("/drafts").body as DraftList).items.find((d) => d.status === status)!;
+const isCard = (d: { kind?: "card" | "teaser" }) => (d.kind ?? "card") === "card";
+// A card in `status`; a pending one awaits the moderator (a teaser draft, or a card waiting only on its owner, can't
+// walk the moderator's review).
+const draftIn = (m: DemoMint, status: string) =>
+  (m.get("/drafts").body as DraftList).items.find((d) => d.status === status && isCard(d) && (status !== "pending" || d.awaiting.includes("moderator")))!;
 
 describe("the tape", () => {
   it("is made from the recorded fixture, with every draft's images", () => {
@@ -55,10 +59,13 @@ describe("the tape", () => {
 
   it("has a distinct bio on every card, filling its box", () => {
     const t = tape();
-    const bios = [...t.drafts.map((d) => d.draft.bio?.text), ...t.samples.flatMap((j) => (j.items ?? []).map((it) => it.bio))];
-    expect(bios.length).toBe(t.drafts.length + t.samples.reduce((n, j) => n + (j.items ?? []).length, 0));
+    // Every card has one (a teaser draft has a quote, not a bio).
+    const cards = t.drafts.filter((d) => isCard(d.draft));
+    const bios = [...cards.map((d) => d.draft.bio?.text), ...t.samples.flatMap((j) => (j.items ?? []).map((it) => it.bio))];
+    expect(bios.length).toBe(cards.length + t.samples.reduce((n, j) => n + (j.items ?? []).length, 0));
+    for (const b of bios) expect(b).toBeTruthy();
     expect(new Set(bios).size).toBe(bios.length);
-    for (const d of t.drafts) {
+    for (const d of cards) {
       const lines = t.layouts[d.id].slots.bio.lines.length;
       expect(lines).toBeGreaterThanOrEqual(3);
       expect(lines).toBeLessThanOrEqual(4);
@@ -233,7 +240,7 @@ describe("the client's static branch", () => {
     const api = await import("./api");
     const list = await api.getDrafts();
     expect(list.items).toHaveLength(t.drafts.length);
-    const id = list.items[0].id;
+    const id = list.items.find((d) => isCard(d) && d.awaiting.includes("moderator"))!.id;
     await api.moderatorReview(id, true, "me", "");
     expect(fetch).toHaveBeenCalledTimes(1);
     expect(api.draftImage(id, "image", "abc")).toBe(`/data-tape/drafts/${id}/image.png`);

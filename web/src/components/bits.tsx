@@ -36,6 +36,16 @@ export function CatalogueBadge({ status }: { status: CatalogueStatus }) {
   );
 }
 
+/** Any status with its mark and word (rule 7), from one of lib/status.ts's maps. */
+export function StatusBadge({ s }: { s: { label: string; mark: string; tone: Tone } }) {
+  return (
+    <Badge className={TONE[s.tone]}>
+      <span aria-hidden="true">{s.mark}</span>
+      {s.label}
+    </Badge>
+  );
+}
+
 /** A hash shown short, full on hover, copyable. */
 export function Hash({ value, chars = 10 }: { value: string; chars?: number }) {
   return (

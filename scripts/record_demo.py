@@ -338,8 +338,10 @@ class StandInDarkroom:
     def __init__(self, images: list[bytes]):
         self.images, self.n = images, 0
 
-    def generate(self, req: RenderRequest) -> GenResult:
+    def generate(self, req: RenderRequest, init=None) -> GenResult:
         self.n += 1
+        if init is not None:  # inpainting: nothing is painted in, the background comes back as it went
+            return GenResult.ok(init.image, ref=f"stand-in-{self.n}")
         return GenResult.ok(self.images[(self.n - 1) % len(self.images)], ref=f"stand-in-{self.n}")
 
     def check_text(self, text: str, policy: str | None = None) -> tuple[bool, str]:
@@ -592,9 +594,18 @@ def reject_note(c: TestClient, draft_id: str, name: str, notes: Path | None) -> 
 
 PROJECT = "example-teasers"  # argus-mint's neutral example project; the only one the demo carries
 REVIEW_KEYS = ("status", "approved_by", "approved_at", "guard")  # written by argus-mint, never sent
-# Approved in the recording, so the page shows both statuses: the project, the embodied identity, its scene and
-# its line. The rest (the viewpoint identity, its scene and line, and the teaser links) stay drafts.
-PROJECT_APPROVE = [("project", PROJECT), ("identity", "keeper"), ("scene", "lamp-room"), ("line", "keep-it-lit")]
+# Approved in the recording: every file both teasers link (T1 the embodied keeper in the lamp room, T2 the
+# viewpoint lamp over the shoreline). The teaser links v1 (no backgrounds chosen) stay a draft; v2, which
+# chooses them, is saved and approved once the backgrounds are reviewed (make_teasers).
+PROJECT_APPROVE = [
+    ("project", PROJECT), ("identity", "keeper"), ("identity", "lamp"), ("scene", "lamp-room"), ("scene", "shoreline"),
+    ("line", "keep-it-lit"), ("line", "every-boat"),
+]  # fmt: skip
+POSTER = "fixture-poster"  # argus-herald's token in the recording; it only records posts
+BG_REJECT_NOTE = "Too busy behind the figure; the first two leave it room."
+# The recording's own report of a post, as argus-herald would send it: nothing was posted anywhere, so it names
+# no platform and no URL (`where` is "demo", `url` null).
+POST_WHERE = "demo"
 
 
 def author_project(c: TestClient, src: Path, by: str) -> None:
@@ -618,6 +629,98 @@ def author_project(c: TestClient, src: Path, by: str) -> None:
         print(f"  approve {kind} {item}: {r.status_code}{'' if r.status_code < 300 else ' ' + r.text}", file=sys.stderr)
 
 
+def cache_key(req: RenderRequest) -> str:
+    """A render's key in --cache: its request, as JSON. argus-mint 0.2.3 added `init_image` (set only for an
+    inpainting, whose input image and mask it hashes); left out while unset, so a card's key is the one it had
+    before and the cache's renders still count."""
+    doc = req.model_dump(mode="json")
+    if doc.get("init_image") is None:
+        doc.pop("init_image", None)
+    return hashlib.sha256(json.dumps(doc, sort_keys=True).encode()).hexdigest()[:24]
+
+
+def owner_approves(c: TestClient, draft_id: str) -> None:
+    """The owner signs argus-mint's challenge with the card's wallet (the public test key) and approves."""
+    ch = c.post(f"/drafts/{draft_id}/challenge", json={"approve": True})
+    if ch.status_code >= 400:
+        sys.exit(f"challenge {draft_id}: {ch.status_code} {ch.text}")
+    msg = ch.json()["message"]
+    sig = OWNER.sign_message(encode_defunct(text=msg)).signature.hex()
+    r = c.post(f"/drafts/{draft_id}/review", json={"role": "owner", "approve": True, "message": msg, "signature": sig})
+    if r.status_code >= 400:
+        sys.exit(f"owner review {draft_id}: {r.status_code} {r.text}")
+
+
+def moderator_approves(c: TestClient, draft_id: str) -> None:
+    """The moderator's approval, unless auto-moderation already recorded it."""
+    if "moderator" not in c.get(f"/drafts/{draft_id}").json()["awaiting"]:
+        return
+    body = {"role": "moderator", "approve": True, "by": "moderator-1", "note": ""}
+    r = c.post(f"/drafts/{draft_id}/review", headers=AUTH, json=body)
+    if r.status_code >= 400:
+        sys.exit(f"moderator review {draft_id}: {r.status_code} {r.text}")
+
+
+def make_teasers(c: TestClient, src: Path, by: str, real: bool) -> None:
+    """The example project's layers, over HTTP as the moderator does from assay: each approved scene's
+    backgrounds (a job each), the last of each set rejected and the rest approved; the teaser links v2
+    choosing the first of each, approved; then a draft of each teaser. T1 (embodied: the keeper painted into
+    the lamp room) is approved by both, posted (the recording's own report: nothing was posted) and minted
+    (local pins, a test-key voucher). T2 (viewpoint: the background is the art) waits for its owner."""
+    for scene in ("lamp-room", "shoreline"):
+        gpu_window(real)
+        r = c.post(f"/projects/{PROJECT}/scenes/{scene}/1/backgrounds", headers=AUTH)
+        print(f"backgrounds {scene} v1: {r.status_code}", file=sys.stderr)
+        if r.status_code != 202:
+            sys.exit(f"starting backgrounds of {scene}: {r.status_code} {r.text}")
+        deadline = time.monotonic() + (3600 if real else 60)
+        path = f"/projects/{PROJECT}/scenes/{scene}/1/backgrounds"
+        while (s := c.get(path).json())["job"]["status"] not in ("done", "failed"):
+            if time.monotonic() > deadline:
+                sys.exit(f"the background job of {scene} didn't finish")
+            time.sleep(2 if real else 0.05)
+        if s["job"]["status"] != "done" or s.get("failed"):
+            sys.exit(f"the background job of {scene}: {s['job']}, failed {s.get('failed')}")
+    chosen = {}
+    for s in c.get(f"/projects/{PROJECT}/backgrounds").json()["sets"]:
+        bgs = s["backgrounds"]
+        for i, bg in enumerate(bgs):
+            reject = i == len(bgs) - 1 and len(bgs) > 2
+            body = {"decision": "reject" if reject else "approve", "by": by, "note": BG_REJECT_NOTE if reject else ""}
+            r = c.post(f"/projects/{PROJECT}/backgrounds/{bg['id']}/review", headers=AUTH, json=body)
+            if r.status_code >= 400:
+                sys.exit(f"reviewing background {bg['id']}: {r.status_code} {r.text}")
+        chosen[s["scene"]] = bgs[0]["id"]
+    links = json.loads(next((src / "teasers").glob("*-v1.json")).read_text())
+    doc = {k: v for k, v in links.items() if k not in (*REVIEW_KEYS, "id", "version", "project")}
+    for t in doc["teasers"].values():
+        t["background"] = chosen[t["scene"]["id"]]
+    base = f"/projects/{PROJECT}/files/teasers/{PROJECT}/2"
+    for path, body in ((base, {"doc": doc}), (f"{base}/review", {"decision": "approve", "by": by})):
+        r = c.post(path, headers=AUTH, json=body)
+        if r.status_code >= 400:
+            sys.exit(f"{path}: {r.status_code} {r.text}")
+    for number in ("T1", "T2"):
+        gpu_window(real)
+        r = c.post(f"/projects/{PROJECT}/teasers/{number}/draft", headers=AUTH, json={"to": OWNER.address})
+        print(f"teaser draft {number}: {r.status_code}", file=sys.stderr)
+        if r.status_code >= 400:
+            sys.exit(f"teaser {number}: {r.status_code} {r.text}")
+        d = r.json()
+        moderator_approves(c, d["id"])
+        if number != "T1":
+            continue
+        owner_approves(c, d["id"])
+        sha = d["draft"]["image_sha256"]
+        post = {"where": POST_WHERE, "url": None, "at": datetime.now(UTC).isoformat(), "sha256": sha}
+        r = c.post(f"/drafts/{d['id']}/posted", headers={"Authorization": f"Bearer {POSTER}"}, json=post)
+        if r.status_code >= 400:
+            sys.exit(f"recording the post of {number}: {r.status_code} {r.text}")
+        r = c.post(f"/drafts/{d['id']}/publish", headers=AUTH, json={"deadline": 1900000000})
+        if r.status_code >= 400:
+            sys.exit(f"minting {number}: {r.status_code} {r.text}")
+
+
 def plan(real: bool) -> str:
     renders = len(CARDS) + SAMPLE["count"]
     bios = renders + 1
@@ -627,7 +730,9 @@ def plan(real: bool) -> str:
         f"only those not made before), {bios} bios on "
         f"{yaml.safe_load((HERE / 'demo-bio-v1.yaml').read_text())['model']} (each rewritten until it fits; "
         f"16 tries a round, {BIO_ROUNDS} rounds for a draft), and darkroom's text check on every try; then "
-        f"darkroom's text check on each text of the example teaser project ({PROJECT}) as it is saved."
+        f"darkroom's text check on each text of the example teaser project ({PROJECT}) as it is saved; then "
+        f"its 6 backgrounds (2 scenes x 3, SDXL 1024x1024, batch priority) and 1 inpainting (T1's keeper into "
+        f"the lamp room; T2 is a viewpoint and renders nothing). No training step runs (curator, lens, forge, proof)."
     )
 
 
@@ -675,6 +780,9 @@ def main(a: argparse.Namespace) -> None:
         shutil.copy(mint / "frames" / "card-green-v1.png", work / "frames")
         shutil.copy(mint / "frames" / "example-plain-v1.yaml", work / "frames")
         shutil.copy(mint / "frames" / "example-plain-v1.png", work / "frames")
+        # The example project's teasers use this frame (full bleed: a quote and a label), approved for the recording.
+        approved(mint / "frames" / "example-teaser-v1.yaml", work / "frames" / "example-teaser-v1.yaml", by)
+        shutil.copy(mint / "frames" / "example-teaser-v1.png", work / "frames")
         shutil.copytree(mint / "frames" / "fonts", work / "frames" / "fonts")
         approved(HERE / "demo-bio-v1.yaml", work / "bios" / "demo-bio-v1.yaml", by)
         entries, images = library(src_fixture, a.library, t, work / "library")
@@ -693,10 +801,15 @@ def main(a: argparse.Namespace) -> None:
         missing: list[str] = []  # --no-render: renders the cache didn't have
 
         class Backend:  # renders go to darkroom; argus-mint's text check goes through the fit guard
-            def generate(self, req):
+            def batch(self):
+                # argus-mint asks for darkroom's batch-priority client for background jobs: it must still be this
+                # one, or those renders would skip the cache and the GPU window.
+                return self
+
+            def generate(self, req, init=None):
                 # --cache: a render already made for this exact request is reused (same record and outcome,
                 # a refusal included), so a re-roll of one card renders that card alone.
-                key = hashlib.sha256(json.dumps(req.model_dump(mode="json"), sort_keys=True).encode()).hexdigest()[:24]
+                key = cache_key(req)
                 hit = a.cache / f"{key}.json" if a.cache and a.real else None
                 if hit and hit.is_file():
                     meta = json.loads(hit.read_text())
@@ -710,7 +823,7 @@ def main(a: argparse.Namespace) -> None:
                 # A ComfyUI out-of-memory error is the GPU's state, not the request's: wait and render it again.
                 for n in range(6):
                     gpu_window(a.real)
-                    r = darkroom.generate(req)
+                    r = darkroom.generate(req) if init is None else darkroom.generate(req, init=init)
                     if r.outcome == "safety_rejected" and r.ref:
                         refused.append(r.ref)
                         if hit:
@@ -737,7 +850,8 @@ def main(a: argparse.Namespace) -> None:
         cfg = Settings(
             drafts_dir=work / "drafts", samples_dir=work / "samples", library_dir=work / "library",
             templates_dir=work / "templates", frames_dir=work / "frames", bios_dir=work / "bios",
-            projects_dir=work / "projects",
+            projects_dir=work / "projects", backgrounds_dir=work / "backgrounds", training_dir=work / "training",
+            poster_token=POSTER,
             darkroom_url="http://darkroom:8106", writer_url="http://writer:9150", ipfs_api="http://kubo:5001",
             network="base-sepolia", card=CARD, moderator_token=TOKEN, siwe_domain="localhost:3108",
         )  # fmt: skip
@@ -822,6 +936,7 @@ def main(a: argparse.Namespace) -> None:
             sys.exit(f"sample job {job_id} ended {job['status']}: {job.get('error') or 'argus-mint gave no reason'}")
 
         author_project(c, mint / "projects" / PROJECT, by)
+        make_teasers(c, mint / "projects" / PROJECT, by, a.real)
 
         stage = Path(tempfile.mkdtemp(dir=out.parent, prefix=f".{out.name}-"))
         # Removed again unless it becomes OUT, so a failed run leaves no hidden .OUT-XXXX directory behind.
@@ -845,7 +960,7 @@ def main(a: argparse.Namespace) -> None:
                     png = preview(c.get(f"/drafts/{item['id']}/{which}").content)
                     (stage / "drafts" / item["id"] / f"{which}.png").write_bytes(png)
                 d = c.get(f"/drafts/{item['id']}").json()["draft"]
-                if d["frame"]:  # where the card's text sits, for the style editor's preview
+                if d["frame"] and d.get("kind", "card") == "card":  # where the card's text sits, for the style editor (teasers have none)
                     texts = {"name": d["name"], **({"bio": d["bio"]["text"]} if d["bio"] else {}), **d["texts"]}
                     lay = c.post(f"/frames/{d['frame']['id']}/{d['frame']['version']}/layout", json={"texts": texts})
                     (stage / "drafts" / item["id"] / "layout.json").write_text(json.dumps(lay.json(), indent=1) + "\n")
@@ -862,7 +977,21 @@ def main(a: argparse.Namespace) -> None:
             dump("library.json", "/library")
             (stage / "projects").mkdir()
             for p in dump("projects.json", "/projects")["projects"]:  # type: ignore[index]
-                dump(f"projects/{p['id']}.json", f"/projects/{p['id']}")
+                pid = p["id"]
+                detail = dump(f"projects/{pid}.json", f"/projects/{pid}")
+                (stage / "projects" / pid / "backgrounds").mkdir(parents=True)
+                for s in dump(f"projects/{pid}/backgrounds.json", f"/projects/{pid}/backgrounds")["sets"]:  # type: ignore[index]
+                    for bg in s["backgrounds"]:
+                        png = preview(c.get(f"/projects/{pid}/backgrounds/{bg['id']}/image").content)
+                        (stage / "projects" / pid / "backgrounds" / f"{bg['id']}.png").write_bytes(png)
+                dump(f"projects/{pid}/tracker.json", f"/projects/{pid}/tracker")
+                # Each embodied identity's training view, as argus-mint answers it. No step runs in the recording
+                # (training needs curator, lens, forge and proof), so it is the record of an untrained identity.
+                (stage / "projects" / pid / "training").mkdir()
+                for f in detail["files"]:  # type: ignore[index]
+                    if f["kind"] == "identity" and f["doc"].get("presence") == "embodied":
+                        path = f"/projects/{pid}/identities/{f['id']}/{f['version']}/training"
+                        dump(f"projects/{pid}/training/{f['id']}-v{f['version']}.json", path)
             (stage / "library").mkdir()
             for e in entries:
                 if a.library is None:  # the previews are the images: keep their bytes
@@ -930,7 +1059,13 @@ docs/demo-recording.md.
   holds the fonts the frame names (SIL OFL), for the style editor's preview.
 - `projects.json` and `projects/<id>.json` are `GET /projects` and `GET /projects/<id>` for argus-mint's
   neutral example teaser project ({project}) only, authored over HTTP as the moderator (each text judged by
-  SingGuard as it was saved), with the project, one identity, its scene and its line approved.
+  SingGuard as it was saved), with every file its two teasers link approved and the teaser links v1 left a
+  draft. `projects/<id>/backgrounds.json` is `GET /projects/<id>/backgrounds` (each scene's 3 backgrounds,
+  two approved and one rejected) and `backgrounds/<bg>.png` each image; `tracker.json` is
+  `GET /projects/<id>/tracker`; `training/<identity>-v<n>.json` is each embodied identity's
+  `GET .../training` (no step was run: training needs curator, lens, forge and proof). Its two teaser drafts
+  are in `drafts/`: T1 approved, with a post record, and minted; T2 awaiting its owner. The post record is
+  the recording's own report (`where: demo`, no URL): nothing was posted anywhere.
 - `library.json` is `GET /library` for six whole groups of the portrait library (one entry per
   checkpoint); `library/<id>.jpg` is each entry's 640 px preview.
 - Images are half-size, 256-colour previews to keep the fixture small, so their sha256 differs

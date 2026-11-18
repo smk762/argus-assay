@@ -68,6 +68,15 @@ export const SECTIONS = {
   "project-guard": ["docs/projects.md", "singguards-verdicts-are-kept-in-the-file"],
   "project-spoilers": ["docs/projects.md", "the-spoiler-list"],
   "project-review": ["docs/projects.md", "review"],
+  backgrounds: ["docs/projects.md", "backgrounds"],
+  "teaser-drafts": ["docs/projects.md", "teaser-drafts"],
+  tracker: ["docs/projects.md", "the-tracker"],
+  "identity-check": ["docs/projects.md", "the-identity-check"],
+  references: ["docs/projects.md", "references"],
+  training: ["docs/projects.md", "training-an-identity"],
+  "training-steps": ["docs/projects.md", "the-steps"],
+  posting: ["docs/projects.md", "posting"],
+  minting: ["docs/projects.md", "minting"],
 } as const satisfies Record<string, readonly [string, string]>;
 
 export type DocsTopic = keyof typeof SECTIONS;

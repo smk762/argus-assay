@@ -26,6 +26,11 @@ import type {
   ProjectFile,
   ProjectList,
   SavedProjectFile,
+  Background,
+  BackgroundSet,
+  BackgroundSetList,
+  IdentityTrainingView,
+  ProjectTracker,
 } from "./types";
 
 export class ApiError extends Error {
@@ -274,6 +279,67 @@ export async function reviewProjectFile(
   await requireCapability("author_catalogue");
   return post(`${projectFilePath(project, kind, item, version)}/review`, { decision, by }, true);
 }
+
+const projectPath = (project: string): string => `/projects/${encodeURIComponent(project)}`;
+
+/** Every background set of a project, one per scene version, with each job as argus-mint reports it. */
+export const getBackgrounds = (project: string): Promise<BackgroundSetList> => getJson(`${projectPath(project)}/backgrounds`);
+
+/** A background's PNG (in the static demo, the recording's preview of it). */
+export const backgroundImage = (project: string, bg: string): string =>
+  staticDemo()
+    ? tapeFile(`projects/${encodeURIComponent(project)}/backgrounds/${encodeURIComponent(bg)}.png`)
+    : imageUrl(`${projectPath(project)}/backgrounds/${encodeURIComponent(bg)}/image`);
+
+/** Start a job rendering an approved scene's missing backgrounds (moderator token). argus-mint refuses (409) what can't run. */
+export async function startBackgrounds(project: string, scene: string, version: number): Promise<BackgroundSet> {
+  await requireCapability("backgrounds");
+  return post(`${projectPath(project)}/scenes/${encodeURIComponent(scene)}/${version}/backgrounds`, {}, true);
+}
+
+/** The moderator's decision on one background, bound by argus-mint to its sha256 and made once. */
+export async function reviewBackground(project: string, bg: string, decision: "approve" | "reject", by: string, note: string): Promise<Background> {
+  await requireCapability("backgrounds");
+  return post(`${projectPath(project)}/backgrounds/${encodeURIComponent(bg)}/review`, { decision, by, note }, true);
+}
+
+/** A teaser draft from `T<n>` of the newest approved links, for the owner's wallet `to` (moderator token). Then reviewed as a card is. */
+export async function makeTeaserDraft(project: string, number: string, to: string): Promise<DraftDetail> {
+  await requireCapability("teasers");
+  return post(`${projectPath(project)}/teasers/${encodeURIComponent(number)}/draft`, { to }, true);
+}
+
+/**
+ * Run a pending teaser's identity check again (moderator token), when argus-proof was down, say. argus-mint
+ * scores the same art against the same files and records auto-moderation's checks again; it changes no image.
+ */
+export async function rerunIdentityCheck(id: string): Promise<DraftDetail> {
+  await requireCapability("identity_check");
+  await requireCapability("moderate");
+  return post(`/drafts/${encodeURIComponent(id)}/identity-check`, {}, true);
+}
+
+/** Each teaser's stages and drafts, as argus-mint works them out. */
+export const getTracker = (project: string): Promise<ProjectTracker> => getJson(`${projectPath(project)}/tracker`);
+
+const trainingPath = (project: string, identity: string, version: number): string =>
+  `${projectPath(project)}/identities/${encodeURIComponent(identity)}/${version}/training`;
+
+/** An identity's training record, each step's status and the one step argus-mint allows next. */
+export const getTraining = (project: string, identity: string, version: number): Promise<IdentityTrainingView> =>
+  getJson(trainingPath(project, identity, version));
+
+/** Start one training step (moderator token). The page only ever asks for argus-mint's `next`. */
+export async function startTrainingStep(project: string, identity: string, version: number, step: string): Promise<IdentityTrainingView> {
+  await requireCapability("identity_training");
+  return post(`${trainingPath(project, identity, version)}/${encodeURIComponent(step)}`, {}, true);
+}
+
+/** A training candidate's PNG. */
+export const trainingCandidate = (project: string, identity: string, version: number, n: number): string =>
+  staticDemo()
+    ? tapeFile(`projects/${encodeURIComponent(project)}/training/${encodeURIComponent(identity)}-v${version}/${n}.png`)
+    : imageUrl(`${trainingPath(project, identity, version)}/candidates/${n}`);
 
 /** A frame (any status) on existing art, as an object URL for an <img>. Revoke it when done. */
 export async function previewFrame(

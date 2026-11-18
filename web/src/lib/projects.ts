@@ -34,13 +34,29 @@ export const PRESENCE_TEXT: Record<Presence, string> = {
   viewpoint: "Viewpoint: nobody painted in; the image is what they see, through their frame",
 };
 
-export const PROVENANCE = ["generated", "licensed", "personal"] as const;
-export type Provenance = (typeof PROVENANCE)[number];
-export const PROVENANCE_TEXT: Record<Provenance, string> = {
-  generated: "Generated",
-  licensed: "Licensed",
-  personal: "A personal photo (needs a consent record)",
+/** argus-cortex's provenance kinds (`Provenance.kind`), as argus-mint checks a reference with them (wire 1.15). */
+export const PROVENANCE = ["synthetic", "stock", "consented", "personal", "curated"] as const;
+export type ProvenanceKind = (typeof PROVENANCE)[number];
+/** What each kind is, in cortex's words. Which kinds can be approved is argus-mint's to say (its problems). */
+export const PROVENANCE_TEXT: Record<ProvenanceKind, string> = {
+  synthetic: "Synthetic: generated, with no real person going in",
+  stock: "Stock: a published asset under its licence",
+  consented: "Consented: a real person's likeness under a signed release",
+  personal: "Personal: the user's own use only",
+  curated: "Curated (reserved)",
 };
+
+/** An argus-cortex `Provenance` record, as a reference carries it. */
+export interface Provenance {
+  kind: ProvenanceKind | string;
+  source: string;
+  license?: string;
+  notes?: string;
+  /** For a consented reference, the person as the release names them. Not shown on the page. */
+  subject?: string;
+  release_sha256?: string | null;
+  generator?: { model?: string; seed?: number; prompt?: string; [k: string]: unknown } | null;
+}
 
 /** Written by argus-mint alone: a saved document may not carry them. */
 export const REVIEW_KEYS = ["status", "approved_by", "approved_at", "guard"] as const;
@@ -84,7 +100,6 @@ export interface Reference {
   file: string;
   sha256: string;
   provenance: Provenance;
-  consent?: string | null;
   held_out?: boolean;
 }
 
@@ -97,7 +112,27 @@ export interface IdentityDoc extends Reviewed {
   frame?: Ref | null;
   lora?: LoraPin | null;
   proof_run?: string | null;
+  proof_export?: string | null;
+  check_metric?: "identity" | "likeness" | null;
+  min_score?: number | null;
+  training?: IdentityTraining | null;
   references?: Reference[];
+}
+
+/** How an embodied identity's LoRA is trained (argus-mint `projects.IdentityTraining`, wire 1.14). */
+export interface IdentityTraining {
+  model: string;
+  base_model?: string | null;
+  sampling: SceneDoc["sampling"];
+  width?: number;
+  height?: number;
+  candidates?: number;
+  train?: number;
+  held_out?: number;
+  trigger: string;
+  caption_style?: "photo" | "anime";
+  max_attempts?: number;
+  proof_seeds?: number;
 }
 
 export interface Area {

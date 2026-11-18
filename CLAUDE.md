@@ -22,6 +22,11 @@ Each row names what catches it. An **UNENFORCED** row gets a check, not more pro
 | A write (the moderator's or the owner's) reaches argus-mint before `requireCapability` (rule 2) | `rules.test.ts` "every write is gated…" (finds every poster in `api.ts`); `api.test.ts` "writes are gated on /health…" (behaviour) |
 | A template variable typed rather than picked, or prompt text sent anywhere but catalogue authoring (rule 3) | `rules.test.ts` "no free-text prompts outside catalogue authoring" (no prompt field on a draft or sample request, via tsc; no text field names a variable, prompt or negative outside `components/ProjectEditors.tsx`; that module imports only `saveProjectFile`, and no other client call names a prompt); argus-mint refuses a value not on the template's list |
 | A project write (a file saved, approved or retired) reaching argus-mint before `requireCapability('author_catalogue')` (rules 2, 3) | `rules.test.ts` "gates every project write on author_catalogue, before it posts"; `api.test.ts` "teaser project writes are gated on author_catalogue" |
+| A teaser-layer write (a background job or review, a teaser draft, a training step, the identity check) reaching argus-mint before its own capability (`backgrounds`, `teasers`, `identity_training`, `identity_check` + `moderate`) (rule 2) | `rules.test.ts` "gates each teaser-layer write on its own capability" (fails on a new writer under a project until it is listed); `api.test.ts` "a teaser's layers are gated on their own capabilities" |
+| A training step started other than the one argus-mint names as `next`, or two at once (rule 1) | `rules.test.ts` "runs only the training step argus-mint names as next"; argus-mint refuses (409) a step whose predecessor isn't done or while one runs |
+| The tracker working out a stage, a count or readiness (rule 1) | `rules.test.ts` "works out nothing on the tracker" (no filter, tally or test across drafts; each stage from `stages[key]`) |
+| The identity check offered again outside a pending teaser (rule 1) | `rules.test.ts` "offers the identity check again only for a pending teaser"; argus-mint refuses (409) otherwise |
+| The person a consented reference names shown on a page | `rules.test.ts` "never shows the person a consented reference names" (no `.subject` read in any `.tsx` but the authoring module) |
 | A spoiler term on the page, in the tape or the fixture (argus-mint sends hold numbers only) | `rules.test.ts` "spoiler terms never appear" (no spoiler field read but `spoiler_rules`, each shown through `spoilerText`); `make_tape.mjs` `checkSpoilers`, `static.test.ts` "carries a spoiler hold as a rule number only" |
 | The moderator token in localStorage, the bundle or a URL (rule 4) | `rules.test.ts` "the moderator token stays in the tab" |
 | Anyone but the owner changes a card (rule 6) | argus-mint: it refuses an edit not signed by the draft's owner |
@@ -33,7 +38,7 @@ Each row names what catches it. An **UNENFORCED** row gets a check, not more pro
 | The hosted demo asks a wallet for anything | `wallet.test.ts` "never asks a wallet, even one the page has injected" |
 | An explorer link to anything but the Card contract (a wallet's page lists its holdings) | `rules.test.ts` "explorer links name only the Card contract" |
 | An address not on `make_tape.mjs`'s allowlist, or a secret, in the tape | `static.test.ts` "refuses an address that isn't on the allowlist, and secrets by name" |
-| `demoMint.ts` and `mock_mint.mjs` answering differently | `parity.test.ts` (runs the mock, asks both the same requests: every list, draft and sample job, 404s, a review, catalogue decisions) |
+| `demoMint.ts` and `mock_mint.mjs` answering differently | `parity.test.ts` (runs the mock, asks both the same requests: every list, draft and sample job, 404s, a review, catalogue decisions, every project's backgrounds, tracker, training views and `/posts/ready`; `PARITY_FIXTURE` runs it over a dry run's recording) |
 | A static demo page without its CSP | `check-static.mjs` (CI `pages`) |
 | Wire types, imported docs or the demo fixture out of step with the pin | `wire:check` (CI `web`); `sync.test.ts`; `mint-drift.yml` flags argus-mint `dev` moving past the pin |
 | An imported doc carrying a private IP, a home path or an email | `docs-pull.mjs`'s opsec gate (at import; the hashes in `sync.test.ts` then hold the files) |
@@ -59,6 +64,7 @@ What the file tree doesn't say:
 - `scripts/make_tape.mjs` builds the static demo's tape from `fixture/` and refuses unlisted addresses and secrets.
 - `fixture/` is recorded with real backends by `scripts/record_demo.py` (docs/demo-recording.md), not copied from argus-mint. It carries argus-mint's neutral example teaser project (`example-teasers`) only, never a real one.
 - `scripts/mock_projects.mjs` is the mock's in-memory teaser project authoring (a port of argus-mint's checks); the hosted demo (`demoMint.ts`) serves the recorded projects read-only.
+- `scripts/mock_teasers.mjs` is the mock's side of a teaser's layers (backgrounds, teaser drafts, the tracker, posts, training views), read from `fixture/projects/<id>/`; `demoMint.ts` ports its reads line for line, and refuses every layer write.
 
 ## Conventions
 

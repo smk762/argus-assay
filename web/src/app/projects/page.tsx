@@ -17,7 +17,7 @@ export default function ProjectsPage() {
   const list = useLoad(() => getProjects());
   const [adding, setAdding] = useState(false);
   const choices = useLoad<Choices | null>(
-    () => (adding ? Promise.all([getFrames(), getTemplates()]).then(([frames, templates]) => ({ frames, templates })) : Promise.resolve(null)),
+    () => (adding ? Promise.all([getFrames(), getTemplates()]).then(([frames, templates]) => ({ frames, templates, backgrounds: [] })) : Promise.resolve(null)),
     [adding],
   );
   const off = !health?.capabilities.author_catalogue

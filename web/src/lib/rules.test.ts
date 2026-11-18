@@ -8,7 +8,7 @@ import { readdirSync, readFileSync } from "node:fs";
 import { join, relative, sep } from "node:path";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import { CATALOGUE_STATUS, DRAFT_STATUS, SAMPLE_STATUS } from "./status";
+import { BACKGROUND_STATUS, CATALOGUE_STATUS, DRAFT_STATUS, IDENTITY_OUTCOME, JOB_STATUS, SAMPLE_STATUS, STAGE_STATUS, STEP_STATUS } from "./status";
 import { spoilerText } from "./projects";
 import { getToken, setToken } from "./token";
 import type { CreateDraft, SampleRequest } from "./types";
@@ -48,8 +48,30 @@ describe("every write is gated on /health before it reaches the wire (rule 2)", 
       expect.arrayContaining([
         "createDraft", "decide", "moderatorReview", "ownerChallenge", "ownerReview", "ownerEditChallenge", "ownerEdit", "publishDraft", "startSamples",
         "saveProjectFile", "reviewProjectFile",
+        "startBackgrounds", "reviewBackground", "makeTeaserDraft", "startTrainingStep", "rerunIdentityCheck",
       ]),
     );
+  });
+
+  it("gates each teaser-layer write on its own capability, before it posts", () => {
+    // Each write a teaser's layers add (argus-mint wire 1.12-1.15) and the capability /health names for it.
+    const GATES: Record<string, string[]> = {
+      startBackgrounds: ["backgrounds"],
+      reviewBackground: ["backgrounds"],
+      makeTeaserDraft: ["teasers"],
+      startTrainingStep: ["identity_training"],
+      rerunIdentityCheck: ["identity_check", "moderate"],
+    };
+    // Every writer under a project but its files' (author_catalogue, below) is one of these: a new one fails here until it is listed.
+    const layered = writers.filter(([, body]) => /\/projects\b|projectPath\(|trainingPath\(/.test(body) && !/projectFilePath\(/.test(body));
+    expect(layered.map(([name]) => name).sort()).toEqual(["makeTeaserDraft", "reviewBackground", "startBackgrounds", "startTrainingStep"]);
+    for (const [name, want] of Object.entries(GATES)) {
+      const body = fns.get(name);
+      expect(body, `${name} is in api.ts`).toBeDefined();
+      const gates = [...body!.matchAll(/await requireCapability\("(\w+)"\)/g)];
+      expect(gates.map((m) => m[1]), `${name}'s gates`).toEqual(want);
+      expect(gates.at(-1)!.index, `${name} posts before requireCapability`).toBeLessThan(body!.search(POST));
+    }
   });
 
   it("calls requireCapability before each one posts", () => {
@@ -63,7 +85,7 @@ describe("every write is gated on /health before it reaches the wire (rule 2)", 
   it("gates every project write on author_catalogue, before it posts", () => {
     // A writer whose request goes under /projects (its own path, or the helper that builds one) is authoring or
     // reviewing a teaser project's files: its first gate is author_catalogue, never another capability.
-    const projectWriters = writers.filter(([, body]) => /\/projects\b|projectFilePath\(/.test(body));
+    const projectWriters = writers.filter(([, body]) => /projectFilePath\(/.test(body));
     expect(projectWriters.map(([name]) => name).sort()).toEqual(["reviewProjectFile", "saveProjectFile"]);
     for (const [name, body] of projectWriters) {
       const gate = body.match(/await requireCapability\("(\w+)"\)/);
@@ -182,7 +204,7 @@ describe("spoiler terms never appear: a hold is a rule number (projects)", () =>
 
 describe("a status has a mark and a word (rule 7)", () => {
   it("defines both for every status the wire has", () => {
-    for (const map of [DRAFT_STATUS, CATALOGUE_STATUS, SAMPLE_STATUS]) {
+    for (const map of [DRAFT_STATUS, CATALOGUE_STATUS, SAMPLE_STATUS, BACKGROUND_STATUS, JOB_STATUS, STEP_STATUS, STAGE_STATUS, IDENTITY_OUTCOME]) {
       for (const [status, s] of Object.entries(map)) {
         expect(s.mark.trim(), status).not.toBe("");
         expect(s.label.trim(), status).not.toBe("");
@@ -242,6 +264,35 @@ describe("the browser decides nothing (rules 1, 5)", () => {
     const pkg = JSON.parse(readFileSync(join(src, "..", "package.json"), "utf8")) as { dependencies?: object; devDependencies?: object };
     const deps = Object.keys({ ...pkg.dependencies, ...pkg.devDependencies });
     expect(deps.filter((d) => /^(?:viem|ethers|siwe|web3|@noble\/(?:secp256k1|curves)|@ethersproject\/)/.test(d))).toEqual([]);
+  });
+
+  it("runs only the training step argus-mint names as next", () => {
+    // The step is in the path, so each request names one step: the page asks only for argus-mint's `next`.
+    const calls = sources.flatMap((f) => [...read(f).matchAll(/\bstartTrainingStep\(([^)]*)\)/g)].map((m) => [f, m[1]] as const));
+    const pages = calls.filter(([f]) => f !== "lib/api.ts");
+    expect(pages.length).toBeGreaterThan(0);
+    for (const [file, args] of pages) expect(args.split(",").at(-1)!.trim(), `${file}: startTrainingStep(${args})`).toMatch(/^\w+\.next!?$/);
+  });
+
+  it("works out nothing on the tracker: every stage is argus-mint's, and nothing is counted", () => {
+    const view = read("app/projects/[id]/tracker/TrackerView.tsx");
+    // A stage is shown from `stages[key]` alone; no tally, test across drafts or derived readiness.
+    expect(view).not.toMatch(/\.(?:filter|reduce|some|every|find|findLast|count)\(/);
+    expect(view).toMatch(/t\.stages\[s\.key\] \? STAGE_STATUS\.reached : STAGE_STATUS\.not_yet/);
+  });
+
+  it("offers the identity check again only for a pending teaser, by argus-mint's kind and status", () => {
+    const panel = read("components/AutoCheck.tsx");
+    expect(panel).toMatch(/\{teaser && d\.status === "pending" \? <Rerun /);
+    expect(panel).toMatch(/const teaser = d\.draft\.kind === "teaser";/);
+  });
+
+  it("never shows the person a consented reference names", () => {
+    // A release's subject is a real person: argus-mint's own problems never name them, and no page does either.
+    // The authoring module may hold it, to save it, and nothing else.
+    for (const file of sources.filter((f) => f.endsWith(".tsx") && f !== "components/ProjectEditors.tsx")) {
+      expect(read(file), file).not.toMatch(/\.subject\b/);
+    }
   });
 
   it("offers each review step only where argus-mint's status and awaiting say so", () => {

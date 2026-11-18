@@ -31,7 +31,10 @@ const OWN_ID = ["project", "teasers"];
 // The fields each kind has, in argus-mint's order, with its defaults (a saved file is returned in full).
 const FIELDS = {
   project: { title: undefined, attribution: null, generated_label: true, frames: [], policy: "default", family: "sdxl", style_lora: null },
-  identity: { project: undefined, voice: undefined, presence: undefined, prompt: "", negative: "", frame: null, lora: null, proof_run: null, references: [] },
+  identity: {
+    project: undefined, voice: undefined, presence: undefined, prompt: "", negative: "", frame: null, lora: null, proof_run: null,
+    proof_export: null, check_metric: null, min_score: null, training: null, references: [],
+  },
   scene: {
     project: undefined, model: undefined, sampling: undefined, width: undefined, height: undefined, prompt: undefined, negative: "",
     backgrounds: 3, character_area: null, max_attempts: 4,
@@ -75,13 +78,17 @@ function invalid(kind, d) {
     if (d.presence === "embodied" && d.frame !== null) return "an embodied identity has no frame of its own (the teaser names one)";
     if (d.presence === "viewpoint" && d.frame === null) return "a viewpoint identity needs its frame";
     if (d.presence === "viewpoint" && d.lora !== null) return "a viewpoint identity isn't painted in, so it takes no LoRA";
-    if ((d.lora === null) !== (d.proof_run === null)) return "a LoRA and the proof run that passed it go together";
     if (!Array.isArray(d.references)) return "references are a list";
     for (const r of d.references) {
       if (!isObj(r) || !str(r.file, 1, Infinity) || !HEX64.test(r.sha256 ?? "")) return "a reference has a file and its sha256";
-      if (!["generated", "licensed", "personal"].includes(r.provenance)) return "a reference's provenance is generated, licensed or personal";
-      if (r.provenance === "personal" && !r.consent) return `reference ${r.file}: a personal photo needs a consent record (\`consent\`)`;
+      const extra = Object.keys(r).filter((k) => !["file", "sha256", "provenance", "held_out"].includes(k));
+      if (extra.length) return `extra fields not permitted in a reference: ${extra.join(", ")}`;
+      // wire 1.15: an argus-cortex Provenance record, checked as cortex does at approval (referenceProblems).
+      if (!isObj(r.provenance) || typeof r.provenance.kind !== "string") return `reference ${r.file}: provenance needs a \`kind\` (argus-cortex Provenance)`;
     }
+    if (d.presence === "viewpoint" && d.training !== null) return "a viewpoint identity isn't painted in, so nothing is trained for it";
+    if (new Set([d.lora === null, d.proof_run === null, d.proof_export === null]).size !== 1)
+      return "a LoRA, the proof run that passed it and proof's export (its references) go together";
     if (new Set(d.references.map((r) => r.file)).size !== d.references.length) return "a reference is listed twice";
   }
   if (kind === "scene") {
@@ -137,6 +144,27 @@ function freshVerdicts(kind, d, policy) {
 }
 
 const fileName = (f) => f.file.split("/").pop();
+
+/** argus-cortex's cleared kinds: a teaser is public, so only these may be approved (argus-mint references.py). */
+const CLEARED = ["stock", "synthetic", "consented"];
+const KINDS_OF_PROVENANCE = ["personal", "stock", "synthetic", "consented", "curated"];
+
+/**
+ * What stops an identity's references being approved (argus-mint's reference_problems), with no consent
+ * directory behind the mock: a consented reference can't be checked, so it is a problem here.
+ */
+function referenceProblems(f) {
+  const out = [];
+  for (const r of f.doc.references ?? []) {
+    const label = `identity ${f.id} v${f.version}: reference ${r.file}`;
+    const p = r.provenance ?? {};
+    if (!KINDS_OF_PROVENANCE.includes(p.kind) || !str(p.source, 1, Infinity)) {
+      out.push(`${label}: its provenance isn't a valid argus-cortex Provenance`);
+    } else if (!CLEARED.includes(p.kind)) out.push(`${label}: a ${p.kind} source isn't cleared to be shown, and teasers are public`);
+    else if (p.kind === "consented") out.push(`${label}: shows a real person, and no consent records are configured (ARGUS_MINT_CONSENT_DIR)`);
+  }
+  return out;
+}
 const docOrder = (kind, d) => {
   const out = { id: d.id, version: d.version, status: d.status, approved_by: d.approved_by ?? null, approved_at: d.approved_at ?? null };
   if (d.guard?.length) out.guard = d.guard;
@@ -212,6 +240,7 @@ export class MockProjects {
       if (family(f.doc.model) !== project.family) out.push(`${fileName(f)}: checkpoint ${f.doc.model} isn't in the project's family ${repr(project.family)}`);
     }
     for (const f of this.table(pid, "teasers")) if (f.status !== "retired") out.push(...this.teaserProblems(pid, f.doc).map((p) => `${fileName(f)}: ${p}`));
+    for (const f of this.table(pid, "identity")) if (f.status !== "retired") out.push(...referenceProblems(f));
     return out;
   }
 
@@ -304,6 +333,10 @@ export class MockProjects {
       return fail(422, 'the body is {decision: "approve" or "retire", by}');
     const by = b.by.trim();
     if (b.decision === "approve") {
+      if (kind === "identity") {
+        const refused = referenceProblems(f);
+        if (refused.length) return fail(409, `its references can't be approved: ${refused.join("; ")}`);
+      }
       if (kind === "teasers") {
         const wrong = this.teaserProblems(pid, f.doc);
         if (wrong.length) return fail(409, `the teaser links have problems: ${wrong.join("; ")}`);

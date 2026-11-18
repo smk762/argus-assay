@@ -3,7 +3,21 @@
  * recorded API responses). One JSON file holds every response; the images and fonts sit beside it
  * under the paths argus-mint's fixture uses. Pure: parsing and checks only.
  */
-import type { BioInfo, DraftDetail, FrameInfo, FrameLayout, Health, LibraryListing, ProjectDetail, ProjectList, SampleJob, TemplateInfo } from "./types";
+import type {
+  BackgroundSetList,
+  BioInfo,
+  DraftDetail,
+  FrameInfo,
+  FrameLayout,
+  Health,
+  IdentityTrainingView,
+  LibraryListing,
+  ProjectDetail,
+  ProjectList,
+  ProjectTracker,
+  SampleJob,
+  TemplateInfo,
+} from "./types";
 
 export const TAPE_FORMAT = "argus-assay-tape";
 export const TAPE_VERSION = 1;
@@ -16,6 +30,16 @@ export interface TapeProvenance {
   source: string;
   mint_version: string | null;
   note: string | null;
+}
+
+/** A project's backgrounds, tracker and training views, as recorded (scripts/mock_teasers.mjs readLayers). */
+export interface ProjectLayers {
+  /** `GET /projects/{id}/backgrounds`. */
+  backgrounds: BackgroundSetList | null;
+  /** `GET /projects/{id}/tracker`, as recorded (the demo reads its drafts' stages again from the drafts as they are). */
+  tracker: ProjectTracker | null;
+  /** Each embodied identity's `GET …/training`, by "<identity>@<version>". */
+  training: Record<string, IdentityTrainingView>;
 }
 
 export interface Tape {
@@ -39,6 +63,8 @@ export interface Tape {
   projects: ProjectList;
   /** Each project's `GET /projects/{id}`, in the list's order. */
   project_details: ProjectDetail[];
+  /** Each project's recorded layers (wire 1.12 on), by project id; none for a tape recorded before. */
+  project_layers: Record<string, ProjectLayers>;
   /** Every image and font beside tape.json, by path. */
   files: string[];
 }
@@ -67,6 +93,13 @@ export function parseTape(raw: unknown): Tape {
   // A tape recorded before argus-mint had teaser projects carries none: the pages then list none.
   raw.projects ??= { projects: [] };
   raw.project_details ??= [];
+  raw.project_layers ??= {};
+  if (!isObject(raw.project_layers)) fail("project_layers must be an object");
+  for (const [pid, l] of Object.entries(raw.project_layers)) {
+    if (!/^[a-z0-9][a-z0-9-]{0,63}$/.test(pid) || !isObject(l) || !isObject(l.training)) fail(`project ${pid}'s layers are not usable`);
+    if (l.backgrounds != null && !(isObject(l.backgrounds) && Array.isArray(l.backgrounds.sets))) fail(`project ${pid}'s backgrounds must be {sets: [...]}`);
+    if (l.tracker != null && !(isObject(l.tracker) && Array.isArray(l.tracker.teasers))) fail(`project ${pid}'s tracker must have teasers`);
+  }
   if (!isObject(raw.projects) || !Array.isArray(raw.projects.projects)) fail("projects must be {projects: [...]}");
   if (!Array.isArray(raw.project_details)) fail("project_details must be a list");
   for (const p of raw.project_details as unknown[]) {

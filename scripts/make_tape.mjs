@@ -16,6 +16,7 @@
 import { cpSync, existsSync, mkdirSync, readdirSync, readFileSync, rmSync, statSync, writeFileSync } from "node:fs";
 import { dirname, join, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { readLayers } from "./mock_teasers.mjs";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const args = process.argv.slice(2);
@@ -206,10 +207,11 @@ const walk = (dir) =>
 
 /** `GET /projects` and each project's `GET /projects/{id}`, when the fixture was recorded with them (wire 1.11 on). */
 export function projectsOf(fixtureDir) {
-  if (!existsSync(join(fixtureDir, "projects.json"))) return { projects: { projects: [] }, project_details: [] };
+  if (!existsSync(join(fixtureDir, "projects.json"))) return { projects: { projects: [] }, project_details: [], project_layers: {} };
   const read = (rel) => JSON.parse(readFileSync(join(fixtureDir, rel), "utf8"));
   const projects = read("projects.json");
-  return { projects, project_details: projects.projects.map((p) => read(`projects/${p.id}.json`)) };
+  // Backgrounds, tracker and training views (wire 1.12 on), read as the mock reads them.
+  return { projects, project_details: projects.projects.map((p) => read(`projects/${p.id}.json`)), project_layers: readLayers(fixtureDir) };
 }
 
 /** The tape for `fixtureDir`, and the image and font paths to copy beside it. Throws on anything not public. */

@@ -8,8 +8,9 @@
  * until it is approved.
  *
  * Free text is only for the authored texts: prompt, negative, a line's text and published wording, its
- * source, the title, the attribution and alt text. Everything else is picked from a list (presence,
- * provenance, voices the project already has, files by id and version, frames, checkpoints, samplers),
+ * source, the title, the attribution and alt text, and a reference's provenance source, licence and (for a
+ * consented one) subject. Everything else is picked from a list (presence, provenance kind, voices the project
+ * already has, files by id and version, frames, checkpoints, samplers, backgrounds of the scene),
  * a number, or an identifier with argus-mint's pattern.
  */
 import { useId, useState, type FormEvent, type ReactNode } from "react";
@@ -43,8 +44,8 @@ import {
   type TeaserLink,
   type TeasersDoc,
 } from "@/lib/projects";
-import { allowedModels, CATALOGUE_STATUS, modelFamily, statusText } from "@/lib/status";
-import type { FrameInfo, ProjectDetail, ProjectFile, Ref, SavedProjectFile, TemplateInfo } from "@/lib/types";
+import { allowedModels, BACKGROUND_STATUS, CATALOGUE_STATUS, modelFamily, statusText } from "@/lib/status";
+import type { BackgroundSet, FrameInfo, ProjectDetail, ProjectFile, Ref, SavedProjectFile, TemplateInfo } from "@/lib/types";
 
 import { INPUT } from "./bits";
 import { Button, Notice, SectionTitle, Spinner } from "./ui";
@@ -55,10 +56,11 @@ const INVALID = "user-invalid:border-error";
 
 type Doc = Record<string, unknown>;
 
-/** What the editors pick from: the server's frames and the checkpoints and samplers its templates name. */
+/** What the editors pick from: the server's frames, the checkpoints and samplers its templates name, and the project's backgrounds. */
 export interface Choices {
   frames: FrameInfo[];
   templates: TemplateInfo[];
+  backgrounds: BackgroundSet[];
 }
 
 function Labeled({ label, hint, children, id }: { label: string; hint?: string; children: ReactNode; id: string }) {
@@ -203,8 +205,22 @@ function ReferenceRow({ r, set, remove }: { r: Reference; set: (r: Reference) =>
       <legend className="px-1 text-caption text-text-muted">Reference</legend>
       <Ident label="File" hint="Relative to the identity file." value={r.file} onChange={(file) => set({ ...r, file })} pattern="[^\s]+" />
       <Ident label="sha256" value={r.sha256} onChange={(sha256) => set({ ...r, sha256 })} pattern="[0-9a-f]{64}" />
-      <Pick label="Provenance" value={r.provenance} options={PROVENANCE.map((p) => ({ value: p, label: PROVENANCE_TEXT[p] }))} onChange={(p) => set({ ...r, provenance: p as Reference["provenance"] })} />
-      {r.provenance === "personal" ? <Ident label="Consent record id" value={r.consent ?? ""} onChange={(consent) => set({ ...r, consent })} pattern="[^\s]{1,128}" /> : null}
+      <Pick
+        label="Provenance"
+        hint="argus-cortex's kind. argus-mint approves only cleared kinds, and checks a consented one against its release."
+        value={r.provenance?.kind ?? ""}
+        options={withCurrent([...PROVENANCE], r.provenance?.kind).map((p) => ({ value: p, label: PROVENANCE_TEXT[p as keyof typeof PROVENANCE_TEXT] ?? p }))}
+        onChange={(kind) => set({ ...r, provenance: { ...r.provenance, kind } })}
+      />
+      <AuthoredText label="Source" hint="Where the image came from, such as a studio shoot." value={r.provenance?.source ?? ""} onChange={(source) => set({ ...r, provenance: { ...r.provenance, source } })} required max={200} />
+      <AuthoredText label="Licence" value={r.provenance?.license ?? ""} onChange={(license) => set({ ...r, provenance: { ...r.provenance, license } })} max={200} />
+      {r.provenance?.kind === "consented" ? (
+        <>
+          <AuthoredText label="Subject, as the release names them" hint="Never shown on the page or in argus-mint's problems." value={r.provenance.subject ?? ""} onChange={(subject) => set({ ...r, provenance: { ...r.provenance, subject } })} required max={200} />
+          <Ident label="Release sha256" hint="Binds the consent record; the release itself is never stored." value={r.provenance.release_sha256 ?? ""} onChange={(release_sha256) => set({ ...r, provenance: { ...r.provenance, release_sha256 } })} pattern="[0-9a-f]{64}" />
+        </>
+      ) : null}
+      {r.provenance?.generator ? <p className="text-caption text-text-muted">Its generator record (model, seed, prompt) is kept as it is.</p> : null}
       <label className="flex items-center gap-2 text-small">
         <input type="checkbox" checked={Boolean(r.held_out)} onChange={(e) => set({ ...r, held_out: e.target.checked })} />
         Held out of training (argus-proof scores against it)
@@ -250,7 +266,7 @@ function IdentityFields({ doc, set, detail, choices }: { doc: IdentityDoc; set: 
       {refs.map((r, i) => (
         <ReferenceRow key={i} r={r} set={(next) => set({ references: refs.map((x, j) => (j === i ? next : x)) })} remove={() => set({ references: refs.filter((_, j) => j !== i) })} />
       ))}
-      <Button small onClick={() => set({ references: [...refs, { file: "", sha256: "", provenance: "generated", held_out: false }] })}>
+      <Button small onClick={() => set({ references: [...refs, { file: "", sha256: "", provenance: { kind: "synthetic", source: "", license: "" }, held_out: false }] })}>
         Add a reference
       </Button>
     </>
@@ -320,7 +336,36 @@ function LineFields({ doc, set, detail }: { doc: LineDoc; set: (d: Partial<LineD
   );
 }
 
-function TeaserRow({ n, t, set, remove, detail, frames, projectFrames }: { n: string; t: TeaserLink; set: (t: TeaserLink) => void; remove: () => void; detail: ProjectDetail; frames: FrameInfo[]; projectFrames: Ref[] }) {
+/**
+ * The backgrounds rendered from the teaser's scene (that id and version), as options with argus-mint's status.
+ * The chosen one is kept even when its set isn't listed. argus-mint refuses a draft from a background that
+ * isn't approved, so nothing is filtered here.
+ */
+function backgroundOptions(sets: BackgroundSet[], scene: Ref | null, current: string | null | undefined): { value: string; label: string }[] {
+  const set = scene ? sets.find((s) => s.scene === scene.id && s.scene_version === scene.version) : undefined;
+  const out = (set?.backgrounds ?? []).map((b) => ({ value: b.id, label: `${b.id} (${statusText(BACKGROUND_STATUS[b.status ?? "pending"])})` }));
+  return current && !out.some((o) => o.value === current) ? [{ value: current, label: `${current} (not in this scene's set)` }, ...out] : out;
+}
+
+function TeaserRow({
+  n,
+  t,
+  set,
+  remove,
+  detail,
+  frames,
+  projectFrames,
+  backgrounds,
+}: {
+  n: string;
+  t: TeaserLink;
+  set: (t: TeaserLink) => void;
+  remove: () => void;
+  detail: ProjectDetail;
+  frames: FrameInfo[];
+  projectFrames: Ref[];
+  backgrounds: BackgroundSet[];
+}) {
   const ref = (kind: ProjectKind, key: "line" | "identity" | "scene", label: string) => (
     <Pick label={label} value={refValue(t[key])} options={fileOptions(detail, kind)} onChange={(v) => set({ ...t, [key]: parseRef(v) as Ref })} />
   );
@@ -334,7 +379,14 @@ function TeaserRow({ n, t, set, remove, detail, frames, projectFrames }: { n: st
         <Pick label="Frame" hint={projectFrames.length ? "One of the project's frames." : undefined} value={refValue(t.frame)} options={frameOptions(frames, projectFrames)} onChange={(v) => set({ ...t, frame: parseRef(v) as Ref })} />
       </div>
       <AuthoredText label="Alt text" hint="Posts refuse an image without it." value={t.alt ?? ""} onChange={(alt) => set({ ...t, alt })} rows={2} required max={1000} />
-      {t.background ? <p className="text-caption text-text-muted">Chosen background: {t.background} (kept as it is)</p> : null}
+      <Pick
+        label="Background"
+        hint="One rendered from this scene. Only an approved background makes a teaser draft."
+        value={t.background ?? ""}
+        options={backgroundOptions(backgrounds, t.scene ?? null, t.background)}
+        onChange={(bg) => set({ ...t, background: bg || null })}
+        required={false}
+      />
       <Button small tone="danger" onClick={remove}>
         Remove {n}
       </Button>
@@ -355,6 +407,7 @@ function TeasersFields({ doc, set, detail, project, choices }: { doc: TeasersDoc
           detail={detail}
           frames={choices.frames}
           projectFrames={project?.frames ?? []}
+          backgrounds={choices.backgrounds}
           set={(t) => set({ teasers: { ...teasers, [n]: t } })}
           remove={() => set({ teasers: Object.fromEntries(Object.entries(teasers).filter(([k]) => k !== n)) })}
         />

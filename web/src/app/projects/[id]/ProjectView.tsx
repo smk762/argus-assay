@@ -6,9 +6,11 @@ import { Suspense, useState, type ReactNode } from "react";
 
 import { CatalogueBadge, DocLink, Hash, INPUT, PageTitle, useLoad } from "@/components/bits";
 import { useMint } from "@/components/MintProvider";
+import { BackgroundsSection } from "@/components/Backgrounds";
 import { FileEditor, type Choices } from "@/components/ProjectEditors";
+import { TrainingPanel } from "@/components/Training";
 import { Button, Card, Kv, Notice, SectionTitle, Spinner } from "@/components/ui";
-import { getFrames, getProject, getTemplates, reviewProjectFile } from "@/lib/api";
+import { getBackgrounds, getFrames, getProject, getTemplates, reviewProjectFile } from "@/lib/api";
 import { staticDemo } from "@/lib/demo";
 import {
   currentVerdicts,
@@ -166,7 +168,18 @@ function DocBody({ file, detail }: { file: ProjectFile; detail: ProjectDetail })
           <Kv label="Voice">{d.voice}</Kv>
           <Kv label="Presence">{PRESENCE_TEXT[d.presence] ?? d.presence}</Kv>
           {d.frame ? <Kv label="Frame">{refText(d.frame)}</Kv> : null}
-          <Kv label="LoRA">{d.lora ? `${d.lora.name} @ ${d.lora.weight ?? 1}, passed by proof run ${d.proof_run}` : "none yet"}</Kv>
+          <Kv label="LoRA">
+            {d.lora ? `${d.lora.name} @ ${d.lora.weight ?? 1}, passed by proof run ${d.proof_run}${d.proof_export ? ` against export ${d.proof_export}` : ""}` : "none yet"}
+          </Kv>
+          {d.presence === "embodied" ? (
+            <Kv label="Checked on">{d.check_metric ? `${d.check_metric}${d.min_score != null ? `, at least ${d.min_score}` : ", no minimum set"}` : "not set"}</Kv>
+          ) : null}
+          {d.training ? (
+            <Kv label="Training">
+              {d.training.candidates ?? 60} candidates on {d.training.model} ({d.training.width ?? 1024}×{d.training.height ?? 1024}), {d.training.train ?? 30} to train and{" "}
+              {d.training.held_out ?? 8} held out, trigger <code>{d.training.trigger}</code>
+            </Kv>
+          ) : null}
         </dl>
         {d.presence === "embodied" ? (
           <>
@@ -179,8 +192,15 @@ function DocBody({ file, detail }: { file: ProjectFile; detail: ProjectDetail })
           <ul className="text-small">
             {d.references.map((r) => (
               <li key={r.file}>
-                <code>{r.file}</code> <Hash value={r.sha256} />: {PROVENANCE_TEXT[r.provenance] ?? r.provenance}
-                {r.consent ? `, consent record ${r.consent}` : ""}
+                <code>{r.file}</code> <Hash value={r.sha256} />: {PROVENANCE_TEXT[r.provenance?.kind as keyof typeof PROVENANCE_TEXT] ?? r.provenance?.kind ?? "no provenance"}
+                {r.provenance?.source ? `, from ${r.provenance.source}` : ""}
+                {r.provenance?.license ? `, licence ${r.provenance.license}` : ""}
+                {r.provenance?.release_sha256 ? (
+                  <>
+                    , release <Hash value={r.provenance.release_sha256} />
+                  </>
+                ) : null}
+                {r.provenance?.generator ? `, generated with ${r.provenance.generator.model ?? "a model"}${r.provenance.generator.seed != null ? ` (seed ${r.provenance.generator.seed})` : ""}` : ""}
                 {r.held_out ? ", held out of training" : ""}
               </li>
             ))}
@@ -243,7 +263,7 @@ function DocBody({ file, detail }: { file: ProjectFile; detail: ProjectDetail })
               <Kv label="Identity">{refText(t.identity)}</Kv>
               <Kv label="Scene">{refText(t.scene)}</Kv>
               <Kv label="Frame">{refText(t.frame)}</Kv>
-              <Kv label="Background">{t.background ?? "not chosen yet"}</Kv>
+              <Kv label="Background">{t.background ? <a href={`#bg-${t.background}`} className="underline decoration-base-600 underline-offset-2">{t.background}</a> : "not chosen yet"}</Kv>
             </dl>
             <Text label="Alt text" value={t.alt} />
           </li>
@@ -328,6 +348,11 @@ function FileCard({
         </p>
       ) : null}
       <DocBody file={file} detail={detail} />
+      {file.kind === "identity" && file.doc.presence === "embodied" ? (
+        <div className="rounded-md border border-base-600/40 p-3">
+          <TrainingPanel projectId={projectId} file={file} />
+        </div>
+      ) : null}
       <details className="text-small">
         <summary className="cursor-pointer text-text-secondary hover:text-text-primary">SingGuard</summary>
         <div className="mt-2">
@@ -425,10 +450,12 @@ function KindSection({
 function Detail() {
   const { id } = useParams<{ id: string }>();
   const project = useLoad(() => getProject(id), [id]);
-  const choices = useLoad<Choices>(async () => {
+  const backgrounds = useLoad(() => getBackgrounds(id), [id]);
+  const lists = useLoad(async () => {
     const [frames, templates] = await Promise.all([getFrames(), getTemplates()]);
     return { frames, templates };
   });
+  const choices = { data: lists.data ? ({ ...lists.data, backgrounds: backgrounds.data?.sets ?? [] } satisfies Choices) : null, error: lists.error };
   const off = useAuthoring();
   if (project.error) return <Notice tone="error">{project.error}</Notice>;
   if (!project.data) return <Spinner />;
@@ -446,6 +473,12 @@ function Detail() {
         aside={
           <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
             {own ? <CatalogueBadge status={own.status} /> : null}
+            <Link
+              href={`/projects/${encodeURIComponent(id)}/tracker`}
+              className="text-small text-text-secondary underline decoration-base-600 underline-offset-2 hover:text-text-primary"
+            >
+              Tracker and teaser drafts
+            </Link>
             <DocLink topic="projects">About teaser projects</DocLink>
           </div>
         }
@@ -464,12 +497,16 @@ function Detail() {
             {label} ({filesOf(detail, kind).length})
           </a>
         ))}
+        <a href="#backgrounds" className="rounded-md px-2.5 py-1.5 text-small text-text-secondary hover:bg-base-700 hover:text-text-primary">
+          Backgrounds
+        </a>
       </nav>
       <div className="space-y-8">
         <ChecksPanel checks={detail.checks} />
         {PROJECT_KINDS.map(({ kind, title: label, one }) => (
           <KindSection key={kind} projectId={id} kind={kind} title={label} one={one} detail={detail} choices={choices.data} off={off} reload={project.reload} />
         ))}
+        <BackgroundsSection projectId={id} detail={detail} list={backgrounds.data} error={backgrounds.error} reload={backgrounds.reload} />
       </div>
       {choices.error ? <Notice tone="error">The editors need the frames and templates: {choices.error}</Notice> : null}
     </>

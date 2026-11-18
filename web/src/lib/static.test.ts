@@ -240,5 +240,16 @@ describe("the client's static branch", () => {
     expect(api.libraryImage("000-x", 640)).toBe("/data-tape/library/000-x.jpg");
     await expect(api.createDraft({ template: { id: "t", version: 1 }, name: "A", to: "0x0", asset: "a" })).rejects.toBeInstanceOf(api.CapabilityRefused);
     await expect(api.previewFrame("card-green", 1, {}, "x", null, {})).rejects.toThrow(/not in this demo/);
+    // A teaser's layers: images from the tape, every write refused before the wire (the demo's /health turns them off).
+    expect(api.backgroundImage("example-teasers", "lamp-room-v1-01")).toBe("/data-tape/projects/example-teasers/backgrounds/lamp-room-v1-01.png");
+    for (const write of [
+      () => api.startBackgrounds("example-teasers", "lamp-room", 1),
+      () => api.reviewBackground("example-teasers", "lamp-room-v1-01", "approve", "me", ""),
+      () => api.makeTeaserDraft("example-teasers", "T1", "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC"),
+      () => api.startTrainingStep("example-teasers", "keeper", 1, "candidates"),
+      () => api.rerunIdentityCheck(id),
+    ])
+      await expect(write()).rejects.toBeInstanceOf(api.CapabilityRefused);
+    expect(fetch).toHaveBeenCalledTimes(1);
   });
 });

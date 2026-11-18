@@ -1,6 +1,22 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import { ApiError, CapabilityRefused, checkTemplate, createDraft, decide, moderatorReview, readError, resetHealthMemo, reviewProjectFile, saveProjectFile } from "./api";
+import {
+  ApiError,
+  CapabilityRefused,
+  checkTemplate,
+  createDraft,
+  decide,
+  makeTeaserDraft,
+  moderatorReview,
+  readError,
+  rerunIdentityCheck,
+  resetHealthMemo,
+  reviewBackground,
+  reviewProjectFile,
+  saveProjectFile,
+  startBackgrounds,
+  startTrainingStep,
+} from "./api";
 import type { Health } from "./types";
 
 const health = (caps: Partial<Health["capabilities"]>) =>
@@ -67,6 +83,60 @@ describe("teaser project writes are gated on author_catalogue", () => {
     const refusal = reviewProjectFile("example-teasers", "teasers", "example-teasers", 1, "approve", "me");
     await expect(refusal).rejects.toBeInstanceOf(ApiError);
     await expect(refusal).rejects.toMatchObject({ message: detail, status: 409 });
+  });
+});
+
+describe("a teaser's layers are gated on their own capabilities", () => {
+  const all = { moderate: true, author_catalogue: true, create_drafts: true, publish: true, review_catalogue: true, sample: true };
+  it("sends none of them where the server says it can't, even with every other capability", async () => {
+    const fetch = vi.fn();
+    vi.stubGlobal("fetch", fetch);
+    resetHealthMemo(health({ ...all, backgrounds: false, teasers: false, identity_training: false, identity_check: false }));
+    for (const write of [
+      () => startBackgrounds("p", "lamp-room", 1),
+      () => reviewBackground("p", "lamp-room-v1-01", "approve", "me", ""),
+      () => makeTeaserDraft("p", "T1", "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC"),
+      () => startTrainingStep("p", "keeper", 1, "candidates"),
+      () => rerunIdentityCheck("abc"),
+    ])
+      await expect(write()).rejects.toBeInstanceOf(CapabilityRefused);
+    expect(fetch).not.toHaveBeenCalled();
+  });
+  it("needs moderate as well as identity_check to run the identity check again", async () => {
+    const fetch = vi.fn();
+    vi.stubGlobal("fetch", fetch);
+    resetHealthMemo(health({ identity_check: true, moderate: false }));
+    await expect(rerunIdentityCheck("abc")).rejects.toBeInstanceOf(CapabilityRefused);
+    expect(fetch).not.toHaveBeenCalled();
+  });
+  it("sends each with the moderator token, to argus-mint's path, with its body", async () => {
+    const fetch = vi.fn(async () => new Response(JSON.stringify({}), { status: 200 }));
+    vi.stubGlobal("fetch", fetch);
+    vi.stubGlobal("sessionStorage", { getItem: () => "tok", setItem: () => {}, removeItem: () => {} });
+    resetHealthMemo(health({ moderate: true, backgrounds: true, teasers: true, identity_training: true, identity_check: true }));
+    await startBackgrounds("example-teasers", "lamp-room", 1);
+    await reviewBackground("example-teasers", "lamp-room-v1-02", "reject", "me", "too busy");
+    await makeTeaserDraft("example-teasers", "T1", "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC");
+    await startTrainingStep("example-teasers", "keeper", 1, "select");
+    await rerunIdentityCheck("3f9c0e1a2b4d5e6f");
+    const sent = (fetch.mock.calls as unknown as [string, RequestInit][]).map(([url, init]) => [
+      url.replace(/^.*?(\/(?:projects|drafts)\/)/, "$1"),
+      JSON.parse(init.body as string),
+      (init.headers as Record<string, string>).Authorization,
+    ]);
+    expect(sent).toEqual([
+      ["/projects/example-teasers/scenes/lamp-room/1/backgrounds", {}, "Bearer tok"],
+      ["/projects/example-teasers/backgrounds/lamp-room-v1-02/review", { decision: "reject", by: "me", note: "too busy" }, "Bearer tok"],
+      ["/projects/example-teasers/teasers/T1/draft", { to: "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC" }, "Bearer tok"],
+      ["/projects/example-teasers/identities/keeper/1/training/select", {}, "Bearer tok"],
+      ["/drafts/3f9c0e1a2b4d5e6f/identity-check", {}, "Bearer tok"],
+    ]);
+  });
+  it("shows a teaser draft's refusal as argus-mint's message, word for word", async () => {
+    const detail = "T1 has no background chosen yet (its `background` in the teaser links)";
+    vi.stubGlobal("fetch", vi.fn(async () => new Response(JSON.stringify({ detail }), { status: 409 })));
+    resetHealthMemo(health({ teasers: true }));
+    await expect(makeTeaserDraft("example-teasers", "T1", "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC")).rejects.toMatchObject({ message: detail, status: 409 });
   });
 });
 

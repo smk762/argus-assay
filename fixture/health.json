@@ -1,7 +1,7 @@
 {
   "service": "argus-mint",
-  "version": "0.2.2",
-  "wire_version": "1.9",
+  "version": "0.2.3.dev38+gcb910c67c",
+  "wire_version": "1.15",
   "read_only": false,
   "network": "base_sepolia",
   "chain_id": 84532,
@@ -23,7 +23,13 @@
     "library": true,
     "edit_text": true,
     "auto_moderate": false,
-    "check_templates": true
+    "check_templates": true,
+    "author_catalogue": true,
+    "backgrounds": true,
+    "teasers": true,
+    "post": true,
+    "identity_training": false,
+    "identity_check": false
   },
   "backends": {
     "darkroom": true,

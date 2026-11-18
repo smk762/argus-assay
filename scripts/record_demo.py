@@ -49,6 +49,7 @@ from eth_account.messages import encode_defunct
 from fastapi.testclient import TestClient
 from PIL import Image
 
+from argus_mint import teasers as teasers_mod
 from argus_mint.bios import BioError
 from argus_mint.darkroom import DarkroomClient
 from argus_mint.frames import layout, load_frame
@@ -112,6 +113,7 @@ for n, (name, role, gender, age, build, colour, pose, background, klass, fate) i
 UNTIL = ""  # --until HH:MM (UTC): start no GPU work at or after it
 BIO_ROUNDS = 3  # rounds of the bio template's max_attempts per draft
 SEEDS: dict[str, int] = {}  # per-card seed overrides, from --seed NAME=SEED (a re-roll)
+TEASER_SEEDS: dict[str, int] = {}  # per-teaser figure seed overrides, from --teaser-seed NUMBER=SEED (a re-roll)
 LIBRARY_NAME = "Library Pick"
 # Seed 120 over the non-binary combinations of demo-portrait v2 picks a giant and a dragon.
 SAMPLE = {"count": 2, "seed": 120, "variables": {"gender": "non-binary"}, "name": "Sample",
@@ -602,7 +604,12 @@ PROJECT_APPROVE = [
     ("line", "keep-it-lit"), ("line", "every-boat"),
 ]  # fmt: skip
 POSTER = "fixture-poster"  # argus-herald's token in the recording; it only records posts
-BG_REJECT_NOTE = "Too busy behind the figure; the first two leave it room."
+# The moderator's note on each rejected background, written against that render (as --reject-notes does for cards):
+# what is actually wrong with it. Fixed text; no model writes it. A rejected background with no note here stops the run.
+BG_REJECT_NOTES = {
+    "lamp-room-v1-03": "Rain falls inside the room, down the walls and across the lantern, and the oil lantern trails an electric cord.",
+    "shoreline-v1-03": "A calm sunset over a quiet sea, where the scene asks for a storm.",
+}
 # The recording's own report of a post, as argus-herald would send it: nothing was posted anywhere, so it names
 # no platform and no URL (`where` is "demo", `url` null).
 POST_WHERE = "demo"
@@ -686,7 +693,9 @@ def make_teasers(c: TestClient, src: Path, by: str, real: bool) -> None:
         bgs = s["backgrounds"]
         for i, bg in enumerate(bgs):
             reject = i == len(bgs) - 1 and len(bgs) > 2
-            body = {"decision": "reject" if reject else "approve", "by": by, "note": BG_REJECT_NOTE if reject else ""}
+            if reject and bg["id"] not in BG_REJECT_NOTES:
+                sys.exit(f"no moderator's note for rejected background {bg['id']} (BG_REJECT_NOTES)")
+            body = {"decision": "reject" if reject else "approve", "by": by, "note": BG_REJECT_NOTES[bg["id"]] if reject else ""}
             r = c.post(f"/projects/{PROJECT}/backgrounds/{bg['id']}/review", headers=AUTH, json=body)
             if r.status_code >= 400:
                 sys.exit(f"reviewing background {bg['id']}: {r.status_code} {r.text}")
@@ -936,6 +945,9 @@ def main(a: argparse.Namespace) -> None:
             sys.exit(f"sample job {job_id} ended {job['status']}: {job.get('error') or 'argus-mint gave no reason'}")
 
         author_project(c, mint / "projects" / PROJECT, by)
+        if TEASER_SEEDS:  # a re-roll of a teaser's figure: argus-mint derives its seed, so the recorder sets it here
+            derived = teasers_mod.teaser_seed
+            teasers_mod.teaser_seed = lambda project, number, sha: TEASER_SEEDS.get(number, derived(project, number, sha))
         make_teasers(c, mint / "projects" / PROJECT, by, a.real)
 
         stage = Path(tempfile.mkdtemp(dir=out.parent, prefix=f".{out.name}-"))
@@ -1085,6 +1097,7 @@ if __name__ == "__main__":
     ap.add_argument("--no-render", action="store_true", help="with --cache: make no render; stop if one isn't cached")
     ap.add_argument("--until", metavar="HH:MM", help="start no GPU work at or after this UTC time (the run stops; resume with --cache)")
     ap.add_argument("--seed", action="append", default=[], metavar="NAME=SEED", help="re-roll one card with a new seed")
+    ap.add_argument("--teaser-seed", action="append", default=[], metavar="NUMBER=SEED", help="re-roll one teaser's figure with a new seed")
     ap.add_argument("--reject-notes", type=Path, metavar="DIR", help="wait for each rejected card's moderator note in DIR/<card>.txt")
     ap.add_argument("--rewrite-bio", action="append", default=[], metavar="NAME", help="with --cache: write this card's bio afresh")
     args = ap.parse_args()
@@ -1092,6 +1105,9 @@ if __name__ == "__main__":
     for kv in args.seed:
         card, _, value = kv.rpartition("=")
         SEEDS[card] = int(value)
+    for kv in args.teaser_seed:
+        number, _, value = kv.partition("=")
+        TEASER_SEEDS[number] = int(value)
     try:
         main(args)
     finally:  # done or failed, the bio model leaves the GPU at once

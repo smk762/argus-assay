@@ -1,0 +1,15 @@
+{
+  "project": "example-teasers",
+  "identity": "keeper",
+  "version": 1,
+  "steps": {
+    "candidates": "not_started",
+    "select": "not_started",
+    "caption": "not_started",
+    "train": "not_started",
+    "evaluate": "not_started",
+    "pin": "not_started"
+  },
+  "next": "candidates",
+  "record": null
+}

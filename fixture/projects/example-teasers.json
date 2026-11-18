@@ -1,0 +1,502 @@
+{
+  "id": "example-teasers",
+  "files": [
+    {
+      "kind": "project",
+      "id": "example-teasers",
+      "version": 1,
+      "status": "approved",
+      "hash": "0x6aac1d2f9c156a954b89e0deefbbfa02bc572202870a4b5cf71afaca4fe7705b",
+      "file": "project.yaml",
+      "doc": {
+        "id": "example-teasers",
+        "version": 1,
+        "status": "approved",
+        "approved_by": "maintainer",
+        "approved_at": "2026-11-18",
+        "guard": [
+          {
+            "field": "title",
+            "sha256": "b009c301ace4fd3bbb0dba8e17dcf4f3157a9295d89e02c5d0f85509fcefe187",
+            "policy": "default",
+            "passed": true,
+            "detail": "",
+            "checked_at": "2026-11-18T15:06:55.071910Z"
+          }
+        ],
+        "title": "Lantern Coast",
+        "attribution": null,
+        "generated_label": true,
+        "frames": [
+          {
+            "id": "example-teaser",
+            "version": 1
+          }
+        ],
+        "policy": "default",
+        "family": "sdxl",
+        "style_lora": null
+      }
+    },
+    {
+      "kind": "identity",
+      "id": "keeper",
+      "version": 1,
+      "status": "approved",
+      "hash": "0x78e64003abb710d9279566c408647bda157220c33b5dc5f278d53635fd43e2cf",
+      "file": "identities/keeper-v1.yaml",
+      "doc": {
+        "id": "keeper",
+        "version": 1,
+        "status": "approved",
+        "approved_by": "maintainer",
+        "approved_at": "2026-11-18",
+        "guard": [
+          {
+            "field": "prompt",
+            "sha256": "8582ac6cdd1b9ab40f446d979c9a776f65f68fb72ca7a3786ea58d28e8bd98c0",
+            "policy": "default",
+            "passed": true,
+            "detail": "",
+            "checked_at": "2026-11-18T15:07:16.144008Z"
+          }
+        ],
+        "project": "example-teasers",
+        "voice": "keeper",
+        "presence": "embodied",
+        "prompt": "an elderly lighthouse keeper, weathered face, short grey beard, dark oilskin coat, knitted cap",
+        "negative": "nude, nudity, text, letters, watermark, signature",
+        "frame": null,
+        "lora": null,
+        "proof_run": null,
+        "proof_export": null,
+        "check_metric": "identity",
+        "min_score": null,
+        "training": {
+          "model": "sdxl/juggernautXL_ragnarokBy/juggernautXL_ragnarokBy.safetensors",
+          "base_model": null,
+          "sampling": {
+            "sampler": "dpmpp_2m",
+            "scheduler": "karras",
+            "steps": 28,
+            "cfg": 6.0,
+            "clip_skip": 1,
+            "guidance": null
+          },
+          "width": 1024,
+          "height": 1024,
+          "candidates": 60,
+          "train": 30,
+          "held_out": 8,
+          "trigger": "kpr_keeper",
+          "caption_style": "photo",
+          "max_attempts": 4,
+          "proof_seeds": 8
+        },
+        "references": []
+      }
+    },
+    {
+      "kind": "identity",
+      "id": "lamp",
+      "version": 1,
+      "status": "approved",
+      "hash": "0x876aef0b915d31ab0f633e1932944b7f68a8f1017d91874fb02419be7e9b2c80",
+      "file": "identities/lamp-v1.yaml",
+      "doc": {
+        "id": "lamp",
+        "version": 1,
+        "status": "approved",
+        "approved_by": "maintainer",
+        "approved_at": "2026-11-18",
+        "project": "example-teasers",
+        "voice": "lamp",
+        "presence": "viewpoint",
+        "prompt": "",
+        "negative": "",
+        "frame": {
+          "id": "example-teaser",
+          "version": 1
+        },
+        "lora": null,
+        "proof_run": null,
+        "proof_export": null,
+        "check_metric": null,
+        "min_score": null,
+        "training": null,
+        "references": []
+      }
+    },
+    {
+      "kind": "scene",
+      "id": "lamp-room",
+      "version": 1,
+      "status": "approved",
+      "hash": "0x9968b9ba353c43278a534af61cb9adc532bc1b5dcae2ed3cb29f04752c165c16",
+      "file": "scenes/lamp-room-v1.yaml",
+      "doc": {
+        "id": "lamp-room",
+        "version": 1,
+        "status": "approved",
+        "approved_by": "maintainer",
+        "approved_at": "2026-11-18",
+        "guard": [
+          {
+            "field": "prompt",
+            "sha256": "a4b474a03fce9e4db0eb0efc49b4bdaa72e7e94b2299a4ce87c3a9cbafe4a382",
+            "policy": "default",
+            "passed": true,
+            "detail": "",
+            "checked_at": "2026-11-18T15:07:16.360712Z"
+          }
+        ],
+        "project": "example-teasers",
+        "model": "sdxl/juggernautXL_ragnarokBy/juggernautXL_ragnarokBy.safetensors",
+        "sampling": {
+          "sampler": "euler",
+          "scheduler": "normal",
+          "steps": 25,
+          "cfg": 6.0,
+          "clip_skip": 1,
+          "guidance": null
+        },
+        "width": 1024,
+        "height": 1024,
+        "prompt": "inside a lighthouse lamp room at night, brass lens, rain on the windows, warm lamplight, painted illustration, no people, no lettering",
+        "negative": "people, person, figure, text, letters, watermark, signature",
+        "backgrounds": 3,
+        "character_area": {
+          "x": 320,
+          "y": 256,
+          "width": 448,
+          "height": 704
+        },
+        "max_attempts": 4
+      }
+    },
+    {
+      "kind": "scene",
+      "id": "shoreline",
+      "version": 1,
+      "status": "approved",
+      "hash": "0x7402e8fa92c90ddf0cdcf857e83544f3a3cddb5be054c6cddf797d37fcc672d3",
+      "file": "scenes/shoreline-v1.yaml",
+      "doc": {
+        "id": "shoreline",
+        "version": 1,
+        "status": "approved",
+        "approved_by": "maintainer",
+        "approved_at": "2026-11-18",
+        "guard": [
+          {
+            "field": "prompt",
+            "sha256": "0ffbeeac61c2b4e2f214392fa51b44e6278c1026c30c29f830605c1c406a5654",
+            "policy": "default",
+            "passed": true,
+            "detail": "",
+            "checked_at": "2026-11-18T15:07:16.569074Z"
+          }
+        ],
+        "project": "example-teasers",
+        "model": "sdxl/juggernautXL_ragnarokBy/juggernautXL_ragnarokBy.safetensors",
+        "sampling": {
+          "sampler": "euler",
+          "scheduler": "normal",
+          "steps": 25,
+          "cfg": 6.0,
+          "clip_skip": 1,
+          "guidance": null
+        },
+        "width": 1024,
+        "height": 1024,
+        "prompt": "a rocky shoreline at dusk seen from high above, waves breaking, a small boat far out, painted illustration, no people, no lettering",
+        "negative": "people, person, text, letters, watermark, signature",
+        "backgrounds": 3,
+        "character_area": null,
+        "max_attempts": 4
+      }
+    },
+    {
+      "kind": "line",
+      "id": "every-boat",
+      "version": 1,
+      "status": "approved",
+      "hash": "0xdd4e22ac5b9a2b864d4361b7a99c357d71ad0f4d27715f8106d883ecb0b10c7a",
+      "file": "lines/every-boat-v1.yaml",
+      "doc": {
+        "id": "every-boat",
+        "version": 1,
+        "status": "approved",
+        "approved_by": "maintainer",
+        "approved_at": "2026-11-18",
+        "guard": [
+          {
+            "field": "text",
+            "sha256": "0bbbd1badb06c92c8e0d16bbadee2c17f705b67c93bfc06ce02a559c1f37460f",
+            "policy": "default",
+            "passed": true,
+            "detail": "",
+            "checked_at": "2026-11-18T15:07:16.764582Z"
+          }
+        ],
+        "project": "example-teasers",
+        "voice": "lamp",
+        "text": "I see every boat. None of them see me until they need to.",
+        "published": null,
+        "source": "lines.md"
+      }
+    },
+    {
+      "kind": "line",
+      "id": "keep-it-lit",
+      "version": 1,
+      "status": "approved",
+      "hash": "0x5b9a5d595b31dbe0e35b6e38cb90f54378b265edd464df4eb3b1ea6609204071",
+      "file": "lines/keep-it-lit-v1.yaml",
+      "doc": {
+        "id": "keep-it-lit",
+        "version": 1,
+        "status": "approved",
+        "approved_by": "maintainer",
+        "approved_at": "2026-11-18",
+        "guard": [
+          {
+            "field": "text",
+            "sha256": "d2f7bbd9b06520af3a26471520f9c7d2bc23a5db4d11605adbf2ca6d2c4b2899",
+            "policy": "default",
+            "passed": true,
+            "detail": "",
+            "checked_at": "2026-11-18T15:07:16.963255Z"
+          },
+          {
+            "field": "published",
+            "sha256": "db8124072e54c35a5bf9c863de852e39b7e602967d720f925bee3396595b468a",
+            "policy": "default",
+            "passed": true,
+            "detail": "",
+            "checked_at": "2026-11-18T15:07:16.963255Z"
+          }
+        ],
+        "project": "example-teasers",
+        "voice": "keeper",
+        "text": "Fourty years I've kept it lit, and not once has the sea said thank you.",
+        "published": "Forty years I've kept it lit, and not once has the sea said thank you.",
+        "source": "scenes/the-long-night.md"
+      }
+    },
+    {
+      "kind": "teasers",
+      "id": "example-teasers",
+      "version": 1,
+      "status": "draft",
+      "hash": "0x4cb69b54cb381d4d0de118a910c160e7e95db601d936a002ef4bb878d56aabab",
+      "file": "teasers/example-teasers-v1.json",
+      "doc": {
+        "id": "example-teasers",
+        "version": 1,
+        "status": "draft",
+        "approved_by": null,
+        "approved_at": null,
+        "guard": [
+          {
+            "field": "T1.alt",
+            "sha256": "e6d29d4e6c45bf73198d65ebd189f9e135060cd5f6a09b7df462fdb5756dd2d4",
+            "policy": "default",
+            "passed": true,
+            "detail": "",
+            "checked_at": "2026-11-18T15:07:17.349170Z"
+          },
+          {
+            "field": "T2.alt",
+            "sha256": "b68c3ceb026b027fd19c8a564dee0d15ed1ab9f777d5020d3d109d806252c1ad",
+            "policy": "default",
+            "passed": true,
+            "detail": "",
+            "checked_at": "2026-11-18T15:07:17.349170Z"
+          }
+        ],
+        "project": "example-teasers",
+        "teasers": {
+          "T1": {
+            "line": {
+              "id": "keep-it-lit",
+              "version": 1
+            },
+            "identity": {
+              "id": "keeper",
+              "version": 1
+            },
+            "scene": {
+              "id": "lamp-room",
+              "version": 1
+            },
+            "frame": {
+              "id": "example-teaser",
+              "version": 1
+            },
+            "alt": "An old lighthouse keeper in an oilskin coat stands beside the great brass lens on a rainy night.",
+            "background": null
+          },
+          "T2": {
+            "line": {
+              "id": "every-boat",
+              "version": 1
+            },
+            "identity": {
+              "id": "lamp",
+              "version": 1
+            },
+            "scene": {
+              "id": "shoreline",
+              "version": 1
+            },
+            "frame": {
+              "id": "example-teaser",
+              "version": 1
+            },
+            "alt": "Looking down from a lighthouse at dusk onto rocks, breaking waves and one small boat far out.",
+            "background": null
+          }
+        }
+      }
+    },
+    {
+      "kind": "teasers",
+      "id": "example-teasers",
+      "version": 2,
+      "status": "approved",
+      "hash": "0x466892652ea283c6a74cabdbb6d015a8ab76ca9ffe9622396ac268fb94ff8ac6",
+      "file": "teasers/example-teasers-v2.json",
+      "doc": {
+        "id": "example-teasers",
+        "version": 2,
+        "status": "approved",
+        "approved_by": "maintainer",
+        "approved_at": "2026-11-18",
+        "guard": [
+          {
+            "field": "T1.alt",
+            "sha256": "e6d29d4e6c45bf73198d65ebd189f9e135060cd5f6a09b7df462fdb5756dd2d4",
+            "policy": "default",
+            "passed": true,
+            "detail": "",
+            "checked_at": "2026-11-18T15:07:22.227577Z"
+          },
+          {
+            "field": "T2.alt",
+            "sha256": "b68c3ceb026b027fd19c8a564dee0d15ed1ab9f777d5020d3d109d806252c1ad",
+            "policy": "default",
+            "passed": true,
+            "detail": "",
+            "checked_at": "2026-11-18T15:07:22.227577Z"
+          }
+        ],
+        "project": "example-teasers",
+        "teasers": {
+          "T1": {
+            "line": {
+              "id": "keep-it-lit",
+              "version": 1
+            },
+            "identity": {
+              "id": "keeper",
+              "version": 1
+            },
+            "scene": {
+              "id": "lamp-room",
+              "version": 1
+            },
+            "frame": {
+              "id": "example-teaser",
+              "version": 1
+            },
+            "alt": "An old lighthouse keeper in an oilskin coat stands beside the great brass lens on a rainy night.",
+            "background": "lamp-room-v1-01"
+          },
+          "T2": {
+            "line": {
+              "id": "every-boat",
+              "version": 1
+            },
+            "identity": {
+              "id": "lamp",
+              "version": 1
+            },
+            "scene": {
+              "id": "shoreline",
+              "version": 1
+            },
+            "frame": {
+              "id": "example-teaser",
+              "version": 1
+            },
+            "alt": "Looking down from a lighthouse at dusk onto rocks, breaking waves and one small boat far out.",
+            "background": "shoreline-v1-01"
+          }
+        }
+      }
+    }
+  ],
+  "checks": {
+    "problems": [],
+    "spoiler_rules": [],
+    "guard": [
+      {
+        "field": "project example-teasers v1: title",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "field": "identity keeper v1: prompt",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "field": "scene lamp-room v1: prompt",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "field": "scene shoreline v1: prompt",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "field": "line every-boat v1: text",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "field": "line keep-it-lit v1: text",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "field": "line keep-it-lit v1: published",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "field": "teasers example-teasers v1: T1.alt",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "field": "teasers example-teasers v1: T2.alt",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "field": "teasers example-teasers v2: T1.alt",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "field": "teasers example-teasers v2: T2.alt",
+        "passed": true,
+        "detail": ""
+      }
+    ],
+    "guard_ran": true
+  }
+}

@@ -114,5 +114,70 @@
       },
       "style_locked": false
     }
+  },
+  {
+    "hash": "0x76b98c5b79ea683223e277941df1bbc248ec3c6720d8869a655359ff951cbee7",
+    "file": "example-teaser-v1.yaml",
+    "width": 1024,
+    "height": 1024,
+    "frame": {
+      "id": "example-teaser",
+      "version": 1,
+      "status": "approved",
+      "approved_by": "maintainer",
+      "approved_at": "2026-11-15",
+      "overlay": "example-teaser-v1.png",
+      "window": {
+        "x": 0,
+        "y": 0,
+        "width": 1024,
+        "height": 1024
+      },
+      "texts": {
+        "quote": {
+          "x": 72,
+          "y": 700,
+          "width": 880,
+          "height": 220,
+          "font": "fonts/CrimsonText-Italic.ttf",
+          "size": 46,
+          "min_size": 24,
+          "colour": "#ffffff",
+          "align": "center",
+          "valign": "middle",
+          "wrap": true,
+          "line_spacing": 1.15
+        },
+        "attribution": {
+          "x": 72,
+          "y": 930,
+          "width": 880,
+          "height": 52,
+          "font": "fonts/CrimsonText-Regular.ttf",
+          "size": 30,
+          "min_size": 18,
+          "colour": "#e8d9b5",
+          "align": "right",
+          "valign": "middle",
+          "wrap": false,
+          "line_spacing": 1.15
+        },
+        "label": {
+          "x": 772,
+          "y": 26,
+          "width": 220,
+          "height": 32,
+          "font": "fonts/CrimsonText-Regular.ttf",
+          "size": 22,
+          "min_size": 14,
+          "colour": "#ffffff",
+          "align": "center",
+          "valign": "middle",
+          "wrap": false,
+          "line_spacing": 1.15
+        }
+      },
+      "style_locked": true
+    }
   }
 ]

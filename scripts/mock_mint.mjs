@@ -147,19 +147,39 @@ function review(d, role, approve, by, note) {
 
 const catalogue = { templates: [templates, "template"], frames: [frames, "frame"], bios: [bios, "bio"] };
 
+// A frame route: `/frames/<id>/<version>/<what>[/<rest>]`. A project's own frame is `<project>/<name>` (wire 1.16),
+// sent with the `/` plain or as `%2F`; argus-mint routes on the decoded path, and the version (digits) followed by a
+// fixed word parses only one way. lib/demoMint.ts frameRoute is the same (parity.test.ts, frameIds.test.ts).
+const FRAME_ROUTE = /^\/frames\/([a-z0-9][a-z0-9-]*(?:\/[a-z0-9][a-z0-9-]*)?)\/(\d+)\/([a-z]+)(?:\/(.+))?$/;
+function frameRoute(pathname) {
+  let path;
+  try {
+    path = decodeURIComponent(pathname);
+  } catch {
+    return null;
+  }
+  const m = FRAME_ROUTE.exec(path);
+  return m ? { id: m[1], version: Number(m[2]), what: m[3], rest: m[4] ?? "" } : null;
+}
+/** A frame's files in the fixture (and the tape): `frames/<id>/<version>/`, a project's frame in nested directories. */
+const frameDir = (id, version) => join(root, "frames", ...id.split("/"), String(version));
+
 createServer(async (req, res) => {
   const url = new URL(req.url, "http://mock");
   const p = url.pathname.split("/").filter(Boolean);
+  const fr = frameRoute(url.pathname);
   if (req.method === "OPTIONS") return send(res, 204, "", "text/plain");
   try {
     if (req.method === "GET") {
       if (url.pathname === "/health") return send(res, 200, health);
       if (p.length === 1 && catalogue[p[0]]) return send(res, 200, catalogue[p[0]][0]);
-      if (p[0] === "frames" && p[3] === "overlay") return send(res, 200, png(`frames/${p[1]}/${p[2]}/overlay.png`), "image/png");
-      if (p[0] === "frames" && p[3] === "fonts") {
-        const rel = p.slice(4).map(decodeURIComponent).join("/");
-        const file = join(root, "frames", p[1], p[2], "fonts", rel);
-        return rel.includes("..") || !existsSync(file) ? fail(res, 404, "no such font") : send(res, 200, readFileSync(file), "font/ttf");
+      if (fr?.what === "overlay" && !fr.rest) {
+        const file = join(frameDir(fr.id, fr.version), "overlay.png");
+        return existsSync(file) ? send(res, 200, readFileSync(file), "image/png") : fail(res, 404, "no frame");
+      }
+      if (fr?.what === "fonts" && fr.rest) {
+        const file = join(frameDir(fr.id, fr.version), "fonts", fr.rest);
+        return fr.rest.includes("..") || !existsSync(file) ? fail(res, 404, "no such font") : send(res, 200, readFileSync(file), "font/ttf");
       }
       if (url.pathname === "/library") return library ? send(res, 200, library) : fail(res, 404, "no pre-rendered library is served here");
       if (p[0] === "library" && p[2] === "image") {
@@ -228,8 +248,8 @@ createServer(async (req, res) => {
       const problem = review(d, b.role, b.approve, b.role === "owner" ? d.draft.to : b.by, b.note ?? "");
       return problem ? fail(res, 409, problem) : send(res, 200, d);
     }
-    if (p[0] === "frames" && p[3] === "layout") {
-      const entry = frames.find((e) => e.frame.id === p[1] && e.frame.version === Number(p[2]));
+    if (fr?.what === "layout" && !fr.rest) {
+      const entry = frames.find((e) => e.frame.id === fr.id && e.frame.version === fr.version);
       if (!entry) return fail(res, 404, "no frame");
       const slots = {};
       for (const [slot, text] of Object.entries(b.texts ?? {})) {
@@ -280,9 +300,12 @@ createServer(async (req, res) => {
       d.status = "published";
       return send(res, 200, d);
     }
-    if (p.length === 4 && catalogue[p[0]] && p[3] === "review") {
-      const [list, kind] = catalogue[p[0]];
-      const entry = list.find((e) => e[kind].id === p[1] && e[kind].version === Number(p[2]));
+    // A frame's review takes a project's two-part id too (frameRoute); a template's or bio's id is one segment.
+    const decision = fr?.what === "review" && !fr.rest ? { plural: "frames", id: fr.id, version: fr.version }
+      : p.length === 4 && p[0] !== "frames" && catalogue[p[0]] && p[3] === "review" ? { plural: p[0], id: p[1], version: Number(p[2]) } : null;
+    if (decision) {
+      const [list, kind] = catalogue[decision.plural];
+      const entry = list.find((e) => e[kind].id === decision.id && e[kind].version === decision.version);
       if (!entry) return fail(res, 404, `no ${kind}`);
       // As argus-mint's wire: "approve" or "retire", nothing else (lib/demoMint.ts says the same).
       if (b.decision !== "approve" && b.decision !== "retire") return fail(res, 422, 'decision must be "approve" or "retire"');
@@ -311,7 +334,7 @@ createServer(async (req, res) => {
       }
       return send(res, 202, job);
     }
-    if (p[0] === "frames" && p[3] === "preview") {
+    if (fr?.what === "preview" && !fr.rest) {
       const any = [...sampleImages.entries()].find(([k]) => k.endsWith("/framed"));
       return any ? send(res, 200, any[1], "image/png") : fail(res, 404, "no recorded framed image");
     }

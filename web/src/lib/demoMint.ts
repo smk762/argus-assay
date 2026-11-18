@@ -121,6 +121,29 @@ function trackerNow(recorded: ProjectTracker, drafts: Iterable<DraftDetail>, lin
 const ok = (body: unknown, status = 200): DemoResponse => ({ status, body: structuredClone(body) });
 const fail = (status: number, detail: string): DemoResponse => ({ status, body: { detail } });
 
+export interface FrameRoute {
+  id: string;
+  version: number;
+  what: string;
+  rest: string;
+}
+const FRAME_ROUTE = /^\/frames\/([a-z0-9][a-z0-9-]*(?:\/[a-z0-9][a-z0-9-]*)?)\/(\d+)\/([a-z]+)(?:\/(.+))?$/;
+/**
+ * A frame route: `/frames/<id>/<version>/<what>[/<rest>]`. A project's own frame is `<project>/<name>` (wire 1.16),
+ * sent with the `/` plain or as `%2F`; argus-mint routes on the decoded path, and the version (digits) followed by a
+ * fixed word parses only one way. scripts/mock_mint.mjs frameRoute is the same (parity.test.ts, frameIds.test.ts).
+ */
+export function frameRoute(pathname: string): FrameRoute | null {
+  let path: string;
+  try {
+    path = decodeURIComponent(pathname);
+  } catch {
+    return null;
+  }
+  const m = FRAME_ROUTE.exec(path);
+  return m ? { id: m[1], version: Number(m[2]), what: m[3], rest: m[4] ?? "" } : null;
+}
+
 export class DemoMint {
   private readonly health: Health;
   private readonly drafts = new Map<string, DraftDetail>();
@@ -291,14 +314,17 @@ export class DemoMint {
     if (draft && p[2] === "publish") return this.publish(draft);
     if (draft && p[2] === "posted") return fail(503, "Recording a post needs a running argus-mint (argus-herald reports to it)");
     if (draft && p[2] === "identity-check") return fail(503, "The identity check needs a running argus-mint and argus-proof");
-    if (p[0] === "frames" && p[3] === "layout") return this.layout(p[1], Number(p[2]), (b.texts ?? {}) as Record<string, string>);
-    const cat = p.length === 4 && p[3] === "review" ? this.catalogue(p[0]) : null;
+    const fr = frameRoute(new URL(path, "http://demo").pathname);
+    if (fr?.what === "layout" && !fr.rest) return this.layout(fr.id, fr.version, (b.texts ?? {}) as Record<string, string>);
+    // A frame's review takes a project's two-part id too (frameRoute); a template's or bio's id is one segment.
+    if (fr?.what === "review" && !fr.rest) return this.decide(this.catalogue("frames")!.list, "frame", fr.id, fr.version, b);
+    const cat = p.length === 4 && p[0] !== "frames" && p[3] === "review" ? this.catalogue(p[0]) : null;
     if (cat) return this.decide(cat.list, cat.kind, p[1], Number(p[2]), b);
     if ((p[0] === "drafts" || p[0] === "samples") && p.length === 1) return fail(503, `${p[0] === "drafts" ? "Making a draft" : "Rendering samples"} needs a running argus-mint and a GPU`);
     if (p[0] === "projects" && p[2] === "files") return fail(503, "Authoring and reviewing a teaser project need a running argus-mint");
     if (p[0] === "projects" && p.length > 2)
       return fail(503, "Rendering and reviewing backgrounds, making teaser drafts and training identities need a running argus-mint");
-    if (p[0] === "frames" && p[3] === "preview") return fail(503, "The frame preview is drawn by a running argus-mint");
+    if (fr?.what === "preview" && !fr.rest) return fail(503, "The frame preview is drawn by a running argus-mint");
     return fail(404, "not found");
   }
 

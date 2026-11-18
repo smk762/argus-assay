@@ -11,17 +11,20 @@ import { FileEditor, type Choices } from "@/components/ProjectEditors";
 import { TrainingPanel } from "@/components/Training";
 import { Button, Card, Kv, Notice, SectionTitle, Spinner } from "@/components/ui";
 import { getBackgrounds, getFrames, getProject, getTemplates, reviewProjectFile } from "@/lib/api";
+import { catalogueHref } from "@/lib/catalogueRoute";
 import { staticDemo } from "@/lib/demo";
 import {
   currentVerdicts,
   docOf,
   fileKey,
   filesOf,
+  groupFrames,
   PRESENCE_TEXT,
   PROJECT_KINDS,
   PROVENANCE_TEXT,
   projectFile,
   refText,
+  refValue,
   spoilerText,
   storedVerdicts,
   teaserOrder,
@@ -31,7 +34,7 @@ import {
 import { readReviewer, saveReviewer } from "@/lib/reviewer";
 import { catalogueAction, samplingText } from "@/lib/status";
 import { when } from "@/lib/time";
-import type { ProjectChecks, ProjectDetail, ProjectFile } from "@/lib/types";
+import type { FrameInfo, ProjectChecks, ProjectDetail, ProjectFile } from "@/lib/types";
 
 /** Why the moderator's controls are off here, or null. */
 function useAuthoring(): string | null {
@@ -447,6 +450,41 @@ function KindSection({
   );
 }
 
+/**
+ * The project's own frames (`<project>/<name>`), as `GET /frames` labels them (`project`, wire 1.16). They are
+ * reviewed like any frame, on their catalogue pages; the project file's "Frames" names the ones teasers may use.
+ */
+function OwnFrames({ projectId, frames, error }: { projectId: string; frames: FrameInfo[] | null; error: string | null }) {
+  const own = frames ? groupFrames(frames, projectId).own : [];
+  return (
+    <section id="frames" className="scroll-mt-4">
+      <SectionTitle className="mb-2">This project&apos;s own frames</SectionTitle>
+      {error ? <Notice tone="error">{error}</Notice> : null}
+      {!frames && !error ? <Spinner /> : null}
+      {frames && own.length === 0 ? <p className="text-small text-text-muted">None: its teasers use global frames.</p> : null}
+      {own.length ? (
+        <ul className="space-y-2">
+          {own.map((f) => (
+            <li key={refValue(f.frame)}>
+              <Card>
+                <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+                  <Link href={catalogueHref("frame", f.frame.id, f.frame.version)} className="font-mono text-small underline decoration-base-600 underline-offset-2">
+                    {refText(f.frame)}
+                  </Link>
+                  <CatalogueBadge status={f.frame.status} />
+                  <Hash value={f.hash} />
+                  <span className="text-caption text-text-muted">{f.file}</span>
+                  {f.frame.effects?.length ? <span className="text-caption text-text-muted">{f.frame.effects.length} effect(s) on the art</span> : null}
+                </div>
+              </Card>
+            </li>
+          ))}
+        </ul>
+      ) : null}
+    </section>
+  );
+}
+
 function Detail() {
   const { id } = useParams<{ id: string }>();
   const project = useLoad(() => getProject(id), [id]);
@@ -497,6 +535,9 @@ function Detail() {
             {label} ({filesOf(detail, kind).length})
           </a>
         ))}
+        <a href="#frames" className="rounded-md px-2.5 py-1.5 text-small text-text-secondary hover:bg-base-700 hover:text-text-primary">
+          Frames
+        </a>
         <a href="#backgrounds" className="rounded-md px-2.5 py-1.5 text-small text-text-secondary hover:bg-base-700 hover:text-text-primary">
           Backgrounds
         </a>
@@ -506,6 +547,7 @@ function Detail() {
         {PROJECT_KINDS.map(({ kind, title: label, one }) => (
           <KindSection key={kind} projectId={id} kind={kind} title={label} one={one} detail={detail} choices={choices.data} off={off} reload={project.reload} />
         ))}
+        <OwnFrames projectId={id} frames={lists.data?.frames ?? null} error={lists.error} />
         <BackgroundsSection projectId={id} detail={detail} list={backgrounds.data} error={backgrounds.error} reload={backgrounds.reload} />
       </div>
       {choices.error ? <Notice tone="error">The editors need the frames and templates: {choices.error}</Notice> : null}

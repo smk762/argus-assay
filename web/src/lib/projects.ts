@@ -7,7 +7,7 @@
  * (`status` on each file, `checks` on the project). These helpers only group, label and look up what it
  * sent, and build the body of a save from an editor's fields.
  */
-import type { ProjectChecks, ProjectDetail, ProjectFile, Ref, TextCheck } from "./types";
+import type { FrameInfo, ProjectChecks, ProjectDetail, ProjectFile, Ref, TextCheck } from "./types";
 
 export type ProjectKind = ProjectFile["kind"];
 
@@ -231,6 +231,30 @@ export const VERDICT = {
 /** The files of a kind as options for a reference, by id and version, as argus-mint sent them. */
 export const refOptions = (detail: ProjectDetail, kind: ProjectKind): { ref: Ref; status: ProjectFile["status"] }[] =>
   filesOf(detail, kind).map((f) => ({ ref: { id: f.id, version: f.version }, status: f.status }));
+
+export interface FrameGroups {
+  /** The project's own frames (`<project>/<name>`). */
+  own: FrameInfo[];
+  /** Global frames, any project's to use. */
+  global: FrameInfo[];
+  /** Another project's frames, only those `keep` already names: argus-mint reports each as a problem. */
+  other: FrameInfo[];
+}
+
+/**
+ * The frames a project's editors offer, grouped by the `project` argus-mint gives each in `GET /frames` (wire 1.16;
+ * null or absent for a global frame). A project uses global frames and its own, never another project's, so another
+ * project's frame is offered only when the file already names it (`keep`), so it can be seen and taken out.
+ */
+export function groupFrames(frames: FrameInfo[], projectId: string, keep: (Ref | null | undefined)[] = []): FrameGroups {
+  const groups: FrameGroups = { own: [], global: [], other: [] };
+  for (const f of frames) {
+    if (f.project == null) groups.global.push(f);
+    else if (f.project === projectId) groups.own.push(f);
+    else if (keep.some((r) => sameRef(r, f.frame))) groups.other.push(f);
+  }
+  return groups;
+}
 
 export const sameRef = (a: Ref | null | undefined, b: Ref | null | undefined): boolean => Boolean(a && b && a.id === b.id && a.version === b.version);
 export const refValue = (r: Ref | null | undefined): string => (r ? `${r.id}@${r.version}` : "");

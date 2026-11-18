@@ -10,11 +10,11 @@ import { describe, expect, it, vi } from "vitest";
 
 (globalThis as { IS_REACT_ACT_ENVIRONMENT?: boolean }).IS_REACT_ACT_ENVIRONMENT = true;
 
-const FIXTURE = join(__dirname, "..", "..", "..", "..", "..", "..", "..", "fixture");
+const FIXTURE = join(__dirname, "..", "..", "..", "..", "..", "..", "fixture");
 const read = (rel: string) => JSON.parse(readFileSync(join(FIXTURE, rel), "utf8"));
 
 vi.mock("next/navigation", () => ({
-  useParams: () => ({ kind: "frame", id: "card-green", version: "1" }),
+  useParams: () => ({ kind: "frame", ref: ["card-green", "1"] }),
   useSearchParams: () => new URLSearchParams("sample=gone&n=3"),
   useRouter: () => ({ push: vi.fn(), replace: vi.fn() }),
   usePathname: () => "/catalogue/frame/card-green/1",

@@ -15,6 +15,8 @@ import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 
 const ID = /^[a-z0-9][a-z0-9-]{0,63}$/;
+// A frame's id: a global frame's, or a project's own (`<project>/<name>`, wire 1.16), as argus-mint's FRAME_ID_PATTERN.
+const FRAME_ID = /^(?:[a-z0-9][a-z0-9-]{0,63}\/)?[a-z0-9][a-z0-9-]{0,63}$/;
 const TEASER = /^T[1-9][0-9]{0,4}$/;
 const HEX64 = /^[0-9a-f]{64}$/;
 const REVIEW_KEYS = ["status", "approved_by", "approved_at", "guard"];
@@ -48,7 +50,10 @@ const repr = (v) => (typeof v === "string" ? `'${v}'` : JSON.stringify(v));
 const isObj = (v) => v != null && typeof v === "object" && !Array.isArray(v);
 const str = (v, min, max) => typeof v === "string" && v.length >= min && v.length <= max;
 const int = (v, min, max = Infinity) => Number.isInteger(v) && v >= min && v <= max;
-const isRef = (r) => isObj(r) && ID.test(r.id ?? "") && int(r.version, 1) && Object.keys(r).every((k) => k === "id" || k === "version");
+const isRef = (r, pattern = ID) => isObj(r) && pattern.test(r.id ?? "") && int(r.version, 1) && Object.keys(r).every((k) => k === "id" || k === "version");
+const isFrameRef = (r) => isRef(r, FRAME_ID);
+/** The project a frame belongs to (`<project>/<name>`), or null for a global frame. */
+const frameProject = (r) => (r.id.includes("/") ? r.id.split("/")[0] : null);
 const sameRef = (a, b) => Boolean(a && b && a.id === b.id && a.version === b.version);
 const refKey = (r) => `${r.id}@${r.version}`;
 /** A checkpoint's family: its top folder ("sdxl", "flux"), as argus-mint's templates.family(). */
@@ -65,7 +70,7 @@ function invalid(kind, d) {
     if (!str(d.title, 1, 120)) return "title is 1 to 120 characters";
     if (d.attribution !== null && !str(d.attribution, 0, 120)) return "attribution is up to 120 characters, or null";
     if (typeof d.generated_label !== "boolean") return "generated_label is true or false";
-    if (!Array.isArray(d.frames) || !d.frames.every(isRef)) return "frames are {id, version}";
+    if (!Array.isArray(d.frames) || !d.frames.every(isFrameRef)) return "frames are {id, version}";
     if (!str(d.policy, 1, 64) || !str(d.family, 1, 32)) return "policy and family are names";
   }
   if (kind === "identity") {
@@ -73,7 +78,7 @@ function invalid(kind, d) {
     if (!["embodied", "viewpoint"].includes(d.presence)) return "presence is embodied or viewpoint";
     if (!str(d.prompt, 0, 2000) || !str(d.negative, 0, 2000)) return "prompt and negative are up to 2000 characters";
     if (/[{}]/.test(d.prompt)) return "an identity's prompt is fixed text: no placeholders or braces";
-    if (d.frame !== null && !isRef(d.frame)) return "frame is {id, version}";
+    if (d.frame !== null && !isFrameRef(d.frame)) return "frame is {id, version}";
     if (d.presence === "embodied" && !d.prompt.trim()) return "an embodied identity needs a prompt describing them";
     if (d.presence === "embodied" && d.frame !== null) return "an embodied identity has no frame of its own (the teaser names one)";
     if (d.presence === "viewpoint" && d.frame === null) return "a viewpoint identity needs its frame";
@@ -116,7 +121,7 @@ function invalid(kind, d) {
     const bad = Object.keys(d.teasers).filter((k) => !TEASER.test(k));
     if (bad.length) return `teaser numbers are T1, T2…: ${bad.join(", ")}`;
     for (const t of Object.values(d.teasers)) {
-      if (!isObj(t) || !["line", "identity", "scene", "frame"].every((k) => isRef(t[k]))) return "a teaser names its line, identity, scene and frame by {id, version}";
+      if (!isObj(t) || !["line", "identity", "scene"].every((k) => isRef(t[k])) || !isFrameRef(t.frame)) return "a teaser names its line, identity, scene and frame by {id, version}";
       if (!str(t.alt, 1, 1000)) return "a teaser's alt text is 1 to 1000 characters";
       if (t.background != null && !str(t.background, 1, 64)) return "background is a render's id";
     }
@@ -229,6 +234,11 @@ export class MockProjects {
     const project = this.table(pid, "project")[0].doc;
     if (project.id !== pid) out.push(`project.yaml says id ${repr(project.id)}, but the directory is ${repr(pid)}`);
     for (const fr of project.frames) if (!this.frames.has(refKey(fr))) out.push(`project.yaml names frame ${fr.id} v${fr.version}, which this server doesn't have`);
+    // A project uses global frames and its own, never another project's.
+    for (const fr of project.frames) {
+      const owner = frameProject(fr);
+      if (owner !== null && owner !== pid) out.push(`project.yaml names frame ${fr.id} v${fr.version}, which is project ${repr(owner)}'s`);
+    }
     for (const kind of ["identity", "scene", "line"]) {
       for (const f of this.table(pid, kind)) if (f.doc.project !== pid) out.push(`${fileName(f)}: ${kind} ${f.id} belongs to project ${repr(f.doc.project)}, not ${repr(pid)}`);
     }

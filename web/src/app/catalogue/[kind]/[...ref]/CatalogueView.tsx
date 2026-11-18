@@ -9,7 +9,9 @@ import { DecisionPanel, SampleRunner, TemplateCheckPanel, useTemplateCheck } fro
 import { CatalogueBadge, DocLink, Field, Hash, INPUT, PageTitle, useLoad } from "@/components/bits";
 import { Button, Card, Kv, Notice, SectionTitle, Spinner } from "@/components/ui";
 import { frameOverlay, getBios, getDrafts, getFrames, getSamples, getTemplates, previewFrame } from "@/lib/api";
+import { parseCatalogueRef } from "@/lib/catalogueRoute";
 import { staticDemo } from "@/lib/demo";
+import { EFFECTS_NOT_PREVIEWED, effectText } from "@/lib/frameEffects";
 import { allowedModels, byFamily, checkpointName, loraText, loraWeights, samplingText } from "@/lib/status";
 import { boxStyle, cropFraction, displaySlots, slotSummary, windowAspect } from "@/lib/slots";
 import type { BioInfo, FrameInfo, TemplateInfo } from "@/lib/types";
@@ -171,7 +173,24 @@ function FrameView({ info }: { info: FrameInfo }) {
             <Kv label="Card size">{info.width}×{info.height}</Kv>
             <Kv label="Art window">{`${f.window.width}×${f.window.height} at (${f.window.x}, ${f.window.y})`}</Kv>
             <Kv label="Best render size">{aspect.suggest}</Kv>
+            {info.project ? <Kv label="Project">{info.project} (the project&apos;s own frame)</Kv> : null}
+            <Kv label="Effects">
+              {f.effects?.length ? (
+                <ol className="list-decimal pl-5">
+                  {f.effects.map((e, i) => (
+                    <li key={i}>{effectText(e)}</li>
+                  ))}
+                </ol>
+              ) : (
+                "none"
+              )}
+            </Kv>
           </dl>
+          {f.effects?.length ? (
+            <p className="mt-2 text-caption text-text-muted">
+              argus-mint applies these to the art inside the window, in this order, when it bakes the PNG. &ldquo;Preview on art&rdquo; is that bake; the owner&apos;s SVG preview says {EFFECTS_NOT_PREVIEWED}.
+            </p>
+          ) : null}
           {crop > 0.1 ? (
             <Notice tone="warning" className="mt-2">
               A square 1024×1024 render loses {Math.round(crop * 100)}% of its area here. Templates for this frame should render {aspect.suggest}.
@@ -248,8 +267,13 @@ function FrameView({ info }: { info: FrameInfo }) {
 }
 
 function Detail() {
-  const { kind, id, version } = useParams<{ kind: string; id: string; version: string }>();
-  const v = Number(version);
+  const params = useParams<{ kind: string; ref: string[] }>();
+  const kind = params.kind;
+  // A project's own frame has a two-part id (`<project>/<name>`): the version is the last segment (catalogueRoute.ts).
+  const named = parseCatalogueRef(kind, params.ref);
+  const id = named?.id ?? "";
+  const v = named?.version ?? 0;
+  const version = String(v);
   const all = useLoad(() => Promise.all([getTemplates(), getFrames(), getBios()]), [kind, id, version]);
   // Before the early returns (a hook): only a known template that isn't retired is checked.
   const checked = kind === "template" ? all.data?.[0].find((x) => x.template.id === id && x.template.version === v) : undefined;

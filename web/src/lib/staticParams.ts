@@ -6,6 +6,7 @@
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 
+import { catalogueRefParam } from "./catalogueRoute";
 import { staticDemo, tapeBase } from "./demo";
 import { parseTape, type Tape } from "./tape";
 
@@ -21,13 +22,14 @@ export function sampleParams(): { id: string }[] {
   return staticDemo() ? tape().samples.map((s) => ({ id: s.id })) : [];
 }
 
-export function catalogueParams(): { kind: string; id: string; version: string }[] {
+/** `app/catalogue/[kind]/[...ref]`: a project's own frame (`<project>/<name>`) exports a page one level deeper. */
+export function catalogueParams(): { kind: string; ref: string[] }[] {
   if (!staticDemo()) return [];
   const t = tape();
   return [
-    ...t.templates.map((e) => ({ kind: "template", id: e.template.id, version: String(e.template.version) })),
-    ...t.frames.map((e) => ({ kind: "frame", id: e.frame.id, version: String(e.frame.version) })),
-    ...t.bios.map((e) => ({ kind: "bio", id: e.bio.id, version: String(e.bio.version) })),
+    ...t.templates.map((e) => ({ kind: "template", ref: catalogueRefParam(e.template.id, e.template.version) })),
+    ...t.frames.map((e) => ({ kind: "frame", ref: catalogueRefParam(e.frame.id, e.frame.version) })),
+    ...t.bios.map((e) => ({ kind: "bio", ref: catalogueRefParam(e.bio.id, e.bio.version) })),
   ];
 }
 

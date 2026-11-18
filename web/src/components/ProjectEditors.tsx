@@ -17,6 +17,7 @@ import { useId, useState, type FormEvent, type ReactNode } from "react";
 
 import { saveProjectFile } from "@/lib/api";
 import {
+  groupFrames,
   ID_PATTERN,
   identityVoices,
   knownVoices,
@@ -129,16 +130,26 @@ function Num({ label, value, onChange, min, max, step = 1 }: { label: string; va
   );
 }
 
-function Pick({ label, hint, value, options, onChange, required = true }: { label: string; hint?: string; value: string; options: { value: string; label: string }[]; onChange: (v: string) => void; required?: boolean }) {
+type Option = { value: string; label: string; group?: string };
+
+function Pick({ label, hint, value, options, onChange, required = true }: { label: string; hint?: string; value: string; options: Option[]; onChange: (v: string) => void; required?: boolean }) {
   const id = useId();
+  const item = (o: Option) => (
+    <option key={o.value} value={o.value}>
+      {o.label}
+    </option>
+  );
+  // Options that name a group are shown under it, in the order the groups first appear.
+  const groups = [...new Set(options.map((o) => o.group).filter((g): g is string => Boolean(g)))];
   return (
     <Labeled label={label} hint={hint} id={id}>
       <select id={id} className={`${INPUT} ${INVALID}`} value={value} required={required} aria-describedby={hint ? `${id}-hint` : undefined} onChange={(e) => onChange(e.target.value)}>
         <option value="">{required ? "Choose…" : "None"}</option>
-        {options.map((o) => (
-          <option key={o.value} value={o.value}>
-            {o.label}
-          </option>
+        {options.filter((o) => !o.group).map(item)}
+        {groups.map((g) => (
+          <optgroup key={g} label={g}>
+            {options.filter((o) => o.group === g).map(item)}
+          </optgroup>
         ))}
       </select>
     </Labeled>
@@ -152,14 +163,21 @@ const uniq = (xs: string[]) => [...new Set(xs.filter(Boolean))];
 const fileOptions = (detail: ProjectDetail, kind: ProjectKind) =>
   refOptions(detail, kind).map(({ ref, status }) => ({ value: refValue(ref), label: `${refText(ref)} (${statusText(CATALOGUE_STATUS[status])})` }));
 
-const frameOptions = (frames: FrameInfo[], only?: Ref[]) =>
-  frames
-    .filter((f) => !only?.length || only.some((r) => r.id === f.frame.id && r.version === f.frame.version))
-    .map((f) => ({ value: refValue(f.frame), label: `${refText(f.frame)} (${statusText(CATALOGUE_STATUS[f.frame.status])})` }));
+const frameLabel = (f: FrameInfo) => `${refText(f.frame)} (${statusText(CATALOGUE_STATUS[f.frame.status])})`;
 
-function ProjectFields({ doc, set, choices }: { doc: ProjectDoc; set: (d: Partial<ProjectDoc>) => void; choices: Choices }) {
+/** The group headings, by `GET /frames`' `project` (groupFrames). */
+const FRAME_GROUP = { own: "This project's own frames", global: "Global frames", other: "Another project's frames (a problem in argus-mint's checks)" } as const;
+
+/** Frames as options, grouped by project: this project's own, then global ones (and another's only if already named). */
+const frameOptions = (frames: FrameInfo[], projectId: string, current: (Ref | null | undefined)[], only?: Ref[]): Option[] => {
+  const groups = groupFrames(frames.filter((f) => !only?.length || only.some((r) => r.id === f.frame.id && r.version === f.frame.version)), projectId, current);
+  return (["own", "global", "other"] as const).flatMap((g) => groups[g].map((f) => ({ value: refValue(f.frame), label: frameLabel(f), group: FRAME_GROUP[g] })));
+};
+
+function ProjectFields({ doc, set, projectId, choices }: { doc: ProjectDoc; set: (d: Partial<ProjectDoc>) => void; projectId: string; choices: Choices }) {
   const families = withCurrent(uniq(["sdxl", ...choices.templates.flatMap((t) => allowedModels(t.template).map(modelFamily))]), doc.family);
   const chosen = doc.frames ?? [];
+  const groups = groupFrames(choices.frames, projectId, chosen);
   return (
     <>
       <AuthoredText label="Working title" hint="What is posted becomes the public name." value={doc.title ?? ""} onChange={(title) => set({ title })} required max={120} />
@@ -171,21 +189,28 @@ function ProjectFields({ doc, set, choices }: { doc: ProjectDoc; set: (d: Partia
       <fieldset className="text-small">
         <legend className="mb-1 font-medium text-text-secondary">Frames teasers may use</legend>
         {choices.frames.length === 0 ? <p className="text-text-muted">This server has no frames.</p> : null}
-        {choices.frames.map((f) => {
-          const on = chosen.some((r) => r.id === f.frame.id && r.version === f.frame.version);
-          return (
-            <label key={refValue(f.frame)} className="flex items-center gap-2">
-              <input
-                type="checkbox"
-                checked={on}
-                onChange={(e) =>
-                  set({ frames: e.target.checked ? [...chosen, { id: f.frame.id, version: f.frame.version }] : chosen.filter((r) => !(r.id === f.frame.id && r.version === f.frame.version)) })
-                }
-              />
-              {refText(f.frame)} ({statusText(CATALOGUE_STATUS[f.frame.status])})
-            </label>
-          );
-        })}
+        {(["own", "global", "other"] as const)
+          .filter((g) => groups[g].length)
+          .map((g) => (
+            <div key={g} className="mt-1">
+              <p className="text-caption text-text-muted">{FRAME_GROUP[g]}</p>
+              {groups[g].map((f) => {
+                const on = chosen.some((r) => r.id === f.frame.id && r.version === f.frame.version);
+                return (
+                  <label key={refValue(f.frame)} className="flex items-center gap-2">
+                    <input
+                      type="checkbox"
+                      checked={on}
+                      onChange={(e) =>
+                        set({ frames: e.target.checked ? [...chosen, { id: f.frame.id, version: f.frame.version }] : chosen.filter((r) => !(r.id === f.frame.id && r.version === f.frame.version)) })
+                      }
+                    />
+                    {frameLabel(f)}
+                  </label>
+                );
+              })}
+            </div>
+          ))}
       </fieldset>
       <Pick
         label="SingGuard policy"
@@ -232,7 +257,7 @@ function ReferenceRow({ r, set, remove }: { r: Reference; set: (r: Reference) =>
   );
 }
 
-function IdentityFields({ doc, set, detail, choices }: { doc: IdentityDoc; set: (d: Partial<IdentityDoc>) => void; detail: ProjectDetail; choices: Choices }) {
+function IdentityFields({ doc, set, detail, projectId, choices }: { doc: IdentityDoc; set: (d: Partial<IdentityDoc>) => void; detail: ProjectDetail; projectId: string; choices: Choices }) {
   const voices = withCurrent(knownVoices(detail), doc.voice);
   const [newVoice, setNewVoice] = useState(voices.length === 0);
   const refs = doc.references ?? [];
@@ -250,7 +275,7 @@ function IdentityFields({ doc, set, detail, choices }: { doc: IdentityDoc; set: 
       ) : null}
       <Pick label="Presence" value={doc.presence ?? ""} options={PRESENCE.map((p) => ({ value: p, label: PRESENCE_TEXT[p] }))} onChange={(p) => set({ presence: p as IdentityDoc["presence"] })} />
       {doc.presence === "viewpoint" ? (
-        <Pick label="Frame" hint="The reviewed overlay that makes the image theirs." value={refValue(doc.frame)} options={frameOptions(choices.frames)} onChange={(v) => set({ frame: parseRef(v) })} />
+        <Pick label="Frame" hint="The reviewed overlay that makes the image theirs." value={refValue(doc.frame)} options={frameOptions(choices.frames, projectId, [doc.frame])} onChange={(v) => set({ frame: parseRef(v) })} />
       ) : (
         <>
           <AuthoredText label="Appearance prompt" hint="Fixed text: no braces or placeholders." value={doc.prompt ?? ""} onChange={(prompt) => set({ prompt })} rows={3} required={doc.presence === "embodied"} max={2000} />
@@ -376,7 +401,7 @@ function TeaserRow({
         {ref("line", "line", "Line")}
         {ref("identity", "identity", "Identity")}
         {ref("scene", "scene", "Scene")}
-        <Pick label="Frame" hint={projectFrames.length ? "One of the project's frames." : undefined} value={refValue(t.frame)} options={frameOptions(frames, projectFrames)} onChange={(v) => set({ ...t, frame: parseRef(v) as Ref })} />
+        <Pick label="Frame" hint={projectFrames.length ? "One of the project's frames." : undefined} value={refValue(t.frame)} options={frameOptions(frames, detail.id, [t.frame], projectFrames)} onChange={(v) => set({ ...t, frame: parseRef(v) as Ref })} />
       </div>
       <AuthoredText label="Alt text" hint="Posts refuse an image without it." value={t.alt ?? ""} onChange={(alt) => set({ ...t, alt })} rows={2} required max={1000} />
       <Pick
@@ -499,8 +524,8 @@ export function FileEditor({
           onChange={setNewId}
         />
       ) : null}
-      {kind === "project" ? <ProjectFields doc={doc as unknown as ProjectDoc} set={set} choices={choices} /> : null}
-      {kind === "identity" && detail ? <IdentityFields doc={doc as unknown as IdentityDoc} set={set} detail={detail} choices={choices} /> : null}
+      {kind === "project" ? <ProjectFields doc={doc as unknown as ProjectDoc} set={set} projectId={fixedId ?? newId} choices={choices} /> : null}
+      {kind === "identity" && detail ? <IdentityFields doc={doc as unknown as IdentityDoc} set={set} detail={detail} projectId={projectId} choices={choices} /> : null}
       {kind === "scene" ? <SceneFields doc={doc as unknown as SceneDoc} set={set} project={project} choices={choices} /> : null}
       {kind === "line" && detail ? <LineFields doc={doc as unknown as LineDoc} set={set} detail={detail} /> : null}
       {kind === "teasers" && detail ? <TeasersFields doc={doc as unknown as TeasersDoc} set={set} detail={detail} project={project} choices={choices} /> : null}

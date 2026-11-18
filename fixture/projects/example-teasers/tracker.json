@@ -1,0 +1,52 @@
+{
+  "project": "example-teasers",
+  "links_version": 2,
+  "teasers": [
+    {
+      "number": "T1",
+      "stages": {
+        "quote_final": true,
+        "concept_chosen": true,
+        "image_made": true,
+        "posted": true,
+        "minted": true
+      },
+      "background": "lamp-room-v1-01",
+      "drafts": [
+        {
+          "id": "0260feab2ed156a6",
+          "status": "published",
+          "awaiting": [],
+          "created_at": "2026-11-18T15:09:27.561610Z",
+          "links_version": 2,
+          "background": "lamp-room-v1-01",
+          "current": true
+        }
+      ]
+    },
+    {
+      "number": "T2",
+      "stages": {
+        "quote_final": true,
+        "concept_chosen": true,
+        "image_made": false,
+        "posted": false,
+        "minted": false
+      },
+      "background": "shoreline-v1-01",
+      "drafts": [
+        {
+          "id": "7f285b699a2fd40e",
+          "status": "pending",
+          "awaiting": [
+            "owner"
+          ],
+          "created_at": "2026-11-18T15:09:28.575378Z",
+          "links_version": 2,
+          "background": "shoreline-v1-01",
+          "current": true
+        }
+      ]
+    }
+  ]
+}

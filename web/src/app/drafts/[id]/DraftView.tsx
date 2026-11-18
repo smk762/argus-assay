@@ -5,7 +5,9 @@ import { useParams, useSearchParams } from "next/navigation";
 import { Suspense, useState } from "react";
 
 import { DocLink, DraftBadge, Hash, INPUT, PageTitle, useLoad } from "@/components/bits";
+import { AutoCheckPanel } from "@/components/AutoCheck";
 import { CardEditor } from "@/components/CardEditor";
+import { Posts, TeaserMade } from "@/components/TeaserDraft";
 import { StepNav } from "@/components/StepNav";
 import { useMint } from "@/components/MintProvider";
 import { Button, Card, Collapsible, Kv, Notice, SectionTitle, Spinner } from "@/components/ui";
@@ -144,7 +146,7 @@ function PublishPanel({ d, onDone }: { d: DraftDetail; onDone: (d: DraftDetail) 
     const card = cardContractUrl(network, domain?.verifyingContract);
     return (
       <Card>
-        <SectionTitle className="mb-2">Published</SectionTitle>
+        <SectionTitle className="mb-2">{d.draft.kind === "teaser" ? "Minted" : "Published"}</SectionTitle>
         <dl>
           <Kv label="Metadata">ipfs://{p.metadata_cid}</Kv>
           <Kv label="Image">ipfs://{String(p.render.image_cid)}</Kv>
@@ -170,13 +172,18 @@ function PublishPanel({ d, onDone }: { d: DraftDetail; onDone: (d: DraftDetail) 
   }
   if (d.status !== "approved") return null;
   const off = !canPublish(d.status, health) ? "This server can't publish (no IPFS, signer or Card address)." : !hasToken ? "Set the moderator token to publish." : null;
+  const teaser = d.draft.kind === "teaser";
   return (
     <Card>
       <div className="mb-2 flex flex-wrap items-baseline justify-between gap-2">
-        <SectionTitle>Publish</SectionTitle>
-        <DocLink topic="publishing">What publishing does</DocLink>
+        <SectionTitle>{teaser ? "Mint (optional)" : "Publish"}</SectionTitle>
+        <DocLink topic={teaser ? "minting" : "publishing"}>{teaser ? "What minting a teaser does" : "What publishing does"}</DocLink>
       </div>
-      <p className="mb-2 text-small text-text-secondary">Pins the art, the card image and the metadata to IPFS, and signs the mint voucher.</p>
+      <p className="mb-2 text-small text-text-secondary">
+        {teaser
+          ? "A teaser can be posted, minted, both or neither. Minting pins the art, the teaser image and its metadata to IPFS and signs the mint voucher; every draft of this teaser shares one asset id, so it mints once."
+          : "Pins the art, the card image and the metadata to IPFS, and signs the mint voucher."}
+      </p>
       {off ? <p className="mb-2 text-small text-text-muted">{off}</p> : null}
       <Button
         tone="primary"
@@ -193,7 +200,7 @@ function PublishPanel({ d, onDone }: { d: DraftDetail; onDone: (d: DraftDetail) 
           }
         }}
       >
-        Pin and sign
+        {d.draft.kind === "teaser" ? "Mint: pin and sign" : "Pin and sign"}
       </Button>
       {error ? <Notice tone="error" className="mt-2">{error}</Notice> : null}
     </Card>
@@ -236,6 +243,9 @@ function Draft() {
   if (error) return <Notice tone="error">{error}</Notice>;
   if (!d) return <Spinner />;
   const draft = d.draft;
+  // A teaser draft (argus-mint's `kind`): its text is the reviewed line's, so there is no editor and no bio,
+  // and its record is the files it was made from rather than a template.
+  const teaser = draft.kind === "teaser" && draft.teaser ? draft.teaser : null;
   const framed = Boolean(draft.frame);
   const frameInfo = frames.data?.find((f) => f.frame.id === draft.frame?.id && f.frame.version === draft.frame?.version);
   return (
@@ -260,7 +270,7 @@ function Draft() {
       >
         {draft.name}
       </PageTitle>
-      {editing && frameInfo ? (
+      {editing && frameInfo && !teaser ? (
         <CardEditor
           key={draft.image_sha256}
           d={d}
@@ -276,7 +286,7 @@ function Draft() {
         <div className="space-y-2">
           <img
             src={draftImage(d.id, showArt && framed ? "art" : "image", draft.image_sha256)}
-            alt={showArt ? "The unframed render" : "The card image under review"}
+            alt={showArt ? "The unframed render" : teaser ? teaser.alt : "The card image under review"}
             fetchPriority="high"
             className="w-full rounded-lg border border-base-600/60 bg-base-900 object-contain"
           />
@@ -291,19 +301,12 @@ function Draft() {
         </div>
         <div className="space-y-4">
           {d.awaiting.length && d.status === "pending" ? <Notice tone="warning">{awaitingText(d.awaiting)}.</Notice> : null}
-          {draft.auto_check && draft.auto_check.image_sha256 === draft.image_sha256 ? (
-            draft.auto_check.passed ? (
-              <Notice tone="info">
-                Auto-moderation approved this image for the moderator: {draft.auto_check.checks.join("; ")}. The owner judges quality.
-              </Notice>
-            ) : (
-              <Notice tone="warning">Auto-moderation held this for a person: {(draft.auto_check.held ?? []).join("; ")}.</Notice>
-            )
-          ) : null}
+          <AutoCheckPanel d={d} onDone={setUpdated} />
           <ModeratorPanel d={d} onDone={setUpdated} />
           <OwnerPanel d={d} onDone={setUpdated} />
           <PublishPanel d={d} onDone={setUpdated} />
-          {draft.frame && d.status !== "published" && health?.capabilities.edit_text && !editing ? (
+          {teaser ? <Posts posts={d.posts ?? []} /> : null}
+          {!teaser && draft.frame && d.status !== "published" && health?.capabilities.edit_text && !editing ? (
             <Card>
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <div>
@@ -352,7 +355,7 @@ function Draft() {
               </ul>
             </Card>
           ) : null}
-          {draft.bio ? (
+          {draft.bio && !teaser ? (
             <Card>
               <SectionTitle className="mb-2">Bio</SectionTitle>
               <p className="text-small italic">{draft.bio.text}</p>
@@ -374,7 +377,8 @@ function Draft() {
               ) : null}
             </Card>
           ) : null}
-          <Card>
+          {teaser ? <TeaserMade d={d} /> : null}
+          {teaser ? null : <Card>
             <div className="mb-2 flex flex-wrap items-baseline justify-between gap-2">
               <SectionTitle>How it was made</SectionTitle>
               <DocLink topic="draft-record">What a draft records</DocLink>
@@ -416,7 +420,7 @@ function Draft() {
                 ))}
               </ul>
             </Collapsible>
-          </Card>
+          </Card>}
         </div>
       </div>
     </>

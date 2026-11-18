@@ -1,10 +1,10 @@
 {
   "items": [
     {
-      "id": "aeec5287e0611f72",
+      "id": "bcbf89a51e25798b",
       "status": "done",
-      "created_at": "2026-11-16T07:40:46.625574Z",
-      "finished_at": "2026-11-16T07:41:31.828152Z",
+      "created_at": "2026-11-18T15:06:51.046825Z",
+      "finished_at": "2026-11-18T15:06:53.318256Z",
       "error": null,
       "request": {
         "template": {
@@ -44,18 +44,12 @@
             "role": "dragon, a scaled non-human reptilian beast with horns and folded wings, no human features"
           },
           "prompt": "waist-up portrait of one non-binary dragon, a scaled non-human reptilian beast with horns and folded wings, no human features, alone in the picture, centered and facing the viewer, clothing and colour scheme silver, guarding a hoard, background: garden, painted fantasy illustration, full bleed, detailed",
-          "seed": 1152728919,
+          "seed": 121,
           "attempts": [
             {
               "seed": 121,
-              "outcome": "safety_rejected",
-              "ref": "21fcb13efc20491baacc9779b1f28399",
-              "detail": "omitted: sfw-exposed"
-            },
-            {
-              "seed": 1152728919,
               "outcome": "ok",
-              "ref": "11f622d47ba0467ab58b6af76fc6ddf0",
+              "ref": "7afa4fc55fb14d1287bf6f064a2074ec",
               "detail": "",
               "workflow": {
                 "name": "sdxl",
@@ -91,7 +85,7 @@
             {
               "seed": 122,
               "outcome": "ok",
-              "ref": "da8670b073824aae95eea31bc1a69b5c",
+              "ref": "527551a6274d4cbb96d54d4aca4bd428",
               "detail": "",
               "workflow": {
                 "name": "sdxl",

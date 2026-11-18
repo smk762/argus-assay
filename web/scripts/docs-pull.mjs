@@ -28,6 +28,7 @@ const FILES = [
   "docs/drafts.md",
   "docs/catalogue.md",
   "docs/customise.md",
+  "docs/projects.md",
   "docs/api.md",
   "docs/cli.md",
 ];

@@ -1,4 +1,17 @@
-import type { CatalogueStatus, DraftStatus, Health, LoraChoice, LoraOption, SampleJob, Sampling } from "./types";
+import type {
+  Background,
+  BackgroundJob,
+  CatalogueStatus,
+  DraftStatus,
+  Health,
+  IdentityCheck,
+  IdentityTrainingView,
+  LoraChoice,
+  LoraOption,
+  SampleJob,
+  Sampling,
+  TeaserStages,
+} from "./types";
 
 export type Tone = "ok" | "warning" | "error" | "muted" | "info";
 
@@ -21,6 +34,57 @@ export const SAMPLE_STATUS: Record<SampleJob["status"], { label: string; mark: s
   running: { label: "Running", mark: "▶", tone: "info" },
   done: { label: "Done", mark: "✓", tone: "ok" },
   failed: { label: "Failed", mark: "✕", tone: "error" },
+};
+
+/** A background's review (argus-mint's `Background.status`). */
+export const BACKGROUND_STATUS: Record<NonNullable<Background["status"]>, { label: string; mark: string; tone: Tone }> = {
+  pending: { label: "Pending review", mark: "…", tone: "warning" },
+  approved: { label: "Approved", mark: "✓", tone: "ok" },
+  rejected: { label: "Rejected", mark: "✕", tone: "error" },
+};
+
+/** A background job's status, and a training step's last run's (argus-mint's `BackgroundJob.status`, `StepRun.status`). */
+export const JOB_STATUS: Record<BackgroundJob["status"], { label: string; mark: string; tone: Tone }> = SAMPLE_STATUS;
+
+/** A training step's status, as argus-mint works it out (`IdentityTrainingView.steps`). */
+export const STEP_STATUS: Record<IdentityTrainingView["steps"][string], { label: string; mark: string; tone: Tone }> = {
+  not_started: { label: "Not started", mark: "○", tone: "muted" },
+  ...SAMPLE_STATUS,
+};
+
+/** Whether argus-mint says a teaser has reached a stage (`TeaserStages`): its boolean, shown with a mark and a word. */
+export const STAGE_STATUS = {
+  reached: { label: "Reached", mark: "✓", tone: "ok" },
+  not_yet: { label: "Not yet", mark: "○", tone: "muted" },
+} as const satisfies Record<string, { label: string; mark: string; tone: Tone }>;
+
+/** The tracker's stages, in argus-mint's order (docs/projects.md, The tracker), with what each means. */
+export const STAGES: readonly { key: keyof TeaserStages; title: string; means: string }[] = [
+  { key: "quote_final", title: "Quote final", means: "its line is approved" },
+  { key: "concept_chosen", title: "Concept chosen", means: "its identity and its scene are approved" },
+  { key: "image_made", title: "Image made", means: "a draft made from the current files is approved (or published)" },
+  { key: "posted", title: "Posted", means: "a draft of it has a post recorded" },
+  { key: "minted", title: "Minted", means: "a draft of it is published: pinned, with metadata and a signed voucher" },
+];
+
+/** The training steps, in argus-mint's order (docs/projects.md, The steps), with who runs each. */
+export const TRAINING_STEPS: readonly { step: NonNullable<IdentityTrainingView["next"]>; who: string }[] = [
+  { step: "candidates", who: "darkroom renders the candidates" },
+  { step: "select", who: "argus-curator selects the training images and the held-out references" },
+  { step: "caption", who: "argus-lens captions the training images" },
+  { step: "train", who: "argus-forge trains the LoRA" },
+  { step: "evaluate", who: "argus-proof scores it against the held-out references" },
+  { step: "pin", who: "argus-mint saves a draft identity version with the LoRA pinned" },
+];
+
+/** argus-proof's identity check on a teaser (`AutoCheck.identity.outcome`, wire 1.15), as argus-mint records it. */
+export const IDENTITY_OUTCOME: Record<IdentityCheck["outcome"], { label: string; mark: string; tone: Tone }> = {
+  passed: { label: "Passed", mark: "✓", tone: "ok" },
+  below: { label: "Below the minimum", mark: "✕", tone: "error" },
+  uncalibrated: { label: "Uncalibrated", mark: "~", tone: "info" },
+  skipped: { label: "Skipped", mark: "–", tone: "muted" },
+  unavailable: { label: "Proof unavailable", mark: "!", tone: "warning" },
+  error: { label: "Error", mark: "✕", tone: "error" },
 };
 
 /** "✓ Approved": a status as plain text (an <option>, a caption), still with its mark and word (rule 7). */

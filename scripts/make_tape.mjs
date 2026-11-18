@@ -16,6 +16,7 @@
 import { cpSync, existsSync, mkdirSync, readdirSync, readFileSync, rmSync, statSync, writeFileSync } from "node:fs";
 import { dirname, join, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { readLayers } from "./mock_teasers.mjs";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const args = process.argv.slice(2);
@@ -57,6 +58,26 @@ export function checkPublic(text, where) {
     if (!ADDRESSES[m[0].toLowerCase()]) problems.push(`${where}: address ${m[0]} is not on the allowlist (scripts/make_tape.mjs ADDRESSES)`);
   }
   for (const [re, what] of FORBIDDEN) if (re.test(text)) problems.push(`${where}: looks like ${what} (${text.match(re)[0]})`);
+  return problems;
+}
+
+/**
+ * A spoiler can reach the tape only as a rule's number: argus-mint reports a hold as `spoiler_rules`, a list
+ * of numbers, and never the list's terms. Any other key naming a spoiler, or a rule that isn't a number,
+ * stops the tape (the spoiler file itself is private and never recorded).
+ */
+export function checkSpoilers(value, where, path = "") {
+  const problems = [];
+  if (Array.isArray(value)) value.forEach((v, i) => problems.push(...checkSpoilers(v, where, `${path}[${i}]`)));
+  else if (value && typeof value === "object") {
+    for (const [k, v] of Object.entries(value)) {
+      const at = path ? `${path}.${k}` : k;
+      if (/spoil/i.test(k) && k !== "spoiler_rules") problems.push(`${where}: ${at} names a spoiler; only spoiler_rules (numbers) may`);
+      else if (k === "spoiler_rules" && !(Array.isArray(v) && v.every((n) => Number.isInteger(n) && n > 0)))
+        problems.push(`${where}: ${at} must be rule numbers only`);
+      else problems.push(...checkSpoilers(v, where, at));
+    }
+  }
   return problems;
 }
 
@@ -184,6 +205,15 @@ const walk = (dir) =>
     return statSync(p).isDirectory() ? walk(p) : [p];
   });
 
+/** `GET /projects` and each project's `GET /projects/{id}`, when the fixture was recorded with them (wire 1.11 on). */
+export function projectsOf(fixtureDir) {
+  if (!existsSync(join(fixtureDir, "projects.json"))) return { projects: { projects: [] }, project_details: [], project_layers: {} };
+  const read = (rel) => JSON.parse(readFileSync(join(fixtureDir, rel), "utf8"));
+  const projects = read("projects.json");
+  // Backgrounds, tracker and training views (wire 1.12 on), read as the mock reads them.
+  return { projects, project_details: projects.projects.map((p) => read(`projects/${p.id}.json`)), project_layers: readLayers(fixtureDir) };
+}
+
 /** The tape for `fixtureDir`, and the image and font paths to copy beside it. Throws on anything not public. */
 export function buildTape(fixtureDir, { kind, note } = {}) {
   if (!existsSync(join(fixtureDir, "health.json"))) throw new Error(`no fixture at ${fixtureDir}`);
@@ -193,7 +223,11 @@ export function buildTape(fixtureDir, { kind, note } = {}) {
   note ??= recorded.note ?? DEFAULT_NOTE;
   if (!["sample", "recorded"].includes(kind)) throw new Error(`--kind must be sample or recorded, not ${kind}`);
   const problems = [];
-  for (const file of walk(fixtureDir).filter((f) => /\.(json|md)$/.test(f))) problems.push(...checkPublic(readFileSync(file, "utf8"), relative(fixtureDir, file)));
+  for (const file of walk(fixtureDir).filter((f) => /\.(json|md)$/.test(f))) {
+    const text = readFileSync(file, "utf8");
+    problems.push(...checkPublic(text, relative(fixtureDir, file)));
+    if (file.endsWith(".json")) problems.push(...checkSpoilers(JSON.parse(text), relative(fixtureDir, file)));
+  }
   if (problems.length) throw new Error(`refusing to make a public tape, ${problems.length} problem(s)\n  ${problems.join("\n  ")}`);
 
   const health = read("health.json");
@@ -229,6 +263,7 @@ export function buildTape(fixtureDir, { kind, note } = {}) {
     drafts,
     layouts,
     samples,
+    ...projectsOf(fixtureDir),
     files,
   };
 }

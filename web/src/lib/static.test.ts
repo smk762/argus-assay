@@ -4,7 +4,7 @@ import { fileURLToPath } from "node:url";
 
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import { BIO_FIT, buildTape, checkBios, checkPublic } from "../../../scripts/make_tape.mjs";
+import { BIO_FIT, buildTape, checkBios, checkPublic, checkSpoilers } from "../../../scripts/make_tape.mjs";
 import { DemoMint } from "./demoMint";
 import { parseTape, type Tape } from "./tape";
 import type { DraftDetail, DraftList } from "./types";
@@ -13,7 +13,11 @@ const FIXTURE = fileURLToPath(new URL("../../../fixture", import.meta.url));
 const tape = (): Tape => parseTape(buildTape(FIXTURE));
 let clock = 0;
 const mint = () => new DemoMint(tape(), { now: () => new Date(Date.UTC(2026, 10, 15, 0, 0, clock++)).toISOString(), randomHex: (n) => "ab".repeat(n) });
-const draftIn = (m: DemoMint, status: string) => (m.get("/drafts").body as DraftList).items.find((d) => d.status === status)!;
+const isCard = (d: { kind?: "card" | "teaser" }) => (d.kind ?? "card") === "card";
+// A card in `status`; a pending one awaits the moderator (a teaser draft, or a card waiting only on its owner, can't
+// walk the moderator's review).
+const draftIn = (m: DemoMint, status: string) =>
+  (m.get("/drafts").body as DraftList).items.find((d) => d.status === status && isCard(d) && (status !== "pending" || d.awaiting.includes("moderator")))!;
 
 describe("the tape", () => {
   it("is made from the recorded fixture, with every draft's images", () => {
@@ -22,6 +26,24 @@ describe("the tape", () => {
     // At least five behind every status filter, so none of the queue's views is a near-empty page.
     for (const status of ["pending", "approved", "rejected", "published"]) expect(t.drafts.filter((d) => d.status === status).length, status).toBeGreaterThanOrEqual(5);
     for (const d of t.drafts) expect(t.files).toContain(`drafts/${d.id}/image.png`);
+  });
+
+  it("carries a spoiler hold as a rule number only, never a term", () => {
+    expect(checkSpoilers({ checks: { spoiler_rules: [1, 3] } }, "x")).toEqual([]);
+    expect(checkSpoilers({ checks: { spoiler_rules: ["the twist"] } }, "x")[0]).toMatch(/rule numbers only/);
+    expect(checkSpoilers({ files: [{ doc: { spoiler_terms: ["x"] } }] }, "x")[0]).toMatch(/files\[0\]\.doc\.spoiler_terms names a spoiler/);
+    expect(checkSpoilers({ spoilers: "x" }, "x")).toHaveLength(1);
+    // The recorded fixture passes, so every hold it carries (if any) is a number.
+    const t = tape();
+    expect(checkSpoilers(t, "tape")).toEqual([]);
+  });
+
+  it("holds each recorded project's detail, and only the neutral example", () => {
+    const t = tape();
+    expect(t.project_details.map((p) => p.id)).toEqual(t.projects.projects.map((p) => p.id));
+    for (const p of t.projects.projects) expect(p.id).toBe("example-teasers");
+    expect(parseTape({ ...buildTape(FIXTURE), projects: undefined, project_details: undefined }).project_details).toEqual([]);
+    expect(() => parseTape({ ...buildTape(FIXTURE), project_details: [{ id: "../x", files: [], checks: {} }] })).toThrow(/no usable id/);
   });
 
   it("refuses an address that isn't on the allowlist, and secrets by name", () => {
@@ -37,10 +59,13 @@ describe("the tape", () => {
 
   it("has a distinct bio on every card, filling its box", () => {
     const t = tape();
-    const bios = [...t.drafts.map((d) => d.draft.bio?.text), ...t.samples.flatMap((j) => (j.items ?? []).map((it) => it.bio))];
-    expect(bios.length).toBe(t.drafts.length + t.samples.reduce((n, j) => n + (j.items ?? []).length, 0));
+    // Every card has one (a teaser draft has a quote, not a bio).
+    const cards = t.drafts.filter((d) => isCard(d.draft));
+    const bios = [...cards.map((d) => d.draft.bio?.text), ...t.samples.flatMap((j) => (j.items ?? []).map((it) => it.bio))];
+    expect(bios.length).toBe(cards.length + t.samples.reduce((n, j) => n + (j.items ?? []).length, 0));
+    for (const b of bios) expect(b).toBeTruthy();
     expect(new Set(bios).size).toBe(bios.length);
-    for (const d of t.drafts) {
+    for (const d of cards) {
       const lines = t.layouts[d.id].slots.bio.lines.length;
       expect(lines).toBeGreaterThanOrEqual(3);
       expect(lines).toBeLessThanOrEqual(4);
@@ -186,6 +211,17 @@ describe("the in-browser argus-mint", () => {
   });
 });
 
+describe("teaser projects in the static demo", () => {
+  it("serves the recorded projects to read, and writes none of their files", () => {
+    const m = mint();
+    expect((m.get("/projects").body as { projects: unknown[] }).projects).toEqual(tape().projects.projects);
+    for (const p of tape().project_details) expect(m.get(`/projects/${p.id}`).body).toEqual(p);
+    expect(m.get("/projects/nope").status).toBe(404);
+    expect(m.post("/projects/example-teasers/files/line/x/1", { doc: {} }).status).toBe(503);
+    expect(m.post("/projects/example-teasers/files/line/x/1/review", { decision: "approve", by: "me" }).status).toBe(503);
+  });
+});
+
 describe("the client's static branch", () => {
   afterEach(() => {
     vi.unstubAllEnvs();
@@ -204,12 +240,23 @@ describe("the client's static branch", () => {
     const api = await import("./api");
     const list = await api.getDrafts();
     expect(list.items).toHaveLength(t.drafts.length);
-    const id = list.items[0].id;
+    const id = list.items.find((d) => isCard(d) && d.awaiting.includes("moderator"))!.id;
     await api.moderatorReview(id, true, "me", "");
     expect(fetch).toHaveBeenCalledTimes(1);
     expect(api.draftImage(id, "image", "abc")).toBe(`/data-tape/drafts/${id}/image.png`);
     expect(api.libraryImage("000-x", 640)).toBe("/data-tape/library/000-x.jpg");
     await expect(api.createDraft({ template: { id: "t", version: 1 }, name: "A", to: "0x0", asset: "a" })).rejects.toBeInstanceOf(api.CapabilityRefused);
     await expect(api.previewFrame("card-green", 1, {}, "x", null, {})).rejects.toThrow(/not in this demo/);
+    // A teaser's layers: images from the tape, every write refused before the wire (the demo's /health turns them off).
+    expect(api.backgroundImage("example-teasers", "lamp-room-v1-01")).toBe("/data-tape/projects/example-teasers/backgrounds/lamp-room-v1-01.png");
+    for (const write of [
+      () => api.startBackgrounds("example-teasers", "lamp-room", 1),
+      () => api.reviewBackground("example-teasers", "lamp-room-v1-01", "approve", "me", ""),
+      () => api.makeTeaserDraft("example-teasers", "T1", "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC"),
+      () => api.startTrainingStep("example-teasers", "keeper", 1, "candidates"),
+      () => api.rerunIdentityCheck(id),
+    ])
+      await expect(write()).rejects.toBeInstanceOf(api.CapabilityRefused);
+    expect(fetch).toHaveBeenCalledTimes(1);
   });
 });

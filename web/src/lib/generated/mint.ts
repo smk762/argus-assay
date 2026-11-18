@@ -1,14 +1,22 @@
-// Generated from smk762/argus-mint@c294ed41151b0b24e6ab89c0e1fef88a3169da4c schema/mint-wire.schema.json.
+// Generated from smk762/argus-mint@d0e51c7729143ef56f36a0db0cfd73f366290969 schema/mint-wire.schema.json.
 // Do not edit: change schema/pins.json and run `npm run wire:pull`.
 
 export interface MintWire {
   ArtSource?: ArtSource;
   AutoCheck?: AutoCheck;
+  Background?: Background;
+  BackgroundDecision?: BackgroundDecision;
+  BackgroundJob?: BackgroundJob;
+  BackgroundReview?: BackgroundReview;
+  BackgroundSet?: BackgroundSet;
+  BackgroundSetList?: BackgroundSetList;
   BioInfo?: BioInfo;
   BioRecord?: BioRecord;
   BioRef?: BioRef;
   BioTemplate?: BioTemplate;
+  Candidate?: Candidate;
   Capabilities?: Capabilities;
+  Caption?: Caption;
   CardDraft?: CardDraft;
   CardStyle?: CardStyle;
   CatalogueDecision?: CatalogueDecision;
@@ -16,17 +24,24 @@ export interface MintWire {
   Challenge?: Challenge;
   ChallengeRequest?: ChallengeRequest;
   CreateDraft?: CreateDraft;
+  CreateTeaserDraft?: CreateTeaserDraft;
   DraftDetail?: DraftDetail;
   DraftList?: DraftList;
+  DraftPosts?: DraftPosts;
   DraftSummary?: DraftSummary;
   Edit?: Edit;
   EditTextRequest?: EditTextRequest;
+  Evaluation?: Evaluation;
+  FailedBackground?: FailedBackground;
+  FailedCandidate?: FailedCandidate;
   Frame?: Frame;
   FrameInfo?: FrameInfo;
   FrameLayout?: FrameLayout;
   FramePreviewRequest?: FramePreviewRequest;
   FrameRef?: FrameRef;
   Health?: Health;
+  IdentityTrainingView?: IdentityTrainingView;
+  InitImageRef?: InitImageRef;
   LayoutRequest?: LayoutRequest;
   LibraryItem?: LibraryItem;
   LibraryListing?: LibraryListing;
@@ -34,13 +49,19 @@ export interface MintWire {
   LoraChoice?: LoraChoice;
   LoraOption?: LoraOption;
   LoraRef?: LoraRef;
+  Pinned?: Pinned;
+  Post?: Post;
+  PostRequest?: PostRequest;
   ProjectChecks?: ProjectChecks;
   ProjectDetail?: ProjectDetail;
   ProjectFile?: ProjectFile;
   ProjectList?: ProjectList;
   ProjectSummary?: ProjectSummary;
+  ProjectTracker?: ProjectTracker;
   PublishRequest?: PublishRequest;
   PublishResult?: PublishResult;
+  ReadyTeaser?: ReadyTeaser;
+  ReadyTeasers?: ReadyTeasers;
   Rect?: Rect;
   Ref?: Ref;
   RenderRequest?: RenderRequest;
@@ -53,9 +74,18 @@ export interface MintWire {
   Sampling?: Sampling;
   SaveProjectFile?: SaveProjectFile;
   SavedProjectFile?: SavedProjectFile;
+  Selection?: Selection;
   SlotBackground?: SlotBackground;
   SlotLayout?: SlotLayout;
   SlotStyle?: SlotStyle;
+  StepRun?: StepRun;
+  TeaserBackground?: TeaserBackground;
+  TeaserDraftState?: TeaserDraftState;
+  TeaserFile?: TeaserFile;
+  TeaserOf?: TeaserOf;
+  TeaserProgress?: TeaserProgress;
+  TeaserRecord?: TeaserRecord;
+  TeaserStages?: TeaserStages;
   Template?: Template;
   TemplateCheck?: TemplateCheck;
   TemplateInfo?: TemplateInfo;
@@ -63,6 +93,8 @@ export interface MintWire {
   TextEdit?: TextEdit;
   TextSlot?: TextSlot;
   Tint?: Tint;
+  TrainedLora?: TrainedLora;
+  TrainingRecord?: TrainingRecord;
 }
 /**
  * Existing art to preview a frame on: a draft's render, or a sample's.
@@ -81,6 +113,144 @@ export interface AutoCheck {
   held?: string[];
   image_sha256: string;
   passed: boolean;
+}
+/**
+ * One rendered background and its review. ``status`` is ``pending`` until the moderator decides.
+ */
+export interface Background {
+  attempts: {
+    [k: string]: unknown;
+  }[];
+  created_at: string;
+  file: string;
+  id: string;
+  made_with?: {
+    [k: string]: string;
+  };
+  n: number;
+  request: RenderRequest;
+  review?: BackgroundReview | null;
+  seed: number;
+  sha256: string;
+  status?: "pending" | "approved" | "rejected";
+}
+/**
+ * Everything a renderer needs, fully determined by template version + values + seed.
+ *
+ * A teaser's renders are not of a template: a background's ``template_*`` name its scene, and
+ * an inpainted figure's name its identity (each file's id, version and hash). ``init_image``
+ * is set only for an inpainted figure.
+ */
+export interface RenderRequest {
+  height: number;
+  init_image?: InitImageRef | null;
+  loras: LoraRef[];
+  model: string;
+  negative: string;
+  prompt: string;
+  sampling: Sampling | null;
+  seed: number;
+  template_hash: string;
+  template_id: string;
+  template_version: number;
+  variables: {
+    [k: string]: string;
+  };
+  width: number;
+}
+/**
+ * An inpainting (or image-to-image) input, by hash: the bytes travel beside the request.
+ *
+ * ``sha256`` is of the image bytes sent and ``mask_sha256`` of the mask's (white repaints,
+ * black keeps); darkroom's record names both as ``source_sha256``, and the client checks them.
+ */
+export interface InitImageRef {
+  denoise: number;
+  mask_sha256?: string | null;
+  sha256: string;
+}
+/**
+ * A LoRA by file name, with its weight and the trigger words the renderer appends.
+ *
+ * A bare string in YAML means ``{name: <string>, weight: 1.0}``.
+ */
+export interface LoraRef {
+  name: string;
+  trigger_words?: string[];
+  weight?: number;
+}
+/**
+ * Sampler settings, fixed by the reviewed template so a render is reproducible.
+ */
+export interface Sampling {
+  cfg: number;
+  clip_skip?: number;
+  guidance?: number | null;
+  sampler: string;
+  scheduler: string;
+  steps: number;
+}
+/**
+ * The moderator's decision on one background image, bound to its sha256.
+ */
+export interface BackgroundReview {
+  at: string;
+  by: string;
+  decision: "approved" | "rejected";
+  image_sha256: string;
+  note?: string;
+}
+/**
+ * POST /projects/{id}/backgrounds/{bg}/review: the moderator's decision on one background.
+ */
+export interface BackgroundDecision {
+  by: string;
+  decision: "approve" | "reject";
+  note?: string;
+}
+/**
+ * The last rendering job for a set. A job left queued or running by a restart reads as failed.
+ */
+export interface BackgroundJob {
+  created_at: string;
+  error?: string | null;
+  finished_at?: string | null;
+  id: string;
+  numbers: number[];
+  status: "queued" | "running" | "done" | "failed";
+}
+/**
+ * ``manifest.json``: the backgrounds of one scene version.
+ */
+export interface BackgroundSet {
+  backgrounds?: Background[];
+  failed?: FailedBackground[];
+  format?: 1;
+  job?: BackgroundJob | null;
+  project: string;
+  scene: string;
+  scene_hash: string;
+  scene_version: number;
+  wanted: number;
+}
+/**
+ * A background that made no image. ``final``: the safety check refused every attempt, so
+ * rendering it again would only repeat them; otherwise an error stopped it and a new job retries.
+ */
+export interface FailedBackground {
+  attempts: {
+    [k: string]: unknown;
+  }[];
+  error: string;
+  final: boolean;
+  n: number;
+  seed: number;
+}
+/**
+ * GET /projects/{id}/backgrounds: each scene version's backgrounds, by scene then version.
+ */
+export interface BackgroundSetList {
+  sets: BackgroundSet[];
 }
 export interface BioInfo {
   bio: BioTemplate;
@@ -124,35 +294,60 @@ export interface BioRef {
   model: string;
   version: number;
 }
+export interface Candidate {
+  attempts: {
+    [k: string]: unknown;
+  }[];
+  file: string;
+  made_with?: {
+    [k: string]: string;
+  };
+  n: number;
+  request: RenderRequest;
+  seed: number;
+  sha256: string;
+}
 /**
  * What this server will do. A client disables a control whose capability is false.
  */
 export interface Capabilities {
   author_catalogue?: boolean;
   auto_moderate?: boolean;
+  backgrounds?: boolean;
   check_templates?: boolean;
   create_drafts: boolean;
   edit_text?: boolean;
+  identity_training?: boolean;
   library?: boolean;
   moderate: boolean;
   owner_review: boolean;
+  post?: boolean;
   publish: boolean;
   review_catalogue?: boolean;
   sample?: boolean;
+  teasers?: boolean;
   write_bios: boolean;
+}
+export interface Caption {
+  file: string;
+  text: string;
 }
 /**
  * Everything needed to publish a card, except the pins and the signature.
+ *
+ * ``kind`` is ``card`` (a game card: ``asset_id``, ``consumer``, maybe a bio) or ``teaser``
+ * (an image and quote from a teaser project: ``teaser`` records what made it, and it has no
+ * asset id, consumer or bio). Both are reviewed the same way; ``to`` is the owner who signs.
  */
 export interface CardDraft {
   art_sha256: string;
-  asset_id: string;
+  asset_id?: string | null;
   attempts: {
     [k: string]: unknown;
   }[];
   auto_check?: AutoCheck | null;
   bio?: BioRecord | null;
-  consumer: string;
+  consumer?: string | null;
   created_at: string;
   description?: string;
   edits?: Edit[];
@@ -160,6 +355,7 @@ export interface CardDraft {
   format?: 1;
   frame?: FrameRef | null;
   image_sha256: string;
+  kind?: "card" | "teaser";
   library?: string | null;
   made_with?: {
     [k: string]: string;
@@ -169,6 +365,7 @@ export interface CardDraft {
   request: RenderRequest;
   reviews?: Review[];
   style?: CardStyle | null;
+  teaser?: TeaserRecord | null;
   texts?: {
     [k: string]: string;
   };
@@ -191,46 +388,6 @@ export interface FrameRef {
   hash: string;
   id: string;
   version: number;
-}
-/**
- * Everything a renderer needs, fully determined by template version + values + seed.
- */
-export interface RenderRequest {
-  height: number;
-  loras: LoraRef[];
-  model: string;
-  negative: string;
-  prompt: string;
-  sampling: Sampling | null;
-  seed: number;
-  template_hash: string;
-  template_id: string;
-  template_version: number;
-  variables: {
-    [k: string]: string;
-  };
-  width: number;
-}
-/**
- * A LoRA by file name, with its weight and the trigger words the renderer appends.
- *
- * A bare string in YAML means ``{name: <string>, weight: 1.0}``.
- */
-export interface LoraRef {
-  name: string;
-  trigger_words?: string[];
-  weight?: number;
-}
-/**
- * Sampler settings, fixed by the reviewed template so a render is reproducible.
- */
-export interface Sampling {
-  cfg: number;
-  clip_skip?: number;
-  guidance?: number | null;
-  sampler: string;
-  scheduler: string;
-  steps: number;
 }
 export interface Review {
   at: string;
@@ -273,6 +430,38 @@ export interface SlotBackground {
 export interface Tint {
   colour: string;
   strength?: number;
+}
+/**
+ * What a teaser draft was made from: its project, number, each linked file and the background.
+ *
+ * The frame is the draft's own ``frame``. The quote, attribution and label drawn on it are the
+ * draft's ``texts`` (by slot), from the reviewed line and project, never edited.
+ */
+export interface TeaserRecord {
+  alt: string;
+  background: TeaserBackground;
+  identity: TeaserFile;
+  line: TeaserFile;
+  links: TeaserFile;
+  number: string;
+  presence: "embodied" | "viewpoint";
+  project: TeaserFile;
+  scene: TeaserFile;
+}
+/**
+ * The approved background a teaser was made on.
+ */
+export interface TeaserBackground {
+  id: string;
+  sha256: string;
+}
+/**
+ * A reviewed project file a teaser was made from, by id, version and hash (0x keccak256).
+ */
+export interface TeaserFile {
+  hash: string;
+  id: string;
+  version: number;
 }
 /**
  * POST /{templates,frames,bios}/{id}/{version}/review (moderator token).
@@ -363,12 +552,34 @@ export interface LoraChoice {
   name: string;
   weight?: number | null;
 }
+/**
+ * POST /projects/{id}/teasers/{n}/draft. Everything else comes from the project's reviewed files.
+ */
+export interface CreateTeaserDraft {
+  to: string;
+}
 export interface DraftDetail {
   awaiting: string[];
   draft: CardDraft;
   id: string;
+  posts?: Post[];
   published?: PublishResult | null;
   status: "pending" | "approved" | "rejected" | "published";
+}
+/**
+ * One posting of a draft's image, as reported by whoever posted it (argus-herald).
+ *
+ * ``sha256`` is of the bytes that were posted, and must be the draft's ``image_sha256``: a teaser
+ * PNG is baked with no metadata chunks, so a copy stripped of metadata hashes the same.
+ * ``by`` says which token recorded it.
+ */
+export interface Post {
+  at: string;
+  by: "poster" | "moderator";
+  recorded_at: string;
+  sha256: string;
+  url?: string | null;
+  where: string;
 }
 export interface PublishResult {
   metadata: {
@@ -400,10 +611,24 @@ export interface DraftSummary {
   frame: Ref | null;
   id: string;
   image_sha256: string;
+  kind?: "card" | "teaser";
   name: string;
   status: "pending" | "approved" | "rejected" | "published";
+  teaser?: TeaserOf | null;
   template: Ref;
   to: string;
+}
+export interface TeaserOf {
+  number: string;
+  project: string;
+}
+/**
+ * A draft's posts, in the order recorded (the answer to POST /drafts/{id}/posted).
+ */
+export interface DraftPosts {
+  id: string;
+  image_sha256: string;
+  posts: Post[];
 }
 /**
  * POST /drafts/{id}/edit: only the owner edits, with the signed challenge for exactly this edit.
@@ -423,6 +648,28 @@ export interface EditTextRequest {
      */
     [k: string]: string;
   } | null;
+}
+export interface Evaluation {
+  metric: "identity" | "likeness";
+  min_score: number | null;
+  passed: boolean;
+  pending: boolean;
+  proof_passed: boolean;
+  proof_run: string;
+  reasons?: string[];
+  score: number | null;
+}
+/**
+ * A candidate that made no image. ``final``: the safety check refused every attempt.
+ */
+export interface FailedCandidate {
+  attempts: {
+    [k: string]: unknown;
+  }[];
+  error: string;
+  final: boolean;
+  n: number;
+  seed: number;
 }
 /**
  * One version of a frame, as reviewed and recorded in its YAML file.
@@ -529,6 +776,88 @@ export interface Health {
   wire_version?: string;
 }
 /**
+ * GET /projects/{id}/identities/{identity}/{version}/training: the record, and each step's status
+ * as mint works it out (a job a restart cut off reads as failed). ``next``: the one step the
+ * moderator may start now, if any.
+ */
+export interface IdentityTrainingView {
+  identity: string;
+  next: ("candidates" | "select" | "caption" | "train" | "evaluate" | "pin") | null;
+  project: string;
+  record: TrainingRecord | null;
+  steps: {
+    [k: string]: "not_started" | "queued" | "running" | "done" | "failed";
+  };
+  version: number;
+}
+/**
+ * ``record.json``: one identity version's training, every step run kept.
+ */
+export interface TrainingRecord {
+  candidates?: Candidate[];
+  captions?: Caption[];
+  evaluation?: Evaluation | null;
+  failed?: FailedCandidate[];
+  format?: 1;
+  identity: string;
+  identity_hash: string;
+  identity_version: number;
+  lora?: TrainedLora | null;
+  metric: "identity" | "likeness";
+  pinned?: Pinned | null;
+  project: string;
+  runs?: StepRun[];
+  selection?: Selection | null;
+}
+export interface TrainedLora {
+  forge_run: string;
+  name: string;
+  output_name: string;
+  sha256: string;
+  trigger: string;
+}
+export interface Pinned {
+  identity_version: number;
+  lora: string;
+  proof_export: string;
+  proof_run: string;
+  sha256: string;
+}
+/**
+ * One run of one step: what it was given, which sibling run or scan it made, what came of it.
+ */
+export interface StepRun {
+  error?: string | null;
+  finished_at?: string | null;
+  inputs?: {
+    [k: string]: unknown;
+  };
+  job: string;
+  outputs?: {
+    [k: string]: unknown;
+  };
+  sibling?: {
+    [k: string]: string;
+  };
+  started_at: string;
+  status: "queued" | "running" | "done" | "failed";
+  step: "candidates" | "select" | "caption" | "train" | "evaluate" | "pin";
+}
+/**
+ * Curator's pick, split by mint. Files are candidate files; the two sets never share one.
+ */
+export interface Selection {
+  anchors?: string[];
+  held_out: string[];
+  held_out_sha256: string[];
+  kept: number;
+  proof_export: string;
+  scan_id: string;
+  train: string[];
+  train_export: string;
+  train_sha256: string[];
+}
+/**
  * POST /frames/{id}/{version}/layout: where these texts go, for a browser preview.
  */
 export interface LayoutRequest {
@@ -570,6 +899,17 @@ export interface LoraOption {
   name: string;
   trigger_words?: string[];
   weights?: number[];
+}
+/**
+ * POST /drafts/{id}/posted: a post of an approved teaser's image (poster or moderator token).
+ *
+ * ``sha256`` is of the bytes posted and must equal the draft's ``image_sha256``.
+ */
+export interface PostRequest {
+  at: string;
+  sha256: string;
+  url?: string | null;
+  where: string;
 }
 /**
  * What stands between a project's files and approval.
@@ -624,9 +964,79 @@ export interface ProjectSummary {
   status: "draft" | "approved" | "retired";
   title: string;
 }
+/**
+ * GET /projects/{id}/tracker: each teaser of the newest approved links (none: ``links_version`` null).
+ */
+export interface ProjectTracker {
+  links_version: number | null;
+  project: string;
+  teasers: TeaserProgress[];
+}
+export interface TeaserProgress {
+  background: string | null;
+  drafts: TeaserDraftState[];
+  number: string;
+  stages: TeaserStages;
+}
+/**
+ * One teaser draft, as the tracker lists it. ``current``: made from the current links' line,
+ * identity and scene (an older draft of the same number may not be).
+ */
+export interface TeaserDraftState {
+  awaiting: string[];
+  background: string;
+  created_at: string;
+  current: boolean;
+  id: string;
+  links_version: number;
+  status: "pending" | "approved" | "rejected" | "published";
+}
+/**
+ * The stages a teaser has reached, as argus-mint works them out (a client never does).
+ */
+export interface TeaserStages {
+  concept_chosen: boolean;
+  image_made: boolean;
+  minted?: boolean;
+  posted?: boolean;
+  quote_final: boolean;
+}
 export interface PublishRequest {
   deadline?: number | null;
   price?: number;
+}
+/**
+ * One approved teaser, as GET /posts/ready lists it for a poster (argus-herald).
+ *
+ * ``image_url`` is the draft's image route, relative to argus-mint's base URL; its bytes hash to
+ * ``image_sha256``. ``posted`` is true once a post is recorded; such a teaser stays listed.
+ * ``current`` is false for a draft made from another line, identity or scene than the
+ * project's current teaser links name for that number (a newer draft supersedes it).
+ */
+export interface ReadyTeaser {
+  alt: string;
+  approved_at: string;
+  attribution: string | null;
+  created_at: string;
+  current: boolean;
+  id: string;
+  image_sha256: string;
+  image_url: string;
+  label: string | null;
+  number: string;
+  posted: boolean;
+  posts: Post[];
+  project: string;
+  quote: string;
+  status: "approved" | "published";
+  title: string;
+}
+/**
+ * GET /posts/ready: approved (and published) teaser drafts, newest first, paged.
+ */
+export interface ReadyTeasers {
+  items: ReadyTeaser[];
+  total: number;
 }
 /**
  * POST /drafts/{id}/review.

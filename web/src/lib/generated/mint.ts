@@ -1,4 +1,4 @@
-// Generated from smk762/argus-mint@aba0d2fce88d9aef3dd0f0ba0407f944ffdd78bb schema/mint-wire.schema.json.
+// Generated from smk762/argus-mint@c294ed41151b0b24e6ab89c0e1fef88a3169da4c schema/mint-wire.schema.json.
 // Do not edit: change schema/pins.json and run `npm run wire:pull`.
 
 export interface MintWire {
@@ -34,6 +34,11 @@ export interface MintWire {
   LoraChoice?: LoraChoice;
   LoraOption?: LoraOption;
   LoraRef?: LoraRef;
+  ProjectChecks?: ProjectChecks;
+  ProjectDetail?: ProjectDetail;
+  ProjectFile?: ProjectFile;
+  ProjectList?: ProjectList;
+  ProjectSummary?: ProjectSummary;
   PublishRequest?: PublishRequest;
   PublishResult?: PublishResult;
   Rect?: Rect;
@@ -46,12 +51,15 @@ export interface MintWire {
   SampleJobList?: SampleJobList;
   SampleRequest?: SampleRequest;
   Sampling?: Sampling;
+  SaveProjectFile?: SaveProjectFile;
+  SavedProjectFile?: SavedProjectFile;
   SlotBackground?: SlotBackground;
   SlotLayout?: SlotLayout;
   SlotStyle?: SlotStyle;
   Template?: Template;
   TemplateCheck?: TemplateCheck;
   TemplateInfo?: TemplateInfo;
+  TextCheck?: TextCheck;
   TextEdit?: TextEdit;
   TextSlot?: TextSlot;
   Tint?: Tint;
@@ -120,6 +128,7 @@ export interface BioRef {
  * What this server will do. A client disables a control whose capability is false.
  */
 export interface Capabilities {
+  author_catalogue?: boolean;
   auto_moderate?: boolean;
   check_templates?: boolean;
   create_drafts: boolean;
@@ -304,6 +313,10 @@ export interface TextEdit {
   name?: string | null;
   style?: CardStyle | null;
   texts?: {
+    /**
+     * This interface was referenced by `undefined`'s JSON-Schema definition
+     * via the `patternProperty` "^[a-z][a-z0-9_]{0,31}$".
+     */
     [k: string]: string;
   } | null;
 }
@@ -328,6 +341,10 @@ export interface CreateDraft {
   style?: CardStyle | null;
   template: Ref;
   texts?: {
+    /**
+     * This interface was referenced by `undefined`'s JSON-Schema definition
+     * via the `patternProperty` "^[a-z][a-z0-9_]{0,31}$".
+     */
     [k: string]: string;
   };
   to: string;
@@ -400,6 +417,10 @@ export interface EditTextRequest {
   signature: string;
   style?: CardStyle | null;
   texts?: {
+    /**
+     * This interface was referenced by `undefined`'s JSON-Schema definition
+     * via the `patternProperty` "^[a-z][a-z0-9_]{0,31}$".
+     */
     [k: string]: string;
   } | null;
 }
@@ -484,6 +505,10 @@ export interface FramePreviewRequest {
   name?: string;
   style?: CardStyle | null;
   texts?: {
+    /**
+     * This interface was referenced by `undefined`'s JSON-Schema definition
+     * via the `patternProperty` "^[a-z][a-z0-9_]{0,31}$".
+     */
     [k: string]: string;
   };
 }
@@ -508,6 +533,10 @@ export interface Health {
  */
 export interface LayoutRequest {
   texts: {
+    /**
+     * This interface was referenced by `undefined`'s JSON-Schema definition
+     * via the `patternProperty` "^[a-z][a-z0-9_]{0,31}$".
+     */
     [k: string]: string;
   };
 }
@@ -541,6 +570,59 @@ export interface LoraOption {
   name: string;
   trigger_words?: string[];
   weights?: number[];
+}
+/**
+ * What stands between a project's files and approval.
+ *
+ * ``spoiler_rules`` are numbers in the private spoiler list, never its terms. ``guard_ran`` is
+ * false when no darkroom is configured: then nothing can be approved.
+ */
+export interface ProjectChecks {
+  guard: TextCheck[];
+  guard_ran: boolean;
+  problems: string[];
+  spoiler_rules: number[];
+}
+/**
+ * SingGuard's verdict on one text, under the project's policy (darkroom's text pre-flight).
+ *
+ * The verdict is stored in the file's ``guard`` block and holds while the text and the policy
+ * are the ones it judged.
+ */
+export interface TextCheck {
+  detail?: string;
+  field: string;
+  passed: boolean;
+}
+/**
+ * GET /projects/{id}: every file of a project (teaser links included, kind ``teasers``) and their checks.
+ *
+ * ``checks.guard`` holds the verdicts stored in the files that still hold; a text with none
+ * hasn't been checked since it (or the project's policy) last changed.
+ */
+export interface ProjectDetail {
+  checks: ProjectChecks;
+  files: ProjectFile[];
+  id: string;
+}
+export interface ProjectFile {
+  doc: {
+    [k: string]: unknown;
+  };
+  file: string;
+  hash: string;
+  id: string;
+  kind: "project" | "identity" | "scene" | "line" | "teasers";
+  status: "draft" | "approved" | "retired";
+  version: number;
+}
+export interface ProjectList {
+  projects: ProjectSummary[];
+}
+export interface ProjectSummary {
+  id: string;
+  status: "draft" | "approved" | "retired";
+  title: string;
 }
 export interface PublishRequest {
   deadline?: number | null;
@@ -602,6 +684,10 @@ export interface SampleRequest {
   style?: CardStyle | null;
   template: Ref;
   texts?: {
+    /**
+     * This interface was referenced by `undefined`'s JSON-Schema definition
+     * via the `patternProperty` "^[a-z][a-z0-9_]{0,31}$".
+     */
     [k: string]: string;
   };
   variables?: {
@@ -611,6 +697,22 @@ export interface SampleRequest {
 export interface SampleJobList {
   items: SampleJob[];
   total: number;
+}
+/**
+ * POST /projects/{id}/files/{kind}/{item}/{version}: write a draft file.
+ *
+ * ``doc`` is the file's content without ``status``, ``approved_by`` or ``approved_at``: a saved
+ * file is always a draft, and ``guard`` is written by the server alone. An approved or
+ * retired file never changes; save a new version.
+ */
+export interface SaveProjectFile {
+  doc: {
+    [k: string]: unknown;
+  };
+}
+export interface SavedProjectFile {
+  checks: ProjectChecks;
+  file: ProjectFile;
 }
 /**
  * One version of a render template, as reviewed and recorded in its YAML file.

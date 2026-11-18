@@ -1,4 +1,4 @@
-// Generated from smk762/argus-mint@cb910c67cf9623c513f53200bdce27e003d0e229 schema/mint-wire.schema.json.
+// Generated from smk762/argus-mint@62ce2a7e94d02ae3afd0c3fdfcbb3ceee10d0141 schema/mint-wire.schema.json.
 // Do not edit: change schema/pins.json and run `npm run wire:pull`.
 
 export interface MintWire {
@@ -10,6 +10,7 @@ export interface MintWire {
   BackgroundReview?: BackgroundReview;
   BackgroundSet?: BackgroundSet;
   BackgroundSetList?: BackgroundSetList;
+  Barrel?: Barrel;
   BioInfo?: BioInfo;
   BioRecord?: BioRecord;
   BioRef?: BioRef;
@@ -23,6 +24,7 @@ export interface MintWire {
   CatalogueEntry?: CatalogueEntry;
   Challenge?: Challenge;
   ChallengeRequest?: ChallengeRequest;
+  ChromaticAberration?: ChromaticAberration;
   CreateDraft?: CreateDraft;
   CreateTeaserDraft?: CreateTeaserDraft;
   DraftDetail?: DraftDetail;
@@ -50,6 +52,7 @@ export interface MintWire {
   LoraChoice?: LoraChoice;
   LoraOption?: LoraOption;
   LoraRef?: LoraRef;
+  Noise?: Noise;
   Pinned?: Pinned;
   Post?: Post;
   PostRequest?: PostRequest;
@@ -75,6 +78,7 @@ export interface MintWire {
   Sampling?: Sampling;
   SaveProjectFile?: SaveProjectFile;
   SavedProjectFile?: SavedProjectFile;
+  Scanlines?: Scanlines;
   ScoreBox?: ScoreBox;
   ScorerFile?: ScorerFile;
   Selection?: Selection;
@@ -98,6 +102,7 @@ export interface MintWire {
   Tint?: Tint;
   TrainedLora?: TrainedLora;
   TrainingRecord?: TrainingRecord;
+  Vignette?: Vignette;
 }
 /**
  * Existing art to preview a frame on: a draft's render, or a sample's.
@@ -305,6 +310,16 @@ export interface FailedBackground {
  */
 export interface BackgroundSetList {
   sets: BackgroundSet[];
+}
+/**
+ * A lens's bulge: the centre magnified, the window's corners kept where they are.
+ *
+ * A pixel at distance ``r`` from the centre (1 at a corner) shows the art at
+ * ``r * (1 + strength * r^2) / (1 + strength)``. 0.1 is mild, 0.3 strong.
+ */
+export interface Barrel {
+  strength: number;
+  type: "barrel";
 }
 export interface BioInfo {
   bio: BioTemplate;
@@ -565,6 +580,13 @@ export interface TextEdit {
   } | null;
 }
 /**
+ * Colour fringing: red spreads out from the centre and blue pulls in, by ``shift`` pixels at the edges.
+ */
+export interface ChromaticAberration {
+  shift: number;
+  type: "chromatic_aberration";
+}
+/**
  * POST /drafts. The template, frame and bio are named by id and version, never by path.
  *
  * Either render (``variables``, ``seed``, optionally ``model``), or take a pre-rendered
@@ -732,6 +754,61 @@ export interface FailedCandidate {
 export interface Frame {
   approved_at?: string | null;
   approved_by?: string | null;
+  /**
+   * @maxItems 8
+   */
+  effects?:
+    | []
+    | [Barrel | Scanlines | Noise | ChromaticAberration | Vignette]
+    | [
+        Barrel | Scanlines | Noise | ChromaticAberration | Vignette,
+        Barrel | Scanlines | Noise | ChromaticAberration | Vignette
+      ]
+    | [
+        Barrel | Scanlines | Noise | ChromaticAberration | Vignette,
+        Barrel | Scanlines | Noise | ChromaticAberration | Vignette,
+        Barrel | Scanlines | Noise | ChromaticAberration | Vignette
+      ]
+    | [
+        Barrel | Scanlines | Noise | ChromaticAberration | Vignette,
+        Barrel | Scanlines | Noise | ChromaticAberration | Vignette,
+        Barrel | Scanlines | Noise | ChromaticAberration | Vignette,
+        Barrel | Scanlines | Noise | ChromaticAberration | Vignette
+      ]
+    | [
+        Barrel | Scanlines | Noise | ChromaticAberration | Vignette,
+        Barrel | Scanlines | Noise | ChromaticAberration | Vignette,
+        Barrel | Scanlines | Noise | ChromaticAberration | Vignette,
+        Barrel | Scanlines | Noise | ChromaticAberration | Vignette,
+        Barrel | Scanlines | Noise | ChromaticAberration | Vignette
+      ]
+    | [
+        Barrel | Scanlines | Noise | ChromaticAberration | Vignette,
+        Barrel | Scanlines | Noise | ChromaticAberration | Vignette,
+        Barrel | Scanlines | Noise | ChromaticAberration | Vignette,
+        Barrel | Scanlines | Noise | ChromaticAberration | Vignette,
+        Barrel | Scanlines | Noise | ChromaticAberration | Vignette,
+        Barrel | Scanlines | Noise | ChromaticAberration | Vignette
+      ]
+    | [
+        Barrel | Scanlines | Noise | ChromaticAberration | Vignette,
+        Barrel | Scanlines | Noise | ChromaticAberration | Vignette,
+        Barrel | Scanlines | Noise | ChromaticAberration | Vignette,
+        Barrel | Scanlines | Noise | ChromaticAberration | Vignette,
+        Barrel | Scanlines | Noise | ChromaticAberration | Vignette,
+        Barrel | Scanlines | Noise | ChromaticAberration | Vignette,
+        Barrel | Scanlines | Noise | ChromaticAberration | Vignette
+      ]
+    | [
+        Barrel | Scanlines | Noise | ChromaticAberration | Vignette,
+        Barrel | Scanlines | Noise | ChromaticAberration | Vignette,
+        Barrel | Scanlines | Noise | ChromaticAberration | Vignette,
+        Barrel | Scanlines | Noise | ChromaticAberration | Vignette,
+        Barrel | Scanlines | Noise | ChromaticAberration | Vignette,
+        Barrel | Scanlines | Noise | ChromaticAberration | Vignette,
+        Barrel | Scanlines | Noise | ChromaticAberration | Vignette,
+        Barrel | Scanlines | Noise | ChromaticAberration | Vignette
+      ];
   id: string;
   overlay: string;
   status: "draft" | "approved" | "retired";
@@ -741,6 +818,33 @@ export interface Frame {
   };
   version: number;
   window: Rect;
+}
+/**
+ * Dark horizontal lines: ``thickness`` rows in every ``spacing``, darkened by ``opacity``.
+ */
+export interface Scanlines {
+  opacity: number;
+  spacing: number;
+  thickness: number;
+  type: "scanlines";
+}
+/**
+ * Signal noise: each pixel moves by up to ``amount`` of full scale, up or down, evenly spread.
+ * ``monochrome``: the same change in each channel (grain); else each channel its own (colour speckle).
+ */
+export interface Noise {
+  amount: number;
+  monochrome: boolean;
+  type: "noise";
+}
+/**
+ * Dark corners: from ``start`` (a fraction of the centre-to-corner distance) the art darkens
+ * smoothly, to ``strength`` at the corners.
+ */
+export interface Vignette {
+  start: number;
+  strength: number;
+  type: "vignette";
 }
 /**
  * A box for one piece of card text.
@@ -769,11 +873,16 @@ export interface Rect {
   x: number;
   y: number;
 }
+/**
+ * GET /frames. ``file`` is relative to the frames directory, or for a project's own frame
+ * (``project`` set, id ``<project>/<name>``) to the projects directory.
+ */
 export interface FrameInfo {
   file: string;
   frame: Frame;
   hash: string;
   height: number;
+  project?: string | null;
   width: number;
 }
 export interface FrameLayout {

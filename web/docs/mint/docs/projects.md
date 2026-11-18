@@ -13,7 +13,7 @@ One directory per project, under `ARGUS_MINT_PROJECTS_DIR` (default `projects`).
 | File | Holds |
 |---|---|
 | `project.yaml` | `title` (the working title), `attribution` (a fixed line under each quote, or `null` for none), `generated_label`, the `frames` teasers may use, the SingGuard `policy` (default `default`, darkroom's SFW one), and the checkpoint `family` (default `sdxl`; painting a figure in is SDXL-only for now) |
-| `identities/*.yaml` | Who a teaser speaks for. Its `voice`, and its `presence`: **`embodied`** (painted in from `prompt`, and kept consistent by a `lora` once a training run passes argus-proof, pinned with its `proof_run` and `proof_export`; see [Training an identity](#training-an-identity)) or **`viewpoint`** (nobody painted in: the image is what they see, and their `frame`, such as a security-feed overlay, says so). It also lists `references`, each with its sha256 and provenance (`generated`, `licensed` or `personal`). A `personal` photo of a real person needs a `consent` record id |
+| `identities/*.yaml` | Who a teaser speaks for. Its `voice`, and its `presence`: **`embodied`** (painted in from `prompt`, and kept consistent by a `lora` once a training run passes argus-proof, pinned with its `proof_run` and `proof_export`; see [Training an identity](#training-an-identity)) or **`viewpoint`** (nobody painted in: the image is what they see, and their `frame`, such as a security-feed overlay, says so). It also lists `references`, each with its `file`, `sha256` and `provenance`: an argus-cortex `Provenance` record (see [References](#references)) |
 | `scenes/*.yaml` | A setting: checkpoint, sampling, size, a fixed `prompt`, how many `backgrounds` to render for review, and the `character_area` where a figure may be painted in (left out when nobody is) |
 | `lines/*.yaml` | One quote each. `text` is verbatim from its `source` and never edited. `published` is what goes on the image (typos fixed, nothing else), and defaults to `text`. No model writes or reads a line |
 | `teasers/<project>-v<n>.json` | The teaser links, one file per version, with the project's id. The teasers by number (`T1`, `T2`…): for each, its `line`, `identity`, `scene` and `frame` (by id and version), its `alt` text, and the chosen `background` once there is one |
@@ -45,6 +45,28 @@ guard:
 ```
 
 A verdict counts while the field's text and the project's policy are the ones it judged: a restart keeps it, and an edit or a change of policy drops it. Like `status`, `guard` is left out of the file's hash, and a client can't send one: a save carrying `guard` is refused.
+
+### References
+
+Each reference's `provenance` is an argus-cortex `Provenance` record, checked with cortex's own models on every save and again at approval:
+
+```yaml
+references:
+  - file: refs/keeper-01.png
+    sha256: 3f1c…
+    provenance: {kind: synthetic, source: argus-mint render, license: own,
+                 generator: {model: sdxl/juggernaut-xl.safetensors, seed: 7, prompt: "an old lighthouse keeper…"}}
+  - file: refs/jo-02.jpg
+    sha256: 9a0e…
+    provenance: {kind: consented, source: studio shoot, license: likeness release,
+                 subject: <as the release names them>, release_sha256: 5b7d…}
+```
+
+- Only **cleared** kinds can be approved: `stock`, `synthetic` (an image mint rendered itself is `synthetic`, with its `generator`) and `consented`. Teasers are public, and a `personal` or `curated` source isn't cleared to be shown.
+- A `consented` reference shows a real person. Its consent record, `<release_sha256>.json` in `ARGUS_MINT_CONSENT_DIR`, must be the one its provenance names (same release and subject), must bind this image (its `sha256` is in the record's `reference_images`), and must cover `training` of the subject's face on the day it is checked: not revoked, not expired.
+- Records are read fresh each time, so a revocation counts at once. They name a person, so the directory stays private: nothing serves, logs or copies a record, and a problem names the reference's file and cortex's refusal code, never the subject.
+
+An identity with a reference problem is reported in `checks.problems` and can't be approved (409). Consent can be revoked or expire after approval, so [training](#training-an-identity) checks again whenever it uses the references: `select` (before the anchors go to curator and the held-out ones into proof's export) and `evaluate` (before proof scores against them) stop with the reason if any reference can't be used that day.
 
 ### The spoiler list
 
@@ -108,6 +130,41 @@ Then the layers:
 3. **The PNG** is baked opaque, with only its critical chunks (`IHDR`, `IDAT`, `IEND`): no text, time, colour-profile or size metadata. Stripping metadata (argus-herald does) changes no byte, so its sha256 stays the one reviewed.
 
 The draft has `kind: "teaser"`, no `asset_id`, `consumer` or bio, and a `teaser` record: the project, the teaser links and the number, each linked file by id, version and hash, `presence`, the background's id and sha256, and the alt text. The frame is the draft's `frame`, and the quote, attribution and label are its `texts`. It is reviewed like a card ([review.md](review.md)): the moderator (or auto-moderation), then the owner by signing in with the wallet in `to`. A teaser's text isn't edited: it is the reviewed line's. Once both approve, it can be [posted](#posting), [minted](#minting), both or neither.
+
+Before it is saved, it gets its [identity check](#the-identity-check) and auto-moderation's checks, which are recorded in its `auto_check` whether auto-moderation is on or not.
+
+## The identity check
+
+Does the figure painted in look like the identity it is meant to be? For a teaser of an **embodied** identity, argus-mint asks argus-proof (`POST /score`, `ARGUS_MINT_PROOF_URL`) to score it:
+
+- **the image:** the draft's unframed art (`art.png`), before the frame and text go on;
+- **the crop:** the scene's `character_area`, so the background isn't scored;
+- **the references:** the identity's `proof_export` (the held-out references its LoRA passed proof against);
+- **the scorer:** its `check_metric` (`identity`: ArcFace, a face; `likeness`: DINOv2, anything else), with proof's `target_category` `identity`.
+
+`character_area` is in the scene's render pixels, and that is the art's own pixel space: the background is rendered at the scene's `width` x `height`, the inpainting mask is drawn at that size over that area, and darkroom answers at its input's size. mint checks this rather than assuming it: art of another size, or with an EXIF orientation (proof crops after applying one), isn't sent, and proof's echo of the crop must be the crop sent.
+
+The result is `auto_check.identity`:
+
+| Field | |
+|---|---|
+| `outcome` | `passed` (`score` ≥ `min_score`), `below`, `uncalibrated` (scored; the identity has no `min_score` yet), `skipped`, `unavailable` or `error` |
+| `reason` | the outcome in words, e.g. `likeness 0.412 is under identity keeper v2's min_score 0.6` |
+| `presence`, `metric`, `score`, `min_score`, `export`, `crop` | what was asked and what came back |
+| `proof_version`, `scorer`, `scorer_version`, `model_file` | proof's provenance: its wire version, and the scorer's name, version and weights (`{name, sha256}`) |
+| `at`, `art_sha256` | when, and the art that was scored |
+
+What each outcome does:
+
+- **`passed`** is one of auto-moderation's passing checks.
+- **`below`** holds the draft, with the reason in `auto_check.held`. The moderator still decides.
+- **`uncalibrated`** records the score and says so, and holds nothing on it: the pilot sets `min_score` from these scores. It can't stand in for the moderator either, so with auto-moderation on the draft waits for a person.
+- **`skipped`**: a viewpoint identity has nobody painted in, so there's nothing to score, and that passes. An embodied identity with no `proof_export` yet (no LoRA has passed proof) has no references to score against, so it is held.
+- **`unavailable`**: proof didn't answer, answered 503 (its scorer isn't installed, or the GPU lease was refused), or isn't configured. **`error`**: proof refused the request (an unknown export, references that overlap the training images, a bad crop), or its answer can't be read. Both hold the draft: a teaser is never let through unchecked.
+
+When proof was down, the moderator runs the check again with `POST /drafts/{id}/identity-check` (moderator token; a pending teaser only, 409 otherwise). It scores the same art against the same identity and scene files the draft was made from (409 if they've changed), and records auto-moderation's checks again; with auto-moderation on and every check passing, that records the moderator's approval. The route is a sub-resource of the draft like `/review` and `/edit`, named for the record it rewrites and for the `identity_check` capability. It reruns the check rather than being a special retry, so it works whatever the last outcome was.
+
+The check never approves on its own. Auto-moderation records the moderator's approval only when it is on and every check passed, the identity check's included, and the owner always reviews.
 
 ## The tracker
 
@@ -294,3 +351,5 @@ Publishing is optional for any approved draft, a card or a teaser: `POST /drafts
 `capabilities.author_catalogue` is true when the moderator token is set, the projects directory is writable, and the server isn't read-only.
 
 `capabilities.identity_training`: see [Training an identity](#training-an-identity).
+
+`capabilities.identity_check` is true when `ARGUS_MINT_PROOF_URL` is set and the server isn't read-only: an embodied identity's teasers are scored ([The identity check](#the-identity-check)). Without it they are held as unchecked.

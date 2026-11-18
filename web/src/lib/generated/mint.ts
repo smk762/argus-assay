@@ -1,4 +1,4 @@
-// Generated from smk762/argus-mint@d0e51c7729143ef56f36a0db0cfd73f366290969 schema/mint-wire.schema.json.
+// Generated from smk762/argus-mint@cb910c67cf9623c513f53200bdce27e003d0e229 schema/mint-wire.schema.json.
 // Do not edit: change schema/pins.json and run `npm run wire:pull`.
 
 export interface MintWire {
@@ -40,6 +40,7 @@ export interface MintWire {
   FramePreviewRequest?: FramePreviewRequest;
   FrameRef?: FrameRef;
   Health?: Health;
+  IdentityCheck?: IdentityCheck;
   IdentityTrainingView?: IdentityTrainingView;
   InitImageRef?: InitImageRef;
   LayoutRequest?: LayoutRequest;
@@ -74,6 +75,8 @@ export interface MintWire {
   Sampling?: Sampling;
   SaveProjectFile?: SaveProjectFile;
   SavedProjectFile?: SavedProjectFile;
+  ScoreBox?: ScoreBox;
+  ScorerFile?: ScorerFile;
   Selection?: Selection;
   SlotBackground?: SlotBackground;
   SlotLayout?: SlotLayout;
@@ -105,14 +108,65 @@ export interface ArtSource {
   sample?: string | null;
 }
 /**
- * What auto-moderation found for the current image. ``passed`` recorded the moderator's approval.
+ * What the platform's checks found for the current image. ``passed`` recorded the moderator's approval.
+ *
+ * ``passed`` is only ever true with auto-moderation on: with it off, a teaser's checks (and its
+ * ``identity`` check) are still recorded, held for a person with the reason that it is off.
  */
 export interface AutoCheck {
   at: string;
   checks: string[];
   held?: string[];
+  identity?: IdentityCheck | null;
   image_sha256: string;
   passed: boolean;
+}
+/**
+ * argus-proof's score of a teaser's figure against its identity's held-out references (#51).
+ *
+ * ``outcome``: ``passed`` (``score`` >= ``min_score``), ``below`` (under it), ``uncalibrated``
+ * (scored, but the identity has no ``min_score`` yet), ``skipped`` (nothing to score: a
+ * viewpoint identity, or an embodied one with no ``proof_export`` yet), ``unavailable`` (proof
+ * is unreachable, answered 503, or isn't configured) or ``error`` (proof refused the request,
+ * or its answer can't be read). ``reason`` says it in words. Only ``passed`` (or a viewpoint's
+ * ``skipped``) lets auto-moderation stand in for the moderator; ``below``, ``unavailable``,
+ * ``error`` and an embodied ``skipped`` hold the draft.
+ *
+ * ``art_sha256`` is the unframed art that was scored, ``crop`` the scene's ``character_area``
+ * in its pixels; ``scorer``, ``scorer_version`` and ``model_file`` are proof's provenance for
+ * ``metric``'s scorer, and ``proof_version`` its wire version.
+ */
+export interface IdentityCheck {
+  art_sha256: string;
+  at: string;
+  crop?: ScoreBox | null;
+  export?: string | null;
+  metric?: ("identity" | "likeness") | null;
+  min_score?: number | null;
+  model_file?: ScorerFile | null;
+  outcome: "passed" | "below" | "uncalibrated" | "skipped" | "unavailable" | "error";
+  presence: "embodied" | "viewpoint";
+  proof_version?: string | null;
+  reason: string;
+  score?: number | null;
+  scorer?: string | null;
+  scorer_version?: string | null;
+}
+/**
+ * The part of an image proof scored, in the image's own pixels.
+ */
+export interface ScoreBox {
+  height: number;
+  width: number;
+  x: number;
+  y: number;
+}
+/**
+ * The weights a proof scorer loaded, pinned by sha256 (proof's ``ModelRef``).
+ */
+export interface ScorerFile {
+  name: string;
+  sha256: string;
 }
 /**
  * One rendered background and its review. ``status`` is ``pending`` until the moderator decides.
@@ -317,6 +371,7 @@ export interface Capabilities {
   check_templates?: boolean;
   create_drafts: boolean;
   edit_text?: boolean;
+  identity_check?: boolean;
   identity_training?: boolean;
   library?: boolean;
   moderate: boolean;

@@ -66,7 +66,9 @@ function Rerun({ d, onDone }: { d: DraftDetail; onDone: (d: DraftDetail) => void
   const { health, hasToken } = useMint();
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const off = !health?.capabilities.identity_check
+  const off = !health
+    ? "Waiting for argus-mint."
+    : !health.capabilities.identity_check
     ? "This server has no argus-proof to score with (identity_check is off)."
     : !health.capabilities.moderate
       ? "This server doesn't take moderator actions."

@@ -13,7 +13,7 @@ import { Card, Collapsible, Notice, Spinner } from "@/components/ui";
 import { getSample, getSamples, sampleImage } from "@/lib/api";
 import { staticDemo } from "@/lib/demo";
 import { step } from "@/lib/step";
-import { checkpointName, loraText } from "@/lib/status";
+import { checkpointName, loraText, SAMPLE_STATUS, statusText } from "@/lib/status";
 import type { SampleJob } from "@/lib/types";
 
 export default function SampleView() {
@@ -89,7 +89,7 @@ export default function SampleView() {
             .{" "}
           </>
         ) : null}
-        {job.items?.length ?? 0} of {r.count ?? 0} done ({job.status}). Local only: never pinned, signed or minted.
+        {job.items?.length ?? 0} of {r.count ?? 0} done ({statusText(SAMPLE_STATUS[job.status])}). Local only: never pinned, signed or minted.
       </p>
       {error ? <Notice tone="warning" className="mb-4">Couldn&apos;t refresh this job ({error}); retrying.</Notice> : null}
       {job.error ? <Notice tone="error" className="mb-4">{job.error}</Notice> : null}

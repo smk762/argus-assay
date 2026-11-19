@@ -1,0 +1,107 @@
+{
+  "id": "b2eb018ab27a6438",
+  "status": "rejected",
+  "awaiting": [
+    "owner"
+  ],
+  "draft": {
+    "format": 1,
+    "kind": "card",
+    "request": {
+      "template_id": "demo-portrait",
+      "template_version": 1,
+      "template_hash": "0xd659b69292f4422d56ee789cbff7d585bd39f6a4527ff2c2ac5b5d0cd245573c",
+      "model": "sdxl/aureanuanceXL_v2/aureanuanceXL_v2.safetensors",
+      "loras": [],
+      "sampling": {
+        "sampler": "euler",
+        "scheduler": "normal",
+        "steps": 25,
+        "cfg": 6.0,
+        "clip_skip": 1,
+        "guidance": null
+      },
+      "width": 1152,
+      "height": 896,
+      "prompt": "waist-up portrait of one female priest of an invented order of lantern-bearers, holding a glowing brass lantern, alone in the picture, centered and facing the viewer, clothing and colour scheme gold, praying, background: temple, painted fantasy illustration, full bleed, detailed",
+      "negative": "text, letters, words, caption, title, label, logo, watermark, signature, border, frame, card frame, trading card, playing card, game ui, icons, badges, numbers, two people, second person, multiple people, crowd, companion, robot beside, empty scene, landscape, gore, cross, crucifix, mitre, rosary, halo, church, religious symbol, nudity",
+      "variables": {
+        "background": "temple",
+        "colour": "gold",
+        "gender": "female",
+        "pose": "praying",
+        "role": "priest of an invented order of lantern-bearers, holding a glowing brass lantern"
+      },
+      "seed": 8464,
+      "init_image": null
+    },
+    "attempts": [
+      {
+        "seed": 8464,
+        "outcome": "ok",
+        "ref": "a9ac415cd1f04cb093601cb537097524",
+        "detail": "",
+        "workflow": {
+          "name": "sdxl",
+          "sha256": "02e08f842f7a66e0e1be2ebc506ab8339f3b39df639beb86fc04dc240f3ef38d"
+        }
+      }
+    ],
+    "renderer": "darkroom",
+    "asset_id": "0xc69006856306bbeaba31ac4a8f62e322285735071ccf46f6c466a81e32bffeae",
+    "to": "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
+    "name": "Lantern Keeper",
+    "description": "Golden arches cast their glow, Lantern Keeper prays, her lantern aglow. She whispers hymns to light's ebb and flow. As she kneels, gold leaf flakes fall, like summer's first snow.",
+    "external_url": null,
+    "consumer": "argus-mint",
+    "teaser": null,
+    "frame": {
+      "id": "card-green",
+      "version": 1,
+      "hash": "0xed8933833831ea63e4f8c91eea897814159af3a7b21acfb560c70162366ccf37"
+    },
+    "bio": {
+      "ref": {
+        "id": "demo-bio",
+        "version": 1,
+        "hash": "0xfee903b50f7131012c3fef6bb3c89daff4fc67e9ad3a1584fe44693f0774e861",
+        "model": "mistral-nemo:12b-instruct-2407-q4_K_M"
+      },
+      "text": "Golden arches cast their glow, Lantern Keeper prays, her lantern aglow. She whispers hymns to light's ebb and flow. As she kneels, gold leaf flakes fall, like summer's first snow.",
+      "attempts": [
+        {
+          "outcome": "ok",
+          "detail": "",
+          "text": "Golden arches cast their glow, {name} prays, her lantern aglow. She whispers hymns to light's ebb and flow. As she kneels, gold leaf flakes fall, like summer's first snow."
+        }
+      ],
+      "edited": false
+    },
+    "texts": {
+      "class": "Priest · Gold",
+      "stats": "No. 4"
+    },
+    "style": null,
+    "library": null,
+    "made_with": {
+      "argus-mint": "0.2.3.dev38+gcb910c67c"
+    },
+    "edits": [],
+    "auto_check": null,
+    "art_sha256": "2ed9f4a44c2903774e5db70498cfd3d0e6a3b272cea1f3c636c1278388697ab6",
+    "image_sha256": "e91f67af2ec4e941c77f356bd6aa40f8b46c1e2d97ff6652a6917d6e5c5c5dca",
+    "created_at": "2026-11-18T15:05:31.758136Z",
+    "reviews": [
+      {
+        "role": "moderator",
+        "decision": "rejected",
+        "by": "moderator-1",
+        "at": "2026-11-18T15:05:31.777474Z",
+        "image_sha256": "e91f67af2ec4e941c77f356bd6aa40f8b46c1e2d97ff6652a6917d6e5c5c5dca",
+        "note": "Two lanterns: the one above her head floats with nothing holding it. One lantern, in her hands, please."
+      }
+    ]
+  },
+  "published": null,
+  "posts": []
+}

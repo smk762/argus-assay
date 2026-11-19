@@ -38,6 +38,7 @@ export const DOC_PAGES: readonly { file: string; slug: string; label: string }[]
   { file: "docs/drafts.md", slug: "drafts", label: "Drafts" },
   { file: "docs/catalogue.md", slug: "catalogue", label: "Catalogue" },
   { file: "docs/customise.md", slug: "customise", label: "Customise" },
+  { file: "docs/projects.md", slug: "projects", label: "Teaser projects" },
   { file: "docs/api.md", slug: "api", label: "HTTP API" },
   { file: "docs/cli.md", slug: "cli", label: "CLI reference" },
 ];
@@ -62,6 +63,20 @@ export const SECTIONS = {
   frames: ["docs/catalogue.md", "frames"],
   bios: ["docs/catalogue.md", "bio-templates"],
   customise: ["docs/customise.md", "what-the-owner-can-change"],
+  projects: ["docs/projects.md", "files"],
+  "project-checks": ["docs/projects.md", "checks"],
+  "project-guard": ["docs/projects.md", "singguards-verdicts-are-kept-in-the-file"],
+  "project-spoilers": ["docs/projects.md", "the-spoiler-list"],
+  "project-review": ["docs/projects.md", "review"],
+  backgrounds: ["docs/projects.md", "backgrounds"],
+  "teaser-drafts": ["docs/projects.md", "teaser-drafts"],
+  tracker: ["docs/projects.md", "the-tracker"],
+  "identity-check": ["docs/projects.md", "the-identity-check"],
+  references: ["docs/projects.md", "references"],
+  training: ["docs/projects.md", "training-an-identity"],
+  "training-steps": ["docs/projects.md", "the-steps"],
+  posting: ["docs/projects.md", "posting"],
+  minting: ["docs/projects.md", "minting"],
 } as const satisfies Record<string, readonly [string, string]>;
 
 export type DocsTopic = keyof typeof SECTIONS;
@@ -100,8 +115,10 @@ export const githubAnchor = (heading: string): string =>
     .replace(/[^\p{L}\p{N}_\- ]/gu, "")
     .replace(/ /g, "-");
 
-const MINT_BLOB = /^https:\/\/github\.com\/smk762\/argus-mint\/blob\/[^/]+\/([^#?]+)(#.*)?$/;
-const MINT_TREE = /^https:\/\/github\.com\/smk762\/argus-mint\/tree\/[^/]+\/([^#?]*)$/;
+// mint's own GitHub links on any ref: the path after the ref (optional for a tree, the repo root), a query
+// (`?plain=1`) and a fragment are all kept; only the ref is replaced by the pinned commit.
+const MINT_BLOB = /^https:\/\/github\.com\/smk762\/argus-mint\/blob\/[^/#?]+\/([^#?]+)(\?[^#]*)?(#.*)?$/;
+const MINT_TREE = /^https:\/\/github\.com\/smk762\/argus-mint\/tree\/[^/#?]+(?:\/([^#?]*))?(\?[^#]*)?(#.*)?$/;
 
 /** Join a relative link onto the directory of the file it appears in (mint paths, posix). */
 function resolvePath(from: string, rel: string): string | null {
@@ -135,9 +152,19 @@ export function resolveDocLink(href: string, from: string, sync: SyncRecord = MI
     return { href: url, external: !url.startsWith(DOCS_ROOT) };
   };
   const blob = MINT_BLOB.exec(href);
-  if (blob) return local(blob[1], (blob[2] ?? "").slice(1));
+  if (blob) {
+    const [, file, query = "", hash = ""] = blob;
+    const to = local(file, hash.slice(1));
+    // An imported file opens here, where a query means nothing; on GitHub the query stays (before the anchor).
+    if (!to.external || !query) return to;
+    const cut = to.href.indexOf("#");
+    return { href: cut < 0 ? `${to.href}${query}` : `${to.href.slice(0, cut)}${query}${to.href.slice(cut)}`, external: true };
+  }
   const tree = MINT_TREE.exec(href);
-  if (tree) return { href: `https://github.com/${sync.repo}/tree/${sync.commit}/${tree[1]}`, external: true };
+  if (tree) {
+    const [, path = "", query = "", hash = ""] = tree;
+    return { href: `https://github.com/${sync.repo}/tree/${sync.commit}${path ? `/${path}` : ""}${query}${hash}`, external: true };
+  }
   if (/^(?:https?:|mailto:)/i.test(href)) return { href, external: true };
   if (/^[a-z][a-z\d+.-]*:/i.test(href) || href.startsWith("//")) return null;
   const cut = href.indexOf("#");

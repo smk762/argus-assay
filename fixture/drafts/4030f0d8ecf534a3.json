@@ -1,0 +1,109 @@
+{
+  "id": "4030f0d8ecf534a3",
+  "status": "rejected",
+  "awaiting": [
+    "owner"
+  ],
+  "draft": {
+    "format": 1,
+    "kind": "card",
+    "request": {
+      "template_id": "demo-cast",
+      "template_version": 1,
+      "template_hash": "0x781f2f17e65402cef5c46a2b7767947951a8eced410d01aa104927bd7283d8f1",
+      "model": "sdxl/aureanuanceXL_v2/aureanuanceXL_v2.safetensors",
+      "loras": [],
+      "sampling": {
+        "sampler": "euler",
+        "scheduler": "normal",
+        "steps": 25,
+        "cfg": 6.0,
+        "clip_skip": 1,
+        "guidance": null
+      },
+      "width": 1152,
+      "height": 896,
+      "prompt": "waist-up portrait of one (male:1.4) (grey-haired and lined in their sixties:1.3) heavyset blacksmith, the only subject in the picture, centered and facing the viewer, clothing and colour scheme crimson red, forging, background: workshop, painted fantasy and science-fiction illustration, full bleed, detailed",
+      "negative": "text, letters, words, caption, title, label, logo, watermark, signature, border, frame, card frame, trading card, playing card, game ui, icons, badges, numbers, two people, second person, multiple people, crowd, companion, child, teenager, empty scene, landscape, gore, blood, weapon pointed at viewer, cross, crucifix, halo, religious symbol, nudity",
+      "variables": {
+        "age": "grey-haired and lined in their sixties",
+        "background": "workshop",
+        "build": "heavyset",
+        "colour": "crimson red",
+        "gender": "male",
+        "pose": "forging",
+        "role": "blacksmith"
+      },
+      "seed": 8535,
+      "init_image": null
+    },
+    "attempts": [
+      {
+        "seed": 8535,
+        "outcome": "ok",
+        "ref": "1c3166f2cd9c49e3b0150b4b27d10cb0",
+        "detail": "",
+        "workflow": {
+          "name": "sdxl",
+          "sha256": "02e08f842f7a66e0e1be2ebc506ab8339f3b39df639beb86fc04dc240f3ef38d"
+        }
+      }
+    ],
+    "renderer": "darkroom",
+    "asset_id": "0xb67caa62c8783486e71a672c1bc404e6f1afd462813cff00fd806fd171f87c83",
+    "to": "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
+    "name": "Crimson Smith",
+    "description": "Brass embers glow, Crimson Smith hammers red-hot iron, his crimson apron sizzling like fresh paint. He whistles through the smoke, his tune as hot as his forge. Every spark that flies, he catches on his tongue.",
+    "external_url": null,
+    "consumer": "argus-mint",
+    "teaser": null,
+    "frame": {
+      "id": "card-green",
+      "version": 1,
+      "hash": "0xed8933833831ea63e4f8c91eea897814159af3a7b21acfb560c70162366ccf37"
+    },
+    "bio": {
+      "ref": {
+        "id": "demo-bio",
+        "version": 1,
+        "hash": "0xfee903b50f7131012c3fef6bb3c89daff4fc67e9ad3a1584fe44693f0774e861",
+        "model": "mistral-nemo:12b-instruct-2407-q4_K_M"
+      },
+      "text": "Brass embers glow, Crimson Smith hammers red-hot iron, his crimson apron sizzling like fresh paint. He whistles through the smoke, his tune as hot as his forge. Every spark that flies, he catches on his tongue.",
+      "attempts": [
+        {
+          "outcome": "ok",
+          "detail": "",
+          "text": "Brass embers glow, {name} hammers red-hot iron, his crimson apron sizzling like fresh paint. He whistles through the smoke, his tune as hot as his forge. Every spark that flies, he catches on his tongue."
+        }
+      ],
+      "edited": false
+    },
+    "texts": {
+      "class": "Smith · Crimson",
+      "stats": "No. 6"
+    },
+    "style": null,
+    "library": null,
+    "made_with": {
+      "argus-mint": "0.2.3.dev38+gcb910c67c"
+    },
+    "edits": [],
+    "auto_check": null,
+    "art_sha256": "7bc737ff99c6221b868cff3a09083dfd89e3854913456d78807ad217b85d9510",
+    "image_sha256": "65dd8355b1274b93550dbffc26ff38449f2ae26a553e4b86e791348edbe2f991",
+    "created_at": "2026-11-18T15:05:32.441343Z",
+    "reviews": [
+      {
+        "role": "moderator",
+        "decision": "rejected",
+        "by": "moderator-1",
+        "at": "2026-11-18T15:05:32.461916Z",
+        "image_sha256": "65dd8355b1274b93550dbffc26ff38449f2ae26a553e4b86e791348edbe2f991",
+        "note": "Three grey-haired men where the card has one smith, and no forge, hammer or anvil in sight."
+      }
+    ]
+  },
+  "published": null,
+  "posts": []
+}

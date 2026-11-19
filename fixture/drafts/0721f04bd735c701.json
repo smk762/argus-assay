@@ -1,0 +1,115 @@
+{
+  "id": "0721f04bd735c701",
+  "status": "approved",
+  "awaiting": [],
+  "draft": {
+    "format": 1,
+    "kind": "card",
+    "request": {
+      "template_id": "demo-cast",
+      "template_version": 1,
+      "template_hash": "0x781f2f17e65402cef5c46a2b7767947951a8eced410d01aa104927bd7283d8f1",
+      "model": "sdxl/aureanuanceXL_v2/aureanuanceXL_v2.safetensors",
+      "loras": [],
+      "sampling": {
+        "sampler": "euler",
+        "scheduler": "normal",
+        "steps": 25,
+        "cfg": 6.0,
+        "clip_skip": 1,
+        "guidance": null
+      },
+      "width": 1152,
+      "height": 896,
+      "prompt": "waist-up portrait of one (non-binary:1.4) (ageless:1.3) broad-shouldered salvage robot, a boxy six-legged machine with one large camera eye, no human features, the only subject in the picture, centered and facing the viewer, clothing and colour scheme steel grey, repairing a brass mechanism, background: market, painted fantasy and science-fiction illustration, full bleed, detailed",
+      "negative": "text, letters, words, caption, title, label, logo, watermark, signature, border, frame, card frame, trading card, playing card, game ui, icons, badges, numbers, two people, second person, multiple people, crowd, companion, child, teenager, empty scene, landscape, gore, blood, weapon pointed at viewer, cross, crucifix, halo, religious symbol, nudity",
+      "variables": {
+        "age": "ageless",
+        "background": "market",
+        "build": "broad-shouldered",
+        "colour": "steel grey",
+        "gender": "non-binary",
+        "pose": "repairing a brass mechanism",
+        "role": "salvage robot, a boxy six-legged machine with one large camera eye, no human features"
+      },
+      "seed": 8508,
+      "init_image": null
+    },
+    "attempts": [
+      {
+        "seed": 8508,
+        "outcome": "ok",
+        "ref": "545ee5233b2548dd84d8010c7d2c2179",
+        "detail": "",
+        "workflow": {
+          "name": "sdxl",
+          "sha256": "02e08f842f7a66e0e1be2ebc506ab8339f3b39df639beb86fc04dc240f3ef38d"
+        }
+      }
+    ],
+    "renderer": "darkroom",
+    "asset_id": "0xb249069394560344bc60cfb804020b40857f11e3664af41741dd4a2f30e76c21",
+    "to": "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
+    "name": "Salvage Walker",
+    "description": "Grey markets buzz as Salvage Walker scuttles, antennae twitching. In silver-stained stalls, they tinker, wrench in hand. Amongst the scrap, they find, and pocket, forgotten clockwork sparrows.",
+    "external_url": null,
+    "consumer": "argus-mint",
+    "teaser": null,
+    "frame": {
+      "id": "card-green",
+      "version": 1,
+      "hash": "0xed8933833831ea63e4f8c91eea897814159af3a7b21acfb560c70162366ccf37"
+    },
+    "bio": {
+      "ref": {
+        "id": "demo-bio",
+        "version": 1,
+        "hash": "0xfee903b50f7131012c3fef6bb3c89daff4fc67e9ad3a1584fe44693f0774e861",
+        "model": "mistral-nemo:12b-instruct-2407-q4_K_M"
+      },
+      "text": "Grey markets buzz as Salvage Walker scuttles, antennae twitching. In silver-stained stalls, they tinker, wrench in hand. Amongst the scrap, they find, and pocket, forgotten clockwork sparrows.",
+      "attempts": [
+        {
+          "outcome": "ok",
+          "detail": "",
+          "text": "Grey markets buzz as {name} scuttles, antennae twitching. In silver-stained stalls, they tinker, wrench in hand. Amongst the scrap, they find, and pocket, forgotten clockwork sparrows."
+        }
+      ],
+      "edited": false
+    },
+    "texts": {
+      "class": "Robot · Steel",
+      "stats": "No. 13"
+    },
+    "style": null,
+    "library": null,
+    "made_with": {
+      "argus-mint": "0.2.3.dev38+gcb910c67c"
+    },
+    "edits": [],
+    "auto_check": null,
+    "art_sha256": "ba2e573fb3098df9988dc643d8406e21f317f614f6bbe8e0c720a301173f640c",
+    "image_sha256": "46cdaa718bd7241c2e365d7e5e42f5f8e963c7726781ef6d61042f2c6d660c22",
+    "created_at": "2026-11-18T15:05:37.243941Z",
+    "reviews": [
+      {
+        "role": "moderator",
+        "decision": "approved",
+        "by": "moderator-1",
+        "at": "2026-11-18T15:05:37.253775Z",
+        "image_sha256": "46cdaa718bd7241c2e365d7e5e42f5f8e963c7726781ef6d61042f2c6d660c22",
+        "note": ""
+      },
+      {
+        "role": "owner",
+        "decision": "approved",
+        "by": "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
+        "at": "2026-11-18T15:05:37.273980Z",
+        "image_sha256": "46cdaa718bd7241c2e365d7e5e42f5f8e963c7726781ef6d61042f2c6d660c22",
+        "note": ""
+      }
+    ]
+  },
+  "published": null,
+  "posts": []
+}

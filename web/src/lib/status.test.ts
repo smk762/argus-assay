@@ -49,6 +49,21 @@ describe("text edits", () => {
       texts: { stats: "No. 1" },
     });
     expect(diffEdit(current, { name: "Hana", bio: "A line.", texts: { class: "" } })).toEqual({ texts: { class: "" } });
+ 
+  });
+  it("leaves untouched display text out of an edit, stray spaces and all (pack-argus-assay-f06abb3df4)", () => {
+    const stored = { name: "Hana", bio: null, texts: { class: "Ranger ", stats: " No. 1" } };
+    expect(diffEdit(stored, { name: "Hana", bio: null, texts: { class: "Ranger ", stats: " No. 1" } })).toBeNull();
+    expect(diffEdit(stored, { name: "Hana", bio: null, texts: { class: "Ranger", stats: "No. 2" } })).toEqual({ texts: { stats: "No. 2" } });
+  });
+  it("compares and sends a bio as one paragraph, as argus-mint draws it (pack-argus-assay-d7f25a8abf)", () => {
+    const stored = { name: "Hana", bio: "A line.\nAnd  another.", texts: {} };
+    // Left as it was: no edit, though the stored text has a line break and a double space.
+    expect(diffEdit(stored, { name: "Hana", bio: "A line.\nAnd  another.", texts: {} })).toBeNull();
+    // Whitespace alone changes nothing on the card.
+    expect(diffEdit(stored, { name: "Hana", bio: " A line. And another. ", texts: {} })).toBeNull();
+    // A real change is sent in the form it was compared in.
+    expect(diffEdit(stored, { name: "Hana", bio: "A line.\n\nAnd a third.", texts: {} })).toEqual({ bio: "A line. And a third." });
   });
   it("recognises the platform's review", () => {
     expect(isAutoReview("auto: platform checks")).toBe(true);

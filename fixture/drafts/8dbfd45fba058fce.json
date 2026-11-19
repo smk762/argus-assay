@@ -1,0 +1,99 @@
+{
+  "id": "8dbfd45fba058fce",
+  "status": "pending",
+  "awaiting": [
+    "moderator",
+    "owner"
+  ],
+  "draft": {
+    "format": 1,
+    "kind": "card",
+    "request": {
+      "template_id": "example-portrait",
+      "template_version": 3,
+      "template_hash": "0x686665bb00253947c55c42f6d6a35aa15276073d4c5102822b79ff720587c7ec",
+      "model": "sd35/sd3.5_large_fp8_scaled.safetensors",
+      "loras": [],
+      "sampling": {
+        "sampler": "euler",
+        "scheduler": "sgm_uniform",
+        "steps": 28,
+        "cfg": 4.0,
+        "clip_skip": 1,
+        "guidance": null
+      },
+      "width": 1152,
+      "height": 896,
+      "prompt": "waist-up portrait of a single non-binary knight, centered and facing the viewer, fully clothed in a tunic bearing gold heraldry, standing, background: academy, painted fantasy illustration, full bleed, detailed face, no lettering or writing anywhere in the image",
+      "negative": "nude, nudity, bare chest, topless, cleavage, text, letters, words, handwriting, script, caption, title, label, logo, watermark, signature, border, frame, card frame, trading card, playing card, game ui, icons, badges, numbers, multiple people, crowd, empty scene, landscape, gore",
+      "variables": {
+        "background": "academy",
+        "colour": "gold",
+        "gender": "non-binary",
+        "pose": "standing",
+        "role": "knight"
+      },
+      "seed": 8453047,
+      "init_image": null
+    },
+    "attempts": [
+      {
+        "seed": 8453047,
+        "outcome": "ok",
+        "ref": "289bad7111c545ab811bd643bf02d0f8",
+        "detail": "",
+        "workflow": {
+          "name": "sd35",
+          "sha256": "7ff5e3a751758ccfb8eb3c0d08c60ee1b19b8c73331f74467e3db0ec75a9f3fc"
+        }
+      }
+    ],
+    "renderer": "darkroom",
+    "asset_id": "0x4e7c4b1ae555535666b339bbef3ecfd778991593efc8590c56c77501872e8ea5",
+    "to": "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
+    "name": "Library Pick",
+    "description": "Golden banners unfurl. Library Pick stands, a sentinel in sunlight. They polish their gauntlets on gold-trimmed robes. Every sunrise, they plant a golden apple seed.",
+    "external_url": null,
+    "consumer": "argus-mint",
+    "teaser": null,
+    "frame": {
+      "id": "card-green",
+      "version": 1,
+      "hash": "0xed8933833831ea63e4f8c91eea897814159af3a7b21acfb560c70162366ccf37"
+    },
+    "bio": {
+      "ref": {
+        "id": "demo-bio",
+        "version": 1,
+        "hash": "0xfee903b50f7131012c3fef6bb3c89daff4fc67e9ad3a1584fe44693f0774e861",
+        "model": "mistral-nemo:12b-instruct-2407-q4_K_M"
+      },
+      "text": "Golden banners unfurl. Library Pick stands, a sentinel in sunlight. They polish their gauntlets on gold-trimmed robes. Every sunrise, they plant a golden apple seed.",
+      "attempts": [
+        {
+          "outcome": "ok",
+          "detail": "",
+          "text": "Golden banners unfurl. {name} stands, a sentinel in sunlight. They polish their gauntlets on gold-trimmed robes. Every sunrise, they plant a golden apple seed."
+        }
+      ],
+      "edited": false
+    },
+    "texts": {
+      "class": "Knight · Gold",
+      "stats": "No. 5"
+    },
+    "style": null,
+    "library": "047-sd3-5-large-fp8-scaled",
+    "made_with": {
+      "argus-mint": "0.2.3.dev38+gcb910c67c"
+    },
+    "edits": [],
+    "auto_check": null,
+    "art_sha256": "6b6d7daa683ce4aa262ef2f42c5bf57cadaa070f3f18358046d4d73b425272db",
+    "image_sha256": "5314eac01741559075cc8e3e0f578293af80377f1a89867a2c59386f39e5111c",
+    "created_at": "2026-11-18T15:06:50.998512Z",
+    "reviews": []
+  },
+  "published": null,
+  "posts": []
+}

@@ -133,7 +133,9 @@ function FrameView({ info }: { info: FrameInfo }) {
   const [error, setError] = useState<string | null>(null);
   const [boxes, setBoxes] = useState(true);
   useEffect(() => () => (url ? URL.revokeObjectURL(url) : undefined), [url]);
-  const chosen = arts.find((a) => a.key === (art || arts[0]?.key));
+  // A deep link (?sample=&n=) to art that isn't there (deleted, no art, another n) falls back to the first, as
+  // the <select> shows it: otherwise nothing is chosen, Preview stays off, and picking that option fires no change.
+  const chosen = arts.find((a) => a.key === art) ?? arts[0];
   const aspect = windowAspect(f);
   const crop = cropFraction(1024, 1024, f);
   return (

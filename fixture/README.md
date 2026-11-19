@@ -19,6 +19,15 @@ Recorded from argus-mint with real backends: renders and text checks by argus-da
   simile (scripts/bio_fit.json; checked as each is written and again by `make tape`).
 - `drafts/<id>/layout.json` is where each line of the card's text sits, and `frames/<id>/<v>/fonts/`
   holds the fonts the frame names (SIL OFL), for the style editor's preview.
+- `projects.json` and `projects/<id>.json` are `GET /projects` and `GET /projects/<id>` for argus-mint's
+  neutral example teaser project (example-teasers) only, authored over HTTP as the moderator (each text judged by
+  SingGuard as it was saved), with every file its two teasers link approved and the teaser links v1 left a
+  draft. `projects/<id>/backgrounds.json` is `GET /projects/<id>/backgrounds` (each scene's 3 backgrounds,
+  two approved and one rejected) and `backgrounds/<bg>.png` each image; `tracker.json` is
+  `GET /projects/<id>/tracker`; `training/<identity>-v<n>.json` is each embodied identity's
+  `GET .../training` (no step was run: training needs curator, lens, forge and proof). Its two teaser drafts
+  are in `drafts/`: T1 approved, with a post record, and minted; T2 awaiting its owner. The post record is
+  the recording's own report (`where: demo`, no URL): nothing was posted anywhere.
 - `library.json` is `GET /library` for six whole groups of the portrait library (one entry per
   checkpoint); `library/<id>.jpg` is each entry's 640 px preview.
 - Images are half-size, 256-colour previews to keep the fixture small, so their sha256 differs

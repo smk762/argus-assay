@@ -5,15 +5,16 @@
  *   - the owner's edit changes the record as argus-mint's would, but can't redraw: the image stays
  *   - publishing reuses the tape's recorded publish result (local CIDs, the fixture's voucher)
  *   - catalogue decisions stick
- * Nothing that needs a GPU or the server's files runs here: making drafts and samples, and the
- * frame preview, answer 503 (the page keeps those controls off or hidden before that).
+ *   - the teaser projects on the tape can be read, as recorded
+ * Nothing that needs a GPU or the server's files runs here: making drafts and samples, the frame
+ * preview, and authoring or reviewing a teaser project's files answer 503 (the page keeps those controls off or hidden before that).
  * It checks no token and no signature, like the mock. Its /health says `mock: true`, which offers
  * "Approve as demo owner" in place of a wallet.
  *
  * Pure apart from the clock and the random ids, both injectable for tests.
  */
 import type { Tape } from "./tape";
-import type { DraftDetail, DraftSummary, FrameLayout, Health, PublishResult, SlotLayout, TextSlot } from "./types";
+import type { DraftDetail, DraftSummary, FrameLayout, Health, ProjectDetail, ProjectTracker, PublishResult, ReadyTeaser, SlotLayout, TextSlot } from "./types";
 
 export interface DemoResponse {
   status: number;
@@ -67,6 +68,55 @@ export function approxLayout(box: Box, text: string): SlotLayout {
   } as SlotLayout;
 }
 
+// ---- A teaser's layers: the same reads scripts/mock_teasers.mjs gives (parity.test.ts), ported line for line.
+
+type Teaser = NonNullable<DraftDetail["draft"]["teaser"]>;
+type Links = { teasers?: Record<string, Record<"line" | "identity" | "scene", { id: string; version: number }>> } | null;
+
+const NOT_RECORDED = (pid: string, what: string) => `${what} of project ${pid} wasn't recorded in this fixture (recorded before argus-mint had it)`;
+
+/** The newest approved teaser links of a project detail (argus-mint's `current_teasers`), or null. */
+function currentLinks(detail: ProjectDetail | undefined): Links {
+  const approved = (detail?.files ?? []).filter((f) => f.kind === "teasers" && f.status === "approved");
+  return (approved.sort((a, b) => b.version - a.version)[0]?.doc as Links) ?? null;
+}
+
+/** argus-mint's posting.is_current. */
+function isCurrent(t: Teaser, links: Links): boolean {
+  const link = links?.teasers?.[t.number];
+  if (!link) return false;
+  return (["line", "identity", "scene"] as const).every((k) => link[k].id === t[k].id && link[k].version === t[k].version);
+}
+
+const newestFirst = (a: DraftDetail, b: DraftDetail) => (a.draft.created_at < b.draft.created_at ? 1 : a.draft.created_at > b.draft.created_at ? -1 : 0);
+const teaserDrafts = (drafts: Iterable<DraftDetail>, pid: string | null) =>
+  [...drafts].filter((d) => d.draft.kind === "teaser" && d.draft.teaser && (!pid || d.draft.teaser.project.id === pid));
+
+/** The recorded tracker, with each teaser's drafts and draft-based stages read from the drafts now. */
+function trackerNow(recorded: ProjectTracker, drafts: Iterable<DraftDetail>, links: Links): ProjectTracker {
+  const out = structuredClone(recorded);
+  const all = [...drafts];
+  for (const t of out.teasers) {
+    const mine = teaserDrafts(all, out.project).filter((d) => d.draft.teaser!.number === t.number).sort(newestFirst);
+    t.drafts = mine.map((d) => ({
+      id: d.id,
+      status: d.status,
+      awaiting: d.awaiting,
+      created_at: d.draft.created_at,
+      links_version: d.draft.teaser!.links.version,
+      background: d.draft.teaser!.background.id,
+      current: isCurrent(d.draft.teaser!, links),
+    }));
+    t.stages = {
+      ...t.stages,
+      image_made: t.drafts.some((s) => s.current && (s.status === "approved" || s.status === "published")),
+      posted: mine.some((d) => (d.posts ?? []).length > 0),
+      minted: t.drafts.some((s) => s.status === "published"),
+    };
+  }
+  return out;
+}
+
 // A copy, as a fresh HTTP response would be: the page must never hold (or mutate) the state itself.
 const ok = (body: unknown, status = 200): DemoResponse => ({ status, body: structuredClone(body) });
 const fail = (status: number, detail: string): DemoResponse => ({ status, body: { detail } });
@@ -91,7 +141,19 @@ export class DemoMint {
     this.health = {
       ...structuredClone(tape.health),
       mock: true,
-      capabilities: { ...tape.health.capabilities, create_drafts: false, sample: false, check_templates: false },
+      capabilities: {
+        ...tape.health.capabilities,
+        create_drafts: false,
+        sample: false,
+        check_templates: false,
+        author_catalogue: false,
+        // A teaser's layers are there to read: nothing renders, posts, scores or trains here.
+        backgrounds: false,
+        teasers: false,
+        post: false,
+        identity_training: false,
+        identity_check: false,
+      },
     } as Health;
     for (const d of this.tape.drafts) this.drafts.set(d.id, d);
     for (const layout of Object.values(tape.layouts)) {
@@ -117,7 +179,68 @@ export class DemoMint {
       template: { id: x.request.template_id, version: x.request.template_version },
       frame: x.frame ? { id: x.frame.id, version: x.frame.version } : null,
       image_sha256: x.image_sha256,
+      kind: x.kind ?? "card",
+      teaser: x.teaser ? { project: x.teaser.project.id, number: x.teaser.number } : null,
     } as DraftSummary;
+  }
+
+  /** A read of a project's layers (scripts/mock_teasers.mjs readLayer), or null when the path isn't one. */
+  private layer(pathname: string): DemoResponse | null {
+    const p = pathname.split("/").filter(Boolean).map(decodeURIComponent);
+    if (p[0] !== "projects" || p.length < 3) return null;
+    const pid = p[1];
+    const detail = this.tape.project_details.find((d) => d.id === pid);
+    const layers = this.tape.project_layers[pid];
+    const known = p.length === 3 ? ["backgrounds", "tracker"].includes(p[2]) : p.length === 6 ? (p[2] === "scenes" && p[5] === "backgrounds") || (p[2] === "identities" && p[5] === "training") : p.length === 8 && p[2] === "identities" && p[6] === "candidates";
+    if (!known) return null;
+    if (!detail) return fail(404, `no project '${pid}'`);
+    if (p[2] === "backgrounds") return layers?.backgrounds ? ok(layers.backgrounds) : fail(404, NOT_RECORDED(pid, "the backgrounds"));
+    if (p[2] === "scenes") {
+      if (!layers?.backgrounds) return fail(404, NOT_RECORDED(pid, "the backgrounds"));
+      const set = layers.backgrounds.sets.find((s) => s.scene === p[3] && s.scene_version === Number(p[4]));
+      return set ? ok(set) : fail(404, `scene ${p[3]} v${p[4]} of project ${pid} has no backgrounds yet`);
+    }
+    if (p[2] === "tracker") return layers?.tracker ? ok(trackerNow(layers.tracker, this.drafts.values(), currentLinks(detail))) : fail(404, NOT_RECORDED(pid, "the tracker"));
+    if (p.length === 8) return fail(404, `${p[3]} v${p[4]} has no recorded candidate ${p[7]}`);
+    const view = layers?.training[`${p[3]}@${Number(p[4])}`];
+    return view ? ok(view) : fail(404, NOT_RECORDED(pid, `the training view of ${p[3]} v${Number(p[4])}`));
+  }
+
+  /** `GET /posts/ready`, worked out from the drafts as argus-mint does (scripts/mock_teasers.mjs readyPosts). */
+  private ready(query: URLSearchParams): DemoResponse {
+    const project = query.get("project");
+    const limit = Number(query.get("limit") ?? 50);
+    const offset = Number(query.get("offset") ?? 0);
+    if ((project !== null && !/^[a-z0-9][a-z0-9-]{0,63}$/.test(project)) || !Number.isInteger(limit) || limit < 1 || limit > 200 || !Number.isInteger(offset) || offset < 0)
+      return fail(422, "project is an id, limit 1 to 200, offset 0 or more");
+    const linksOf = (pid: string) => currentLinks(this.tape.project_details.find((d) => d.id === pid));
+    const items: ReadyTeaser[] = teaserDrafts(this.drafts.values(), project)
+      .filter((d) => d.status === "approved" || d.status === "published")
+      .sort(newestFirst)
+      .map((d) => {
+        const x = d.draft;
+        const t = x.teaser!;
+        const approvals = (x.reviews ?? []).filter((r) => r.image_sha256 === x.image_sha256 && r.decision === "approved").map((r) => r.at);
+        return {
+          id: d.id,
+          project: t.project.id,
+          title: x.name.endsWith(` ${t.number}`) ? x.name.slice(0, -(t.number.length + 1)) : x.name,
+          number: t.number,
+          status: d.status as ReadyTeaser["status"],
+          current: isCurrent(t, linksOf(t.project.id)),
+          created_at: x.created_at,
+          approved_at: approvals.sort().at(-1)!,
+          image_url: `/drafts/${d.id}/image`,
+          image_sha256: x.image_sha256,
+          alt: t.alt,
+          quote: x.texts?.quote ?? "",
+          attribution: x.texts?.attribution ?? null,
+          label: x.texts?.label ?? null,
+          posted: (d.posts ?? []).length > 0,
+          posts: d.posts ?? [],
+        };
+      });
+    return ok({ items: items.slice(offset, offset + limit), total: items.length });
   }
 
   private catalogue(plural: string): { list: Record<string, unknown>[]; kind: "template" | "frame" | "bio" } | null {
@@ -143,6 +266,14 @@ export class DemoMint {
       const items = [...this.tape.samples].reverse();
       return ok({ items, total: items.length });
     }
+    if (url.pathname === "/posts/ready") return this.ready(url.searchParams);
+    const layer = this.layer(url.pathname);
+    if (layer) return layer;
+    if (url.pathname === "/projects") return ok(this.tape.projects);
+    if (p[0] === "projects" && p.length === 2) {
+      const project = this.tape.project_details.find((d) => d.id === p[1]);
+      return project ? ok(project) : fail(404, `no project ${p[1]}`);
+    }
     if (p[0] === "samples" && p.length === 2) {
       const job = this.tape.samples.find((s) => s.id === p[1]);
       return job ? ok(job) : fail(404, "no sample job");
@@ -158,10 +289,15 @@ export class DemoMint {
     if (draft && p[2] === "review") return this.review(draft, b);
     if (draft && p[2] === "edit") return this.edit(draft, b);
     if (draft && p[2] === "publish") return this.publish(draft);
+    if (draft && p[2] === "posted") return fail(503, "Recording a post needs a running argus-mint (argus-herald reports to it)");
+    if (draft && p[2] === "identity-check") return fail(503, "The identity check needs a running argus-mint and argus-proof");
     if (p[0] === "frames" && p[3] === "layout") return this.layout(p[1], Number(p[2]), (b.texts ?? {}) as Record<string, string>);
     const cat = p.length === 4 && p[3] === "review" ? this.catalogue(p[0]) : null;
     if (cat) return this.decide(cat.list, cat.kind, p[1], Number(p[2]), b);
     if ((p[0] === "drafts" || p[0] === "samples") && p.length === 1) return fail(503, `${p[0] === "drafts" ? "Making a draft" : "Rendering samples"} needs a running argus-mint and a GPU`);
+    if (p[0] === "projects" && p[2] === "files") return fail(503, "Authoring and reviewing a teaser project need a running argus-mint");
+    if (p[0] === "projects" && p.length > 2)
+      return fail(503, "Rendering and reviewing backgrounds, making teaser drafts and training identities need a running argus-mint");
     if (p[0] === "frames" && p[3] === "preview") return fail(503, "The frame preview is drawn by a running argus-mint");
     return fail(404, "not found");
   }
@@ -254,6 +390,8 @@ export class DemoMint {
       return obj.id === id && obj.version === version;
     });
     if (!entry) return fail(404, `no ${kind}`);
+    // As argus-mint's wire: "approve" or "retire", nothing else. Anything else would otherwise fall through to "retired".
+    if (b.decision !== "approve" && b.decision !== "retire") return fail(422, 'decision must be "approve" or "retire"');
     const obj = entry[kind] as { id: string; version: number; status: string; approved_by?: string | null; approved_at?: string | null };
     if (b.decision === "approve" && obj.status !== "draft") return fail(409, "only a draft can be approved");
     if (b.decision === "retire" && obj.status !== "approved") return fail(409, "only an approved file can be retired");

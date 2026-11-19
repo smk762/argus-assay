@@ -17,6 +17,65 @@ The hosted demo (`make pages`, for assay.dragonhound.dev) replays a **data tape*
 - **Dropped:** a mushroom-sprite card, after darkroom's age check flagged its first render; the concept went, not just the seed. (Its value is still in demo-cast's role list, unused; removing it changes the template and so every cast render.)
 - **Purged:** every render darkroom refused or sent to review in these runs, one record at a time (the dragon's first attempt on each run, two candidate seeds, and the sprite).
 
+## Teaser projects (from argus-mint 0.2.3.dev18, wire 1.11)
+
+`scripts/record_demo.py` authors argus-mint's neutral example project, `example-teasers` (a lighthouse on a stormy coast, from argus-mint's `projects/`), over HTTP as the moderator would from the project page: each of its 8 files is saved as a draft, so argus-mint checks it and SingGuard (darkroom's text pre-flight, under the project's `default` policy) judges its texts as it is saved: the title, both prompts of the scenes, the embodied identity's prompt, each line's text and published wording, and each teaser's alt text (9 texts). Then the project, the `keeper` identity, the `lamp-room` scene and the `keep-it-lit` line are approved; the rest stay drafts, so the teaser links can't be approved yet and the page shows argus-mint's refusal. No spoiler list is configured, so nothing is held. The fixture holds `projects.json` and `projects/example-teasers.json` and no other project, ever.
+
+A real (`--real`) run sends those 9 texts to darkroom's text check on the GPU host, besides the bios'. With stand-ins (`make record-dry`), the stand-in passes every text, so its verdicts are not SingGuard's and never go in the committed fixture.
+
+## A teaser's layers (from argus-mint 0.2.3.dev38, wire 1.15)
+
+After authoring the project, `record_demo.py` (`make_teasers`) walks the example through every layer, over HTTP as the moderator does from assay:
+
+1. **Every file both teasers link is approved:** the project, both identities (`keeper` embodied, `lamp` a viewpoint), both scenes (`lamp-room`, `shoreline`) and both lines. The teaser links v1, which choose no background, stay a draft.
+2. **Backgrounds.** One job per scene renders its 3 backgrounds. The last of each set is rejected with a note that says what is wrong with that render (`BG_REJECT_NOTES` in `record_demo.py`, fixed text written by eye: rain falling inside the lamp room, a calm sunset where the shoreline asks for a storm), the other two approved. A rejected background with no note there stops the run.
+3. **Teaser links v2** choose the first background of each scene, and are approved.
+4. **Teaser drafts.** `T1` paints the keeper into `lamp-room-v1-01` (inpainting). Both reviewers approve it; a post is recorded with the poster token; and it is minted (local pins, a test-key voucher). `T2` (the lamp's view of the shoreline: the background is the art) is approved by the moderator and waits for its owner.
+5. **Dumped:** `projects/example-teasers/backgrounds.json` and each background PNG (half size, as every image in the fixture), `tracker.json`, and `training/keeper-v1.json`, the embodied identity's training view. The teaser drafts are in `drafts/` with the cards.
+
+What is real and what isn't:
+
+- **The post record** is the recording's own report, as argus-herald would send one: `where: demo`, no URL. Nothing was posted anywhere.
+- **No training step runs.** It needs curator, lens, forge (training on the trusted GPU host) and proof, so the training view is argus-mint's answer for an untrained identity: every step `not_started`, `next: candidates`, `record: null`. The page shows that panel as recorded, with "Run candidates" off (the tape's `identity_training` is false). No candidates, runs or evaluation are shown, because none were recorded, and none are made up.
+- **The identity check** isn't configured (no `ARGUS_MINT_PROOF_URL`), so `identity_check` is false. `T1`'s `auto_check.identity` is `skipped` (keeper has no `proof_export`, since no LoRA of it has passed proof), so T1 is held for the moderator. `T2`'s is `skipped` too, as a viewpoint, which passes. With auto-moderation off, both record `held: auto-moderation is off: the moderator decides`.
+- **Demo:** the hosted demo shows all of it read-only. Starting a job, reviewing a background, making a teaser draft, recording a post, running the identity check and training are off (503 in `demoMint.ts`; the page disables them first). The mock (`make mock`) reviews backgrounds and records posts in memory. Its teaser draft is a copy of the newest recorded draft of that number, since nothing renders there.
+
+`make record-dry` runs all of it on stand-ins: the stand-in inpainting returns the background unchanged. The dry run's data is what the screenshots in the PR used: `MOCK_FIXTURE=.record-dry make mock`, and `PARITY_FIXTURE=… npx vitest run src/lib/parity.test.ts` runs the parity checks over it.
+
+### The re-record at argus-mint `cb910c6` (needs the maintainer's approval)
+
+`web/schema/pins.json` pins argus-mint `cb910c6` (0.2.3.dev38, wire 1.15). `fixture/` is still the 0.2.2 recording, so `sync.test.ts` fails until it is re-recorded. `make record` with `--cache /home/…/argus-assay-record-cache` (and `--no-render` only if no new render is approved) would do this:
+
+**Already in the cache (no GPU):**
+- **19 card renders.** Checked offline: every card request at this pin, keyed as `record_demo.cache_key` does, is in the cache. argus-mint 0.2.3 added `init_image` to every render request, and `cache_key` leaves it out while it is unset; without that, all 19 would miss. The template's hash includes `approved_by`, which a real run stamps `maintainer` and a stand-in run `fixture`, so the 19 hits show only when the check is keyed as a real run (`approved_by: maintainer`); a plain dry run shows 0.
+- **22 bios and 5 reject notes,** as before.
+
+**New GPU work, through darkroom on the GPU host:**
+
+| What | Request | Notes |
+|---|---|---|
+| Sample job, 2 renders | demo-portrait v2, seeds 121 and 122, SDXL `aureanuanceXL_v2`, 1152x896, euler/normal, 25 steps, cfg 6, no LoRA | As in phase 1 |
+| `lamp-room` v1 backgrounds 1–3 | SDXL `juggernautXL_ragnarokBy`, 1024x1024, euler/normal, 25 steps, cfg 6, no LoRA (the project has no `style_lora`), seeds 3701882332, 3640844258, 1937172164 | `batch` priority, txt2img. Seeds come from the project, scene, version and n, so they are the dry run's. A safety refusal retries the next derived seed, up to 4 times |
+| `shoreline` v1 backgrounds 1–3 | the same checkpoint, sampling and size, seeds 3729655101, 557845662, 192604687 | as above |
+| `T1` inpainting | keeper's prompt (`an elderly lighthouse keeper, weathered face, short grey beard, dark oilskin coat, knitted cap`) into `lamp-room-v1-01`, mask over `character_area` 448x704 at (320, 256), denoise 1.0, the scene's checkpoint, sampling and size, **no LoRA** (keeper has none pinned) | The seed comes from the project, `T1` and the real background's sha256, so it is known only once the background renders. It needs a LoRA-free SDXL inpainting workflow in darkroom; argus-mint refuses (409) before rendering if `/models` lacks one. Up to 4 attempts |
+| `T2` | none | A viewpoint: the background is the art |
+
+**Text checks (darkroom `/preflight`, no GPU render):**
+- 22 bios.
+- 9 project texts, as in phase 1.
+- The teaser links v2's 2 alt texts, judged again because v2 is a new file: about 33 checks in all.
+
+**Not in this recording:**
+- curator, lens, forge and proof (no training step).
+- proof `/score`: no identity check runs, because `ARGUS_MINT_PROOF_URL` isn't set and keeper has no `proof_export`. Scoring a real identity check needs a trained, proof-passed LoRA of keeper first: the whole training run, then proof `/score` (ArcFace for `check_metric: identity`) on the GPU. That would be a separate approval.
+
+**Afterwards:**
+- Check every background and T1 by eye: no figure in a background, one adult keeper in T1.
+- Purge any render darkroom refused.
+- Run `make pages`.
+
+`record_demo.py --until` and `--cache` resume as for cards.
+
 ## What the sample tape is
 
 `make sample-fixture` (no GPU, no network):
@@ -90,7 +149,7 @@ What `--real` does:
 ### 2. Renders (GPU host)
 - argus-darkroom on the GPU host, demo-portrait's checkpoint `sdxl/aureanuanceXL_v2`. 20 drafts and a two-card sample job: 22 renders at 1152x896, 25 steps (only the ones not in the cache, with `--cache`). The library card is not rendered.
 - The run starts no GPU work from :50 to :05 (a scheduled job has the GPU then), waits while darkroom is busy, and retries a render that ran out of memory (60 s apart, up to 5 times). It prints the record ids of any renders darkroom refused, to purge one by one.
-- **Re-rolls:** run `scripts/record_demo.py` directly (the `RECORD` line in the Makefile) with `--cache DIR`, which keeps every render and reuses one made for the same request, and `--seed "Card Name=SEED"` for each card to render again. A change to the render template changes every request, so it re-renders everything. `--no-render` (with `--cache`) makes no render at all: a request not in the cache stops the run, naming it, so a bios-only run can't reach the GPU. Refusals are cached too, so a replay takes the same retry path. `--reject-notes DIR` writes each rejected card's image to `DIR/<card>.png` and waits for the moderator's note in `DIR/<card>.txt`, so every note says what is wrong with that render; a note is reused on a later run only while the card's art is unchanged.
+- **Re-rolls:** run `scripts/record_demo.py` directly (the `RECORD` line in the Makefile) with `--cache DIR`, which keeps every render and reuses one made for the same request, and `--seed "Card Name=SEED"` for each card to render again. A teaser's figure is re-rolled with `--teaser-seed T1=SEED`: argus-mint derives that seed from the project, the teaser and the background's sha256, so the recorder sets it in its place (the next of argus-mint's derived seeds, say), and the draft records the seed it was painted at. A change to the render template changes every request, so it re-renders everything. `--no-render` (with `--cache`) makes no render at all: a request not in the cache stops the run, naming it, so a bios-only run can't reach the GPU. Refusals are cached too, so a replay takes the same retry path. `--reject-notes DIR` writes each rejected card's image to `DIR/<card>.png` and waits for the moderator's note in `DIR/<card>.txt`, so every note says what is wrong with that render; a note is reused on a later run only while the card's art is unchanged. Never pass `--reject-notes` to a stand-in dry run: its art never matches a recorded note's, so the run deletes that note and waits for a new one.
 - **Licences to check before publishing renders:**
   - The SDXL finetunes inherit CreativeML Open RAIL++-M, plus each author's own terms on Civitai.
   - FLUX.1 [dev] is under Black Forest Labs' non-commercial licence (only in the library's existing images).

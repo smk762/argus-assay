@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useId, useState } from "react";
 
 import { frameFont, frameOverlay } from "@/lib/api";
 import { svgMatrix, type CardStyle } from "@/lib/style";
@@ -12,7 +12,10 @@ const familyOf = (frameId: string, version: number, font: string) => `assay-${fr
 function useFrameFonts(frame: FrameInfo["frame"]): boolean {
   const fonts = Array.from(new Set(Object.values(frame.texts ?? {}).map((s) => s.font).filter(Boolean) as string[]));
   const key = fonts.join("|");
-  const [ready, setReady] = useState(false);
+  // Ready for one frame and font set: another frame's preview waits for its own fonts rather than drawing in
+  // the fallback face while they load.
+  const want = `${frame.id}@${frame.version}|${key}`;
+  const [readyFor, setReadyFor] = useState<string | null>(null);
   useEffect(() => {
     let live = true;
     Promise.all(
@@ -23,15 +26,15 @@ function useFrameFonts(frame: FrameInfo["frame"]): boolean {
         document.fonts.add(await face.load());
       }),
     ).then(
-      () => live && setReady(true),
-      () => live && setReady(true),
+      () => live && setReadyFor(want),
+      () => live && setReadyFor(want),
     );
     return () => {
       live = false;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [frame.id, frame.version, key]);
-  return ready;
+  return readyFor === want;
 }
 
 /**
@@ -45,7 +48,9 @@ export function CardPreview({ frame, artUrl, layout, style }: { frame: FrameInfo
   const W = frame.width;
   const H = frame.height;
   const slots = style.slots ?? {};
-  const uid = `${f.id}-${f.version}`;
+  // `url(#id)` resolves across the whole document, so two previews of one frame (side by side, or a list)
+  // would share the first one's filters: each instance gets its own ids. Only [\w-] is kept for url().
+  const uid = `${f.id}-${f.version}-${useId()}`.replace(/[^\w-]/g, "");
   return (
     <svg viewBox={`0 0 ${W} ${H}`} className="w-full rounded-lg bg-[repeating-conic-gradient(#8884_0_25%,transparent_0_50%)] bg-[length:16px_16px]" role="img" aria-label="Preview of the styled card">
       <defs>

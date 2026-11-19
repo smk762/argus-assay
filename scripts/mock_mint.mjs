@@ -4,17 +4,21 @@
 // clicked through without a GPU, darkroom, IPFS or a wallet:
 //   reviews change a draft's status, catalogue decisions stick, samples "render" after a delay,
 //   creating a draft clones the fixture's pending one, publishing reuses the published result.
+//   teaser project files are saved and reviewed in memory (mock_projects.mjs).
 // The pre-rendered library is served when the fixture has one (library.json and library/<id>.jpg,
 // thumbnails of a subset). A draft from it records the entry, but keeps the pending draft's image.
 // It checks no token and no signature, and composites nothing (a frame preview returns a
 // recorded framed image). Its /health says `mock: true`, which offers "Approve as demo owner".
 import { createServer } from "node:http";
 import { readFileSync, readdirSync, existsSync } from "node:fs";
-import { join, dirname } from "node:path";
+import { join, dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { randomBytes } from "node:crypto";
+import { MockProjects } from "./mock_projects.mjs";
+import { MockTeasers } from "./mock_teasers.mjs";
 
-const root = join(dirname(fileURLToPath(import.meta.url)), "..", "fixture");
+// MOCK_FIXTURE serves another recording (a dry run's, say) in place of fixture/.
+const root = process.env.MOCK_FIXTURE ? resolve(process.env.MOCK_FIXTURE) : join(dirname(fileURLToPath(import.meta.url)), "..", "fixture");
 const port = Number(process.env.MOCK_PORT ?? 8108);
 const STEP_MS = Number(process.env.MOCK_STEP_MS ?? 1500);
 const read = (rel) => JSON.parse(readFileSync(join(root, rel), "utf8"));
@@ -24,13 +28,21 @@ const library = existsSync(join(root, "library.json")) ? read("library.json") : 
 const libraryEntry = (id) => library?.items.find((i) => i.id === id);
 const health = { ...read("health.json"), mock: true };
 // No darkroom behind the mock, so no template check (web/src/lib/demoMint.ts says the same).
-health.capabilities = { ...health.capabilities, library: Boolean(library?.items.length), check_templates: false };
+// It keeps teaser project saves and reviews in memory (mock_projects.mjs), so the moderator can author here.
+// No argus-proof, curator, lens or forge either: no identity check and no training (mock_teasers.mjs).
+health.capabilities = {
+  ...health.capabilities, library: Boolean(library?.items.length), check_templates: false, author_catalogue: true,
+  identity_training: false, identity_check: false,
+};
 const templates = read("templates.json");
 const frames = read("frames.json");
 const bios = read("bios.json");
+const projects = new MockProjects(root, frames);
 const drafts = new Map(); // id -> detail
 const images = new Map(); // id -> { image, art }
-for (const item of read("drafts.json").items) {
+// Kept oldest first (drafts.json is newest first), so a draft made here goes last and the list, reversed, is
+// newest first as in argus-mint. make_tape.mjs stores the tape the same way for lib/demoMint.ts (parity.test.ts).
+for (const item of [...read("drafts.json").items].reverse()) {
   drafts.set(item.id, read(`drafts/${item.id}.json`));
   images.set(item.id, { image: png(`drafts/${item.id}/image.png`), art: png(`drafts/${item.id}/art.png`) });
 }
@@ -39,7 +51,7 @@ const recordedLayouts = new Map(); // `${slot}\u0000${text}` -> slot layout
 for (const id of drafts.keys()) {
   const f = join(root, "drafts", id, "layout.json");
   if (!existsSync(f)) continue;
-  for (const [slot, l] of Object.entries(JSON.parse(readFileSync(f, "utf8")).slots)) {
+  for (const [slot, l] of Object.entries(JSON.parse(readFileSync(f, "utf8")).slots ?? {})) {
     recordedLayouts.set(`${slot}\u0000${l.lines.map((x) => x.text).join(" ")}`, l);
   }
 }
@@ -82,6 +94,8 @@ for (const job of read("samples.json").items) {
     sampleImages.set(`${job.id}/${n}/${which}`, png(`samples/${job.id}/${f}`));
   }
 }
+// Backgrounds, teaser drafts, the tracker, posts and training: what the fixture recorded, writes in memory.
+const teasers = new MockTeasers(root, drafts, images);
 const template = [...samples.values()][0];
 const published = [...drafts.values()].find((d) => d.published)?.published;
 const pendingId = [...drafts.values()].find((d) => d.status === "pending")?.id;
@@ -118,6 +132,7 @@ function summary(d) {
     id: d.id, name: x.name, to: x.to, status: d.status, awaiting: d.awaiting, created_at: x.created_at,
     template: { id: x.request.template_id, version: x.request.template_version },
     frame: x.frame ? { id: x.frame.id, version: x.frame.version } : null, image_sha256: x.image_sha256,
+    kind: x.kind ?? "card", teaser: x.teaser ? { project: x.teaser.project.id, number: x.teaser.number } : null,
   };
 }
 
@@ -168,9 +183,17 @@ createServer(async (req, res) => {
         const img = sampleImages.get(`${p[1]}/${p[2]}/${p[3]}`);
         return img ? send(res, 200, img, "image/png") : fail(res, 404, "no image");
       }
+      const layer = teasers.get(url);
+      if (layer) return send(res, layer.status, layer.body, layer.type);
+      const project = projects.get(url.pathname);
+      if (project) return send(res, project.status, project.body);
       return fail(res, 404, "not found");
     }
     const b = await body(req);
+    const authored = projects.post(url.pathname, b);
+    if (authored) return send(res, authored.status, authored.body);
+    const layered = teasers.post(url.pathname, b);
+    if (layered) return send(res, layered.status, layered.body);
     if (url.pathname === "/drafts") {
       // A library entry brings its variables, seed and checkpoint, as in argus-mint.
       const entry = b.library == null ? null : libraryEntry(b.library);
@@ -261,6 +284,8 @@ createServer(async (req, res) => {
       const [list, kind] = catalogue[p[0]];
       const entry = list.find((e) => e[kind].id === p[1] && e[kind].version === Number(p[2]));
       if (!entry) return fail(res, 404, `no ${kind}`);
+      // As argus-mint's wire: "approve" or "retire", nothing else (lib/demoMint.ts says the same).
+      if (b.decision !== "approve" && b.decision !== "retire") return fail(res, 422, 'decision must be "approve" or "retire"');
       const obj = entry[kind];
       if (b.decision === "approve" && obj.status !== "draft") return fail(res, 409, "only a draft can be approved");
       if (b.decision === "retire" && obj.status !== "approved") return fail(res, 409, "only an approved file can be retired");

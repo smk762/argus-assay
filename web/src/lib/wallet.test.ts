@@ -1,6 +1,6 @@
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 
-import { sameAddress, toHex } from "./wallet";
+import { connectWallet, hasWallet, sameAddress, signMessage, toHex } from "./wallet";
 
 describe("wallet helpers", () => {
   it("hex-encodes UTF-8 for personal_sign", () => {
@@ -8,5 +8,24 @@ describe("wallet helpers", () => {
   });
   it("compares addresses without case", () => {
     expect(sameAddress("0xAbC", "0xabc")).toBe(true);
+  });
+});
+
+describe("the hosted demo", () => {
+  afterEach(() => {
+    vi.unstubAllEnvs();
+    vi.unstubAllGlobals();
+  });
+
+  it("never asks a wallet, even one the page has injected", async () => {
+    const request = vi.fn();
+    vi.stubGlobal("ethereum", { request });
+    vi.stubEnv("NEXT_PUBLIC_ASSAY_STATIC", "1");
+    expect(hasWallet()).toBe(false);
+    await expect(connectWallet()).rejects.toThrow();
+    await expect(signMessage("hi", "0x0")).rejects.toThrow();
+    expect(request).not.toHaveBeenCalled();
+    vi.stubEnv("NEXT_PUBLIC_ASSAY_STATIC", "");
+    expect(hasWallet()).toBe(true);
   });
 });

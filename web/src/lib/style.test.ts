@@ -32,4 +32,20 @@ describe("plain styles", () => {
     expect(sameStyle({ slots: { name: {} } }, null)).toBe(true);
     expect(sameStyle({ tint: { colour: "#000000" } }, null)).toBe(false);
   });
+
+  it("compares what the card shows, not key order or no-op fields (pack-argus-assay-f44fdd9acc)", () => {
+    // Effect toggled to shadow and back: "none" (and its colour) change nothing.
+    expect(sameStyle({ slots: { name: { colour: "#ffffff" } } }, { slots: { name: { colour: "#ffffff", effect: "none", effect_colour: "#000000" } } })).toBe(true);
+    // The server's key order against the editor's.
+    expect(sameStyle({ tint: { strength: 0.5, colour: "#ff0000" } } as never, { tint: { colour: "#ff0000", strength: 0.5 } })).toBe(true);
+    expect(
+      sameStyle(
+        { slots: { bio: { background: { radius: 8, colour: "#000000", opacity: 0.6 } }, name: { effect: "glow", colour: "#fff000" } } },
+        { slots: { name: { colour: "#fff000", effect: "glow" }, bio: { background: { colour: "#000000", opacity: 0.6, radius: 8 } } } },
+      ),
+    ).toBe(true);
+    // A real difference still counts.
+    expect(sameStyle({ slots: { name: { effect: "glow" } } }, { slots: { name: { effect: "shadow" } } })).toBe(false);
+    expect(sameStyle({ slots: { name: { effect: "glow", effect_colour: "#ff0000" } } }, { slots: { name: { effect: "glow" } } })).toBe(false);
+  });
 });

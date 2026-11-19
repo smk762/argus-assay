@@ -1,0 +1,368 @@
+{
+  "sets": [
+    {
+      "format": 1,
+      "project": "example-teasers",
+      "scene": "lamp-room",
+      "scene_version": 1,
+      "scene_hash": "0x9968b9ba353c43278a534af61cb9adc532bc1b5dcae2ed3cb29f04752c165c16",
+      "wanted": 3,
+      "backgrounds": [
+        {
+          "id": "lamp-room-v1-01",
+          "n": 1,
+          "seed": 3701882332,
+          "request": {
+            "template_id": "lamp-room",
+            "template_version": 1,
+            "template_hash": "0x9968b9ba353c43278a534af61cb9adc532bc1b5dcae2ed3cb29f04752c165c16",
+            "model": "sdxl/juggernautXL_ragnarokBy/juggernautXL_ragnarokBy.safetensors",
+            "loras": [],
+            "sampling": {
+              "sampler": "euler",
+              "scheduler": "normal",
+              "steps": 25,
+              "cfg": 6.0,
+              "clip_skip": 1,
+              "guidance": null
+            },
+            "width": 1024,
+            "height": 1024,
+            "prompt": "inside a lighthouse lamp room at night, brass lens, rain on the windows, warm lamplight, painted illustration, no people, no lettering",
+            "negative": "people, person, figure, text, letters, watermark, signature",
+            "variables": {},
+            "seed": 3701882332,
+            "init_image": null
+          },
+          "attempts": [
+            {
+              "seed": 3701882332,
+              "outcome": "ok",
+              "ref": "ef623b70d753431f9dd98d39315504ad",
+              "detail": "",
+              "workflow": {
+                "name": "sdxl",
+                "sha256": "02e08f842f7a66e0e1be2ebc506ab8339f3b39df639beb86fc04dc240f3ef38d"
+              }
+            }
+          ],
+          "file": "lamp-room-v1-01.png",
+          "sha256": "e5594a06b6054aa4c308cd41914e02167a3f9e7b1d7f868c3c16eb2934f72b8a",
+          "made_with": {
+            "argus-mint": "0.2.3.dev38+gcb910c67c"
+          },
+          "created_at": "2026-11-18T15:07:18.010443Z",
+          "status": "approved",
+          "review": {
+            "decision": "approved",
+            "by": "maintainer",
+            "at": "2026-11-18T15:07:22.138941Z",
+            "image_sha256": "e5594a06b6054aa4c308cd41914e02167a3f9e7b1d7f868c3c16eb2934f72b8a",
+            "note": ""
+          }
+        },
+        {
+          "id": "lamp-room-v1-02",
+          "n": 2,
+          "seed": 3640844258,
+          "request": {
+            "template_id": "lamp-room",
+            "template_version": 1,
+            "template_hash": "0x9968b9ba353c43278a534af61cb9adc532bc1b5dcae2ed3cb29f04752c165c16",
+            "model": "sdxl/juggernautXL_ragnarokBy/juggernautXL_ragnarokBy.safetensors",
+            "loras": [],
+            "sampling": {
+              "sampler": "euler",
+              "scheduler": "normal",
+              "steps": 25,
+              "cfg": 6.0,
+              "clip_skip": 1,
+              "guidance": null
+            },
+            "width": 1024,
+            "height": 1024,
+            "prompt": "inside a lighthouse lamp room at night, brass lens, rain on the windows, warm lamplight, painted illustration, no people, no lettering",
+            "negative": "people, person, figure, text, letters, watermark, signature",
+            "variables": {},
+            "seed": 3640844258,
+            "init_image": null
+          },
+          "attempts": [
+            {
+              "seed": 3640844258,
+              "outcome": "ok",
+              "ref": "100c43d890f44c3683b52043cd0d1eee",
+              "detail": "",
+              "workflow": {
+                "name": "sdxl",
+                "sha256": "02e08f842f7a66e0e1be2ebc506ab8339f3b39df639beb86fc04dc240f3ef38d"
+              }
+            }
+          ],
+          "file": "lamp-room-v1-02.png",
+          "sha256": "1e42fdf38e781dcf766c0d36251d2d1d6bb108bc569689bc815c2925ec5f03f3",
+          "made_with": {
+            "argus-mint": "0.2.3.dev38+gcb910c67c"
+          },
+          "created_at": "2026-11-18T15:07:18.021147Z",
+          "status": "approved",
+          "review": {
+            "decision": "approved",
+            "by": "maintainer",
+            "at": "2026-11-18T15:07:22.152909Z",
+            "image_sha256": "1e42fdf38e781dcf766c0d36251d2d1d6bb108bc569689bc815c2925ec5f03f3",
+            "note": ""
+          }
+        },
+        {
+          "id": "lamp-room-v1-03",
+          "n": 3,
+          "seed": 1937172164,
+          "request": {
+            "template_id": "lamp-room",
+            "template_version": 1,
+            "template_hash": "0x9968b9ba353c43278a534af61cb9adc532bc1b5dcae2ed3cb29f04752c165c16",
+            "model": "sdxl/juggernautXL_ragnarokBy/juggernautXL_ragnarokBy.safetensors",
+            "loras": [],
+            "sampling": {
+              "sampler": "euler",
+              "scheduler": "normal",
+              "steps": 25,
+              "cfg": 6.0,
+              "clip_skip": 1,
+              "guidance": null
+            },
+            "width": 1024,
+            "height": 1024,
+            "prompt": "inside a lighthouse lamp room at night, brass lens, rain on the windows, warm lamplight, painted illustration, no people, no lettering",
+            "negative": "people, person, figure, text, letters, watermark, signature",
+            "variables": {},
+            "seed": 1937172164,
+            "init_image": null
+          },
+          "attempts": [
+            {
+              "seed": 1937172164,
+              "outcome": "ok",
+              "ref": "3e116eba0933430790b59ac613aeb192",
+              "detail": "",
+              "workflow": {
+                "name": "sdxl",
+                "sha256": "02e08f842f7a66e0e1be2ebc506ab8339f3b39df639beb86fc04dc240f3ef38d"
+              }
+            }
+          ],
+          "file": "lamp-room-v1-03.png",
+          "sha256": "ed65c7fad8cbea9e820e4a19c7077b9e2d277806ada563b053e40a6bdd91bf27",
+          "made_with": {
+            "argus-mint": "0.2.3.dev38+gcb910c67c"
+          },
+          "created_at": "2026-11-18T15:07:18.029336Z",
+          "status": "rejected",
+          "review": {
+            "decision": "rejected",
+            "by": "maintainer",
+            "at": "2026-11-18T15:07:22.166916Z",
+            "image_sha256": "ed65c7fad8cbea9e820e4a19c7077b9e2d277806ada563b053e40a6bdd91bf27",
+            "note": "Rain falls inside the room, down the walls and across the lantern, and the oil lantern trails an electric cord."
+          }
+        }
+      ],
+      "failed": [],
+      "job": {
+        "id": "88d7391b78a6b444",
+        "status": "done",
+        "created_at": "2026-11-18T15:07:17.995918Z",
+        "finished_at": "2026-11-18T15:07:18.030293Z",
+        "error": null,
+        "numbers": [
+          1,
+          2,
+          3
+        ]
+      }
+    },
+    {
+      "format": 1,
+      "project": "example-teasers",
+      "scene": "shoreline",
+      "scene_version": 1,
+      "scene_hash": "0x7402e8fa92c90ddf0cdcf857e83544f3a3cddb5be054c6cddf797d37fcc672d3",
+      "wanted": 3,
+      "backgrounds": [
+        {
+          "id": "shoreline-v1-01",
+          "n": 1,
+          "seed": 3729655101,
+          "request": {
+            "template_id": "shoreline",
+            "template_version": 1,
+            "template_hash": "0x7402e8fa92c90ddf0cdcf857e83544f3a3cddb5be054c6cddf797d37fcc672d3",
+            "model": "sdxl/juggernautXL_ragnarokBy/juggernautXL_ragnarokBy.safetensors",
+            "loras": [],
+            "sampling": {
+              "sampler": "euler",
+              "scheduler": "normal",
+              "steps": 25,
+              "cfg": 6.0,
+              "clip_skip": 1,
+              "guidance": null
+            },
+            "width": 1024,
+            "height": 1024,
+            "prompt": "a rocky shoreline at dusk seen from high above, waves breaking, a small boat far out, painted illustration, no people, no lettering",
+            "negative": "people, person, text, letters, watermark, signature",
+            "variables": {},
+            "seed": 3729655101,
+            "init_image": null
+          },
+          "attempts": [
+            {
+              "seed": 3729655101,
+              "outcome": "ok",
+              "ref": "cc8e2f197f794435882b30a91a9a5b6d",
+              "detail": "",
+              "workflow": {
+                "name": "sdxl",
+                "sha256": "02e08f842f7a66e0e1be2ebc506ab8339f3b39df639beb86fc04dc240f3ef38d"
+              }
+            }
+          ],
+          "file": "shoreline-v1-01.png",
+          "sha256": "5891f520d430238f07b72d9fe76011d8a54e470cf48c926bbafdfdfc7f8ae67e",
+          "made_with": {
+            "argus-mint": "0.2.3.dev38+gcb910c67c"
+          },
+          "created_at": "2026-11-18T15:07:20.090511Z",
+          "status": "approved",
+          "review": {
+            "decision": "approved",
+            "by": "maintainer",
+            "at": "2026-11-18T15:07:22.180315Z",
+            "image_sha256": "5891f520d430238f07b72d9fe76011d8a54e470cf48c926bbafdfdfc7f8ae67e",
+            "note": ""
+          }
+        },
+        {
+          "id": "shoreline-v1-02",
+          "n": 2,
+          "seed": 557845662,
+          "request": {
+            "template_id": "shoreline",
+            "template_version": 1,
+            "template_hash": "0x7402e8fa92c90ddf0cdcf857e83544f3a3cddb5be054c6cddf797d37fcc672d3",
+            "model": "sdxl/juggernautXL_ragnarokBy/juggernautXL_ragnarokBy.safetensors",
+            "loras": [],
+            "sampling": {
+              "sampler": "euler",
+              "scheduler": "normal",
+              "steps": 25,
+              "cfg": 6.0,
+              "clip_skip": 1,
+              "guidance": null
+            },
+            "width": 1024,
+            "height": 1024,
+            "prompt": "a rocky shoreline at dusk seen from high above, waves breaking, a small boat far out, painted illustration, no people, no lettering",
+            "negative": "people, person, text, letters, watermark, signature",
+            "variables": {},
+            "seed": 557845662,
+            "init_image": null
+          },
+          "attempts": [
+            {
+              "seed": 557845662,
+              "outcome": "ok",
+              "ref": "3a3d8c46fcce447f84f847727e771396",
+              "detail": "",
+              "workflow": {
+                "name": "sdxl",
+                "sha256": "02e08f842f7a66e0e1be2ebc506ab8339f3b39df639beb86fc04dc240f3ef38d"
+              }
+            }
+          ],
+          "file": "shoreline-v1-02.png",
+          "sha256": "7d842332309a091ce02da25feaea467562af1911116ccbbd3ebbf008dc057cd6",
+          "made_with": {
+            "argus-mint": "0.2.3.dev38+gcb910c67c"
+          },
+          "created_at": "2026-11-18T15:07:20.105582Z",
+          "status": "approved",
+          "review": {
+            "decision": "approved",
+            "by": "maintainer",
+            "at": "2026-11-18T15:07:22.193577Z",
+            "image_sha256": "7d842332309a091ce02da25feaea467562af1911116ccbbd3ebbf008dc057cd6",
+            "note": ""
+          }
+        },
+        {
+          "id": "shoreline-v1-03",
+          "n": 3,
+          "seed": 192604687,
+          "request": {
+            "template_id": "shoreline",
+            "template_version": 1,
+            "template_hash": "0x7402e8fa92c90ddf0cdcf857e83544f3a3cddb5be054c6cddf797d37fcc672d3",
+            "model": "sdxl/juggernautXL_ragnarokBy/juggernautXL_ragnarokBy.safetensors",
+            "loras": [],
+            "sampling": {
+              "sampler": "euler",
+              "scheduler": "normal",
+              "steps": 25,
+              "cfg": 6.0,
+              "clip_skip": 1,
+              "guidance": null
+            },
+            "width": 1024,
+            "height": 1024,
+            "prompt": "a rocky shoreline at dusk seen from high above, waves breaking, a small boat far out, painted illustration, no people, no lettering",
+            "negative": "people, person, text, letters, watermark, signature",
+            "variables": {},
+            "seed": 192604687,
+            "init_image": null
+          },
+          "attempts": [
+            {
+              "seed": 192604687,
+              "outcome": "ok",
+              "ref": "a15fe51d50cf472fa6e3c358ad54f2fb",
+              "detail": "",
+              "workflow": {
+                "name": "sdxl",
+                "sha256": "02e08f842f7a66e0e1be2ebc506ab8339f3b39df639beb86fc04dc240f3ef38d"
+              }
+            }
+          ],
+          "file": "shoreline-v1-03.png",
+          "sha256": "d63f61fa998f26a530f4fc190af1d3d7aab8e1b6b7c4d3e1a1bd600ad9951369",
+          "made_with": {
+            "argus-mint": "0.2.3.dev38+gcb910c67c"
+          },
+          "created_at": "2026-11-18T15:07:20.117151Z",
+          "status": "rejected",
+          "review": {
+            "decision": "rejected",
+            "by": "maintainer",
+            "at": "2026-11-18T15:07:22.206809Z",
+            "image_sha256": "d63f61fa998f26a530f4fc190af1d3d7aab8e1b6b7c4d3e1a1bd600ad9951369",
+            "note": "A calm sunset over a quiet sea, where the scene asks for a storm."
+          }
+        }
+      ],
+      "failed": [],
+      "job": {
+        "id": "1883997122c88ada",
+        "status": "done",
+        "created_at": "2026-11-18T15:07:20.078202Z",
+        "finished_at": "2026-11-18T15:07:20.119534Z",
+        "error": null,
+        "numbers": [
+          1,
+          2,
+          3
+        ]
+      }
+    }
+  ]
+}

@@ -59,11 +59,48 @@ The standalone review UI for [argus-mint](https://github.com/smk762/argus-mint),
    - **Decision:** approve a draft or retire an approved file. argus-mint writes `status`, `approved_by` and `approved_at` into the file. A retired file keeps its hash.
 6. **Samples** (`/samples`, `/samples/{id}`). The jobs, polled until done. Each sample shows its framed image, variables, bio, and render and bio attempts, with a link to preview its frame on that art. Samples are never pinned, signed or minted.
 
+7. **Teaser projects** (`/projects`, `/projects/{id}`, `/projects/{id}/tracker`). The files behind image + quote teasers (argus-mint's docs/projects.md), their review, their layers, and where each teaser stands.
+   - **Each kind in its own section:** the project, identities, scenes, lines and teaser links. Each file shows its status (mark and word), hash, path, who approved it and when, and its content laid out to read (and as sent).
+   - **Checks, as argus-mint reports them:** problems as its sentences; a spoiler hold only as "Held by spoiler rule N"; SingGuard's verdicts per file and field, with the policy, when each was checked and whether argus-mint still counts it. When no darkroom is configured, the page says nothing can be approved.
+   - **Editors (moderator token, `capabilities.author_catalogue`):** structured fields per kind. Free text only for the authored texts (prompt, negative, a line's text, published wording and source, the title, attribution, alt text). Presence, provenance, a line's voice, frames, checkpoints, samplers and the files a teaser links (by id and version) are picked from lists; ids and labels are typed only as identifiers. A draft is saved over itself; an approved or retired file is saved as the next version.
+   - **Decision:** approve a draft file or retire an approved one, gated the same way. A refusal (409) is shown as argus-mint's message, word for word.
+   - **References** show their argus-cortex provenance (kind, source, licence, release hash, generator) and never the person a consented one names. A reference problem is one of argus-mint's problems.
+   - **Backgrounds, per scene** (`capabilities.backgrounds`, moderator token):
+     - start the job that renders the scene's missing backgrounds;
+     - see the job's status and the images, each with its status (mark and word), sha256, seed and attempts, and the review with its note;
+     - approve or reject each pending one;
+     - see the backgrounds not rendered, and whether each is final.
+     - A running job is asked about again until argus-mint says it is done or failed. The teaser links editor picks a teaser's background from its scene's set.
+   - **LoRA training, on each embodied identity:**
+     - each step's status, as argus-mint works it out (mark and word), and its last run's times, sibling ids (curator's scan, forge's run, proof's run) and error;
+     - every run's inputs and outputs;
+     - the candidates (thumbnails: the first loads at once, the rest lazily), the selection, the captions, the LoRA, proof's evaluation, and what was pinned.
+     - One button, "Run <next>", starts argus-mint's `next` step and no other (`capabilities.identity_training`).
+   - **Nothing is worked out here:** no status, verdict or readiness is derived or counted.
+   - **Tracker** (`/projects/{id}/tracker`):
+     - One row per teaser of the newest approved links, with argus-mint's stages: quote final, concept chosen, image made, posted, minted. Each is shown as "✓ Reached" or "○ Not yet".
+     - Each row also shows the chosen background (a link to it) and the teaser's drafts (links, with status, `awaiting`, the links version and whether each is current).
+     - Nothing is counted.
+     - Below the table, **Make a teaser draft** (`capabilities.teasers`): pick T<n> from the tracker's list and give the owner's wallet. argus-mint's refusal (409) is shown word for word.
+8. **A teaser draft** (`/drafts/{id}` with `kind: "teaser"`): reviewed as a card is (the moderator, then the owner's wallet).
+   - **Hidden:** the card editor and the bio. A teaser's text is its reviewed line's.
+   - **How this teaser was made** replaces the template record:
+     - each linked file (project, teaser links, line, identity, scene, frame) by id, version and hash;
+     - the presence, the background (id and sha256, linked), the alt text and the texts;
+     - for an embodied identity, the inpainting request: checkpoint, LoRAs, sampling, size, seed, input image and mask hashes, denoise; and every render attempt.
+   - **Platform checks** (any draft's `auto_check`, shown as recorded):
+     - the checks that passed, what held it (always shown, not only when it passed), and whether it is for an earlier image;
+     - for a teaser, argus-proof's identity check: its outcome (mark and word), the reason, the score and `min_score` as numbers, the crop, the export, the scorer and its weights' hash.
+     - "Run the identity check again" (`identity_check` and `moderate`) for a pending teaser.
+   - **Mint (optional)** replaces Publish: pin and sign, as for a card.
+   - **Posts:** where, the URL, when, who reported it, and the sha256 of the bytes posted. Recording a post is argus-herald's job (`POST /drafts/{id}/posted`, its own token), not the page's.
+
 ## What it does not do
 
-- **No free-text prompts.**
+- **No free-text prompts**, except catalogue authoring of a teaser project's files (moderator only, checked by argus-mint on save, nothing rendered until approved).
 - **No stats.** Display text is the consumer's; argus-mint draws it and doesn't store it as stats.
 - **No marketplace, payouts or minting.** The owner's wallet sends the voucher with the consumer's app or `argus-mint submit`.
+- **No posting.** argus-herald posts approved teasers and reports each post to argus-mint; the page shows the record.
 - **No storing the moderator token beyond the tab** (sessionStorage).
 
 ## Wire
@@ -75,11 +112,19 @@ The standalone review UI for [argus-mint](https://github.com/smk762/argus-mint),
 
 `scripts/mock_mint.mjs` serves `fixture/` (recorded by `scripts/record_demo.py`, a copy of argus-mint's `scripts/api_fixture.py`) as an argus-mint on :8108, with state in memory:
 - reviews, catalogue decisions and publishing stick until it restarts
+- teaser project files are saved and reviewed in memory (`scripts/mock_projects.mjs`); with no darkroom behind it, SingGuard judges nothing, so a file without a verdict that still holds can't be approved
+- a teaser's layers (`scripts/mock_teasers.mjs`):
+  - the recorded backgrounds, tracker and training views are served;
+  - a background review and a post are kept in memory;
+  - a teaser draft is a copy of the newest recorded draft of its number;
+  - the tracker's drafts and draft-based stages, and `/posts/ready`, are read from the drafts as they are now;
+  - a background job, a training step and the identity check answer 503 (no darkroom, siblings or proof behind it).
+  - `MOCK_FIXTURE` serves another recording, such as a dry run's.
 - samples "render" one every `MOCK_STEP_MS`
 - the library is served when the fixture has one (`library.json` and `library/<id>.jpg` thumbnails); a draft from it records the entry, but keeps the fixture's image
 - "Approve as demo owner" stands in for the wallet; the mock checks no signature
 
 **Hosted demo** (`make pages`, static). The same behaviour runs in the browser (`lib/demoMint.ts`) over a tape made from `fixture/` (`scripts/make_tape.mjs`). There is no server and no token, and state lasts until reload.
-- **Off:** drafts and samples can't be made (they need a GPU), and the frame preview is hidden (argus-mint composites it).
+- **Off:** drafts and samples can't be made (they need a GPU), the frame preview is hidden (argus-mint composites it), and teaser project files can't be saved or reviewed (the recorded example project is there to read). A teaser's layers are read-only too: its backgrounds, tracker, teaser drafts (which can be reviewed like cards), posts and training view are shown as recorded. Starting a job, reviewing a background, making a teaser draft, recording a post, the identity check and training are off.
 - **No wallet:** the demo owner signs instead, and wallet buttons are hidden.
 - **Label:** the header says Sample data or Recorded, from the tape. [docs/demo-recording.md](docs/demo-recording.md) covers what a real recording needs.

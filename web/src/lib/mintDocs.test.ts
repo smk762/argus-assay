@@ -77,6 +77,18 @@ describe("resolveDocLink", () => {
     });
   });
 
+  it("pins every shape of mint's GitHub links to the commit: repo root, query, fragment (pack-argus-assay-1c2337365d)", () => {
+    const at = `https://github.com/smk762/argus-mint`;
+    expect(resolveDocLink(`${at}/tree/dev`, "docs/api.md")).toEqual({ href: `${at}/tree/${MINT.commit}`, external: true });
+    expect(resolveDocLink(`${at}/tree/dev/`, "docs/api.md")).toEqual({ href: `${at}/tree/${MINT.commit}`, external: true });
+    expect(resolveDocLink(`${at}/tree/main#readme`, "docs/api.md")).toEqual({ href: `${at}/tree/${MINT.commit}#readme`, external: true });
+    expect(resolveDocLink(`${at}/tree/dev/fixtures/api?x=1`, "docs/api.md")).toEqual({ href: `${at}/tree/${MINT.commit}/fixtures/api?x=1`, external: true });
+    expect(resolveDocLink(`${at}/blob/dev/README.md?plain=1`, "docs/api.md")).toEqual({ href: `${at}/blob/${MINT.commit}/README.md?plain=1`, external: true });
+    expect(resolveDocLink(`${at}/blob/dev/README.md?plain=1#L3`, "docs/api.md")).toEqual({ href: `${at}/blob/${MINT.commit}/README.md?plain=1#L3`, external: true });
+    // An imported file stays in the docs; the query has no meaning there.
+    expect(resolveDocLink(`${at}/blob/dev/docs/drafts.md?plain=1#attempts`, "docs/api.md")).toEqual({ href: "/docs/drafts#attempts", external: false });
+  });
+
   it("sends the rest off-site in a new tab, at the pinned commit for mint's other files", () => {
     expect(resolveDocLink("https://eips.ethereum.org/EIPS/eip-4361", "docs/review.md")).toEqual({ href: "https://eips.ethereum.org/EIPS/eip-4361", external: true });
     expect(resolveDocLink("../README.md#install", "docs/api.md")).toEqual({

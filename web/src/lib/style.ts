@@ -65,12 +65,38 @@ export function isPlain(style: CardStyle | null | undefined): boolean {
   return !style || (!style.tint && Object.keys(style.slots ?? {}).length === 0);
 }
 
-/** Drop slot entries that change nothing, so an untouched slot doesn't make a style. */
+/**
+ * One slot's style with only what changes the card, in a fixed key order. A frame's slots have no effect of their
+ * own, so `effect: "none"` is the same as no effect, and `effect_colour` means nothing without one.
+ */
+function slotOf(s: SlotStyle): SlotStyle {
+  const out: SlotStyle = {};
+  if (s.colour) out.colour = s.colour;
+  if (s.effect && s.effect !== "none") {
+    out.effect = s.effect;
+    if (s.effect_colour) out.effect_colour = s.effect_colour;
+  }
+  if (s.background) {
+    const { colour, opacity, padding, radius } = s.background;
+    out.background = { colour, ...(opacity != null ? { opacity } : {}), ...(padding != null ? { padding } : {}), ...(radius != null ? { radius } : {}) };
+  }
+  return out;
+}
+
+/**
+ * The style in one canonical form: slots in name order, each with only the fields that change the card (an untouched
+ * slot is dropped), keys in a fixed order. So two styles that draw the same card compare equal (sameStyle), and an
+ * edit carries exactly what changes it.
+ */
 export function normalise(style: CardStyle): CardStyle {
   const slots = Object.fromEntries(
-    Object.entries(style.slots ?? {}).filter(([, s]) => s.colour || (s.effect && s.effect !== "none") || s.background),
+    Object.keys(style.slots ?? {})
+      .sort()
+      .map((name) => [name, slotOf(style.slots![name])] as const)
+      .filter(([, s]) => Object.keys(s).length > 0),
   );
-  return { ...(style.tint ? { tint: style.tint } : {}), slots };
+  const t = style.tint;
+  return { ...(t ? { tint: { colour: t.colour, ...(t.strength != null ? { strength: t.strength } : {}) } } : {}), slots };
 }
 
 export const sameStyle = (a: CardStyle | null | undefined, b: CardStyle | null | undefined): boolean =>

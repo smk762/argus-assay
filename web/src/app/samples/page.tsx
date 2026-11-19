@@ -6,6 +6,7 @@ import { PageTitle, useLoad } from "@/components/bits";
 import { Button, Card, Notice, Spinner } from "@/components/ui";
 import { getSamples } from "@/lib/api";
 import { staticDemo } from "@/lib/demo";
+import { SAMPLE_STATUS, statusText } from "@/lib/status";
 import { when } from "@/lib/time";
 
 const ref = (r: { id: string; version: number } | null | undefined) => (r ? `${r.id} v${r.version}` : null);
@@ -37,7 +38,7 @@ export default function SamplesPage() {
                 {job.request.frame ? <span>framed by {ref(job.request.frame)}</span> : null}
                 {job.request.bio ? <span>bio {ref(job.request.bio)}</span> : null}
                 <span className="text-text-muted">
-                  {job.items?.length ?? 0}/{job.request.count} · {job.status} · {when(job.created_at)}
+                  {job.items?.length ?? 0}/{job.request.count} · {statusText(SAMPLE_STATUS[job.status])} · {when(job.created_at)}
                 </span>
               </div>
             </Card>

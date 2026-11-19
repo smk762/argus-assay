@@ -36,6 +36,16 @@ export function CatalogueBadge({ status }: { status: CatalogueStatus }) {
   );
 }
 
+/** Any status with its mark and word (rule 7), from one of lib/status.ts's maps. */
+export function StatusBadge({ s }: { s: { label: string; mark: string; tone: Tone } }) {
+  return (
+    <Badge className={TONE[s.tone]}>
+      <span aria-hidden="true">{s.mark}</span>
+      {s.label}
+    </Badge>
+  );
+}
+
 /** A hash shown short, full on hover, copyable. */
 export function Hash({ value, chars = 10 }: { value: string; chars?: number }) {
   return (
@@ -54,22 +64,27 @@ export function PageTitle({ children, aside }: { children: ReactNode; aside?: Re
   );
 }
 
-/** Load once on mount (and when `deps` change); `reload` to refetch. */
+const sameDeps = (a: readonly unknown[], b: readonly unknown[]) => a.length === b.length && a.every((x, i) => Object.is(x, b[i]));
+
+/**
+ * Load once on mount (and when `deps` change); `reload` to refetch. The result is kept with the deps it was
+ * loaded for and shown only while they still match: after draft A, draft B's page shows nothing (not A) until
+ * B arrives. A failed load keeps only the same item's data (a dropped `reload` of it, as a poll makes, isn't
+ * the item going away, and the poll must keep running), never another's: an error never sits next to an older
+ * item's content.
+ */
 export function useLoad<T>(load: () => Promise<T>, deps: unknown[] = []): { data: T | null; error: string | null; reload: () => void } {
-  const [data, setData] = useState<T | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  const [result, setResult] = useState<{ deps: readonly unknown[]; data: T | null; error: string | null }>({ deps, data: null, error: null });
   const [tick, setTick] = useState(0);
   useEffect(() => {
     let live = true;
     load().then(
       (value) => {
-        if (live) {
-          setData(value);
-          setError(null);
-        }
+        if (live) setResult({ deps, data: value, error: null });
       },
       (e: unknown) => {
-        if (live) setError(e instanceof Error ? e.message : String(e));
+        const error = e instanceof Error ? e.message : String(e);
+        if (live) setResult((prev) => ({ deps, data: sameDeps(prev.deps, deps) ? prev.data : null, error }));
       },
     );
     return () => {
@@ -77,7 +92,8 @@ export function useLoad<T>(load: () => Promise<T>, deps: unknown[] = []): { data
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tick, ...deps]);
-  return { data, error, reload: () => setTick((t) => t + 1) };
+  const current = sameDeps(result.deps, deps);
+  return { data: current ? result.data : null, error: current ? result.error : null, reload: () => setTick((t) => t + 1) };
 }
 
 export function Field({ label, hint, children }: { label: string; hint?: string; children: ReactNode }) {

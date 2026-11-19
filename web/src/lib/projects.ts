@@ -274,8 +274,9 @@ export function saveTarget(detail: ProjectDetail, file: ProjectFile): { id: stri
 
 /**
  * The `doc` of a save: the editor's fields without what argus-mint writes itself (status, approval,
- * SingGuard's verdicts) or takes from the path (id, version, project). Empty optional text is left out,
- * so argus-mint applies its own default.
+ * SingGuard's verdicts) or takes from the path (id, version, project). A field left undefined is left out,
+ * so argus-mint applies its own default; an empty string is sent as it is (the editors turn an empty
+ * attribution or published wording into null themselves, where argus-mint takes null).
  */
 export function saveDoc(doc: Record<string, unknown>): Record<string, unknown> {
   const out: Record<string, unknown> = {};

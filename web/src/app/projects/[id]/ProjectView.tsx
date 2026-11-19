@@ -344,7 +344,7 @@ function FileCard({
       </header>
       {approvedBy ? (
         <p className="text-caption text-text-muted">
-          Approved by {approvedBy}, {String(file.doc.approved_at ?? "")}
+          Approved by {approvedBy}, {when(typeof file.doc.approved_at === "string" ? file.doc.approved_at : null)}
         </p>
       ) : null}
       <DocBody file={file} detail={detail} />

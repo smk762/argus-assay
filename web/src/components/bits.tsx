@@ -69,7 +69,9 @@ const sameDeps = (a: readonly unknown[], b: readonly unknown[]) => a.length === 
 /**
  * Load once on mount (and when `deps` change); `reload` to refetch. The result is kept with the deps it was
  * loaded for and shown only while they still match: after draft A, draft B's page shows nothing (not A) until
- * B arrives. A failed load clears the data, so an error never sits next to an older item's content.
+ * B arrives. A failed load keeps only the same item's data (a dropped `reload` of it, as a poll makes, isn't
+ * the item going away, and the poll must keep running), never another's: an error never sits next to an older
+ * item's content.
  */
 export function useLoad<T>(load: () => Promise<T>, deps: unknown[] = []): { data: T | null; error: string | null; reload: () => void } {
   const [result, setResult] = useState<{ deps: readonly unknown[]; data: T | null; error: string | null }>({ deps, data: null, error: null });
@@ -81,7 +83,8 @@ export function useLoad<T>(load: () => Promise<T>, deps: unknown[] = []): { data
         if (live) setResult({ deps, data: value, error: null });
       },
       (e: unknown) => {
-        if (live) setResult({ deps, data: null, error: e instanceof Error ? e.message : String(e) });
+        const error = e instanceof Error ? e.message : String(e);
+        if (live) setResult((prev) => ({ deps, data: sameDeps(prev.deps, deps) ? prev.data : null, error }));
       },
     );
     return () => {

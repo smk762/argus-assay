@@ -248,7 +248,22 @@ function IdentityFields({ doc, set, detail, choices }: { doc: IdentityDoc; set: 
           {newVoice ? "Pick a voice the project has" : "A new voice"}
         </Button>
       ) : null}
-      <Pick label="Presence" value={doc.presence ?? ""} options={PRESENCE.map((p) => ({ value: p, label: PRESENCE_TEXT[p] }))} onChange={(p) => set({ presence: p as IdentityDoc["presence"] })} />
+      <Pick
+        label="Presence"
+        value={doc.presence ?? ""}
+        options={PRESENCE.map((p) => ({ value: p, label: PRESENCE_TEXT[p] }))}
+        // What the other presence carries and this one can't, argus-mint refuses, and its field is hidden here: an
+        // embodied identity has no frame of its own; a viewpoint one takes no LoRA and trains nothing.
+        onChange={(p) =>
+          set(
+            p === "embodied"
+              ? { presence: p, frame: null }
+              : p === "viewpoint"
+                ? { presence: p, lora: null, proof_run: null, proof_export: null, training: null }
+                : { presence: p as IdentityDoc["presence"] },
+          )
+        }
+      />
       {doc.presence === "viewpoint" ? (
         <Pick label="Frame" hint="The reviewed overlay that makes the image theirs." value={refValue(doc.frame)} options={frameOptions(choices.frames)} onChange={(v) => set({ frame: parseRef(v) })} />
       ) : (

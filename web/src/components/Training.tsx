@@ -31,7 +31,12 @@ function useTrainingOff(): string | null {
   return hasToken ? null : "Set the moderator token (key icon) to run a training step.";
 }
 
-const PASS = { passed: { label: "Passes", mark: "✓", tone: "ok" }, failed: { label: "Doesn't pass", mark: "✕", tone: "error" } } as const;
+const PASS = {
+  passed: { label: "Passes", mark: "✓", tone: "ok" },
+  failed: { label: "Doesn't pass", mark: "✕", tone: "error" },
+  // argus-mint's `pending`: proof waits for a person's ratings, so `passed` is no verdict yet.
+  pending: { label: "Waiting for ratings", mark: "…", tone: "warning" },
+} as const;
 
 /** A sibling's ids (curator's scan, forge's run, proof's run), as argus-mint recorded them. */
 function Sibling({ ids }: { ids: Record<string, string> | undefined }) {
@@ -141,7 +146,7 @@ function Record({ projectId, view }: { projectId: string; view: IdentityTraining
       {r.evaluation ? (
         <div className="text-small">
           <div className="flex flex-wrap items-center gap-2">
-            Proof run <code>{r.evaluation.proof_run}</code>: <StatusBadge s={r.evaluation.passed ? PASS.passed : PASS.failed} />
+            Proof run <code>{r.evaluation.proof_run}</code>: <StatusBadge s={r.evaluation.pending ? PASS.pending : r.evaluation.passed ? PASS.passed : PASS.failed} />
             {r.evaluation.pending ? <span className="text-caption text-warning">waiting for a person&apos;s ratings in proof</span> : null}
           </div>
           <p className="text-caption text-text-secondary">

@@ -21,8 +21,11 @@ afterEach(() => {
 function probe() {
   const pending = new Map<string, { resolve: (v: string) => void; reject: (e: Error) => void }>();
   const seen: Seen[] = [];
+  let reload = () => {};
   function Probe({ id }: { id: string }) {
-    const { data, error } = useLoad(() => new Promise<string>((resolve, reject) => pending.set(id, { resolve, reject })), [id]);
+    const loaded = useLoad(() => new Promise<string>((resolve, reject) => pending.set(id, { resolve, reject })), [id]);
+    const { data, error } = loaded;
+    reload = loaded.reload;
     seen.push({ data, error });
     return null;
   }
@@ -32,6 +35,7 @@ function probe() {
     seen,
     last: () => seen[seen.length - 1],
     show: (id: string) => act(() => root!.render(<Probe id={id} />)),
+    reload: () => act(() => reload()),
     resolve: async (id: string, v: string) => act(async () => pending.get(id)!.resolve(v)),
     reject: async (id: string, e: string) => act(async () => pending.get(id)!.reject(new Error(e))),
   };
@@ -59,6 +63,18 @@ describe("useLoad", () => {
     p.show("B");
     await p.reject("B", "no draft B");
     expect(p.last()).toEqual({ data: null, error: "no draft B" });
+  });
+
+  it("keeps A's data when a reload of A fails, so a poll keeps going", async () => {
+    const p = probe();
+    p.show("A");
+    await p.resolve("A", "draft A");
+    p.reload();
+    await p.reject("A", "dropped");
+    expect(p.last()).toEqual({ data: "draft A", error: "dropped" });
+    p.reload();
+    await p.resolve("A", "draft A again");
+    expect(p.last()).toEqual({ data: "draft A again", error: null });
   });
 
   it("ignores a late answer for A after the page moved to B", async () => {

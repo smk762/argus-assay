@@ -133,9 +133,14 @@ export function Posts({ posts }: { posts: Post[] }) {
               {p.url ? (
                 <>
                   {" "}
-                  <a href={p.url} rel="noopener noreferrer" className={`break-all ${LINK}`}>
-                    {p.url}
-                  </a>
+                  {/* The poster's report, as sent: a link only when it is a web address, never another scheme. */}
+                  {/^https?:\/\//i.test(p.url) ? (
+                    <a href={p.url} rel="noopener noreferrer" className={`break-all ${LINK}`}>
+                      {p.url}
+                    </a>
+                  ) : (
+                    <code className="break-all">{p.url}</code>
+                  )}
                 </>
               ) : (
                 <span className="text-text-muted"> (no URL)</span>

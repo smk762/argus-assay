@@ -254,6 +254,10 @@ def shared_run(a: str, b: str, n: int) -> str | None:
     return None
 
 
+UNCHECKED_RETRIES = 3  # darkroom's text check answering "unchecked" (no verdict) is asked again this often
+UNCHECKED_WAIT = 20  # seconds between those tries
+
+
 class FitGuard:
     """argus-mint's text guard, plus the demo's: the bio fills its box, and no other card's repeats in it.
 
@@ -328,6 +332,15 @@ class FitGuard:
             print(f"  bio for {self.name} rejected: {why}", file=sys.stderr)
             return False, f"demo fit: {why}"
         ok, detail = self.inner.check_text(text)
+        # "unchecked" is darkroom saying SingGuard gave no verdict (it timed out or was busy), not a judgement
+        # of the text. Ask again, the same text under the same policy: the check stays, only its outage is
+        # retried. Without this a cached bio that still passes is dropped and the model writes a new one.
+        for _ in range(UNCHECKED_RETRIES):
+            if ok or detail != "unchecked":
+                break
+            print(f"  bio for {self.name}: darkroom's text check gave no verdict (unchecked); asking again", file=sys.stderr)
+            time.sleep(UNCHECKED_WAIT)
+            ok, detail = self.inner.check_text(text)
         if ok:
             self.taken.append((self.name, text))
             self.on_keep(text)

@@ -1,4 +1,4 @@
-// Generated from smk762/argus-mint@62ce2a7e94d02ae3afd0c3fdfcbb3ceee10d0141 schema/mint-wire.schema.json.
+// Generated from smk762/argus-mint@72b4f58d60545d289058bc612233e3c43898aa86 schema/mint-wire.schema.json.
 // Do not edit: change schema/pins.json and run `npm run wire:pull`.
 
 export interface MintWire {

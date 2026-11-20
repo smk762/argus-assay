@@ -615,11 +615,19 @@ BG_REJECT_NOTES = {
 POST_WHERE = "demo"
 
 
-def author_project(c: TestClient, src: Path, by: str) -> None:
+def author_project(c: TestClient, src: Path, by: str, projects_dir: Path) -> None:
     """Author argus-mint's example teaser project over HTTP, as the moderator does from assay's editors: each
     file is saved as a draft (argus-mint checks it and SingGuard judges its texts under the project's policy),
     then a few are approved. No spoiler list is configured, so nothing is held; the page shows a hold as
-    "held by spoiler rule N" only. Nothing renders from a project file here."""
+    "held by spoiler rule N" only. Nothing renders from a project file here.
+
+    The project's own frames (``frames/``, ids ``<project>/<name>``) have no editor over HTTP: they are copied
+    into the project's directory as files, each marked approved for the recording like the global frames."""
+    if (src / "frames").is_dir():
+        dst = projects_dir / PROJECT / "frames"
+        shutil.copytree(src / "frames", dst, ignore=shutil.ignore_patterns("*.yaml", "*.yml", "src"))
+        for f in sorted((src / "frames").glob("*.yaml")):
+            approved(f, dst / f.name, by)
     files = [("project", src / "project.yaml")]
     for kind, sub in (("identity", "identities"), ("scene", "scenes"), ("line", "lines"), ("teasers", "teasers")):
         files += [(kind, f) for f in sorted((src / sub).iterdir()) if f.suffix in (".yaml", ".json")]
@@ -944,7 +952,7 @@ def main(a: argparse.Namespace) -> None:
         if job["status"] != "done":
             sys.exit(f"sample job {job_id} ended {job['status']}: {job.get('error') or 'argus-mint gave no reason'}")
 
-        author_project(c, mint / "projects" / PROJECT, by)
+        author_project(c, mint / "projects" / PROJECT, by, work / "projects")
         if TEASER_SEEDS:  # a re-roll of a teaser's figure: argus-mint derives its seed, so the recorder sets it here
             derived = teasers_mod.teaser_seed
             teasers_mod.teaser_seed = lambda project, number, sha: TEASER_SEEDS.get(number, derived(project, number, sha))

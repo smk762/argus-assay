@@ -30,7 +30,7 @@
         "role": "huge broad-shouldered giant dwarfing the room"
       },
       "seed": 8453000,
-      "sha256": "81b833f79e021a04cb99d4804e3b907d2580d679708f9f6b6a42e9e82c5bb345"
+      "sha256": "a361073aa32104c5d3bd607d3f44eeaddab10d359bffd8d601cd68f0b832b428"
     },
     {
       "id": "000-aureanuancexl-v2",
@@ -44,7 +44,7 @@
         "role": "huge broad-shouldered giant dwarfing the room"
       },
       "seed": 8453000,
-      "sha256": "9fec142fce99f181d84ace6b513d30647e123e131407c0a2d6181750e1a4c56b"
+      "sha256": "1169b635f64eae618b5e19a759e257a93f3605218b831d6d2610c3f829bca1f9"
     },
     {
       "id": "000-biglove-xl2",
@@ -58,7 +58,7 @@
         "role": "huge broad-shouldered giant dwarfing the room"
       },
       "seed": 8453000,
-      "sha256": "0c0e995776ce48478359882844709e1e7201692152f372815af999e61059dcba"
+      "sha256": "04f48aec2a7b12292e321c9a138e620589a4aaf432aa7160d7b55efdee4b2e6e"
     },
     {
       "id": "000-cyberrealisticxl-desirev20",
@@ -72,7 +72,7 @@
         "role": "huge broad-shouldered giant dwarfing the room"
       },
       "seed": 8453000,
-      "sha256": "6338575ef5c6ff5d5eebc5f9b4b7465d23f9ae3c3e9b6e37b491c3618ba3d840"
+      "sha256": "a8f4669c8eca36f0efdbdda3e49e699dae6c16bf60c99d1ae825f46ba4abfb3f"
     },
     {
       "id": "000-epicrealismxl-purefix",
@@ -86,7 +86,7 @@
         "role": "huge broad-shouldered giant dwarfing the room"
       },
       "seed": 8453000,
-      "sha256": "29010291edd6f8652ee73ed3b1aed072d9735633ab2110b3ac89cfd3b2ab34e8"
+      "sha256": "7f936bdaf0fd3cb762341d4d3e49e4856908945cbbd523351c8cb5f7e4d2a274"
     },
     {
       "id": "000-eventhorizon-xlv60",
@@ -100,7 +100,7 @@
         "role": "huge broad-shouldered giant dwarfing the room"
       },
       "seed": 8453000,
-      "sha256": "809a19f0fa915bd6436ea140df766d73f574a5bccd163f5146c130f7aa8b73e0"
+      "sha256": "e5a711fa5790663d610dc071354a7aabcb61e25e4bed77b3cf7e18816826b963"
     },
     {
       "id": "000-juggernautxl-ragnarokby",
@@ -114,7 +114,7 @@
         "role": "huge broad-shouldered giant dwarfing the room"
       },
       "seed": 8453000,
-      "sha256": "1dcde6810d482439d20cf28d237e05bd41aa2262d8f2f0ed5b70a50da2717635"
+      "sha256": "40ad4f7594d6164bf55e3e21a56636d5da97283a62c6b851b8e4b0164fdefa44"
     },
     {
       "id": "000-realityboundxl-soulgripv10",
@@ -128,7 +128,7 @@
         "role": "huge broad-shouldered giant dwarfing the room"
       },
       "seed": 8453000,
-      "sha256": "77cbbaf494d0efd035ce91e7ed722b228db959a733270e6c515822897afa609d"
+      "sha256": "02b1bd60159543a72fa5e414254d89a4efab5f3f37cdf1ce7b98447aaacaf3a6"
     },
     {
       "id": "000-flux1-schnell-fp8-e4m3fn",
@@ -142,7 +142,7 @@
         "role": "huge broad-shouldered giant dwarfing the room"
       },
       "seed": 8453000,
-      "sha256": "13f725da5e82ee541f5bfbff6d4cb475e374250daaf5d3c7d7362ae91aa31d6c"
+      "sha256": "0eaa7283a2884d2d66598fd2785d431495bd73ed24cc2bb2d8169be715c68029"
     },
     {
       "id": "000-flux-2-klein-9b-fp8",
@@ -156,7 +156,7 @@
         "role": "huge broad-shouldered giant dwarfing the room"
       },
       "seed": 8453000,
-      "sha256": "596d2ff16847b0153e7201d833ade053e9086925f0bed75ea0c2c83bfe5928fb"
+      "sha256": "0ea7a826de768db453d09bd512776a42573db731f36c1543650cadf7de067bf9"
     },
     {
       "id": "000-sd3-5-large-fp8-scaled",
@@ -170,7 +170,7 @@
         "role": "huge broad-shouldered giant dwarfing the room"
       },
       "seed": 8453000,
-      "sha256": "d5a7536624a7d0bb67626560b35ccaa38870296d2a98446e1b3f211ed30ec303"
+      "sha256": "04e5dfa9e93e3246737fbcefc701f955cc1a6cbfec1fc8fb1aa3a32e1731ac8d"
     },
     {
       "id": "010-flux1-dev-fp8",
@@ -184,7 +184,7 @@
         "role": "wizard"
       },
       "seed": 8453010,
-      "sha256": "10aef81d64c14ef23cc697cb2359225f6e8f0482088ef296c02814f70ada9607"
+      "sha256": "c2fa6b60386e0b1edbddbc281daf68246cbb78428bf93808149438743f2fcd16"
     },
     {
       "id": "010-aureanuancexl-v2",
@@ -198,7 +198,7 @@
         "role": "wizard"
       },
       "seed": 8453010,
-      "sha256": "da37b6cfc8099b2cb7c1da23449db149aa4453e7ef61a22bf2e8140876351dd6"
+      "sha256": "e41d6c3d839e4a12bab00b4b9a6e5509c9dfbaf524f0d4cd4aeb859d6a8b6206"
     },
     {
       "id": "010-biglove-xl2",
@@ -212,7 +212,7 @@
         "role": "wizard"
       },
       "seed": 8453010,
-      "sha256": "b700f9349db6126a7477b8f2db944b208fc3ba6da73fb918b75e5035d11cc362"
+      "sha256": "9cc454e4b6c5ed58c0e484501c331414cd42fdee981b95d6d38f41a239947a4f"
     },
     {
       "id": "010-cyberrealisticxl-desirev20",
@@ -226,7 +226,7 @@
         "role": "wizard"
       },
       "seed": 8453010,
-      "sha256": "c10b8a720b1e73e7c8350abed92ab6d37d8b753685ad0ff339a90090ca743a21"
+      "sha256": "5e455b822119af70ac5b1dd54c8b21d1d8bf2117ec1b23acdbf8e0dbca2b52f8"
     },
     {
       "id": "010-epicrealismxl-purefix",
@@ -240,7 +240,7 @@
         "role": "wizard"
       },
       "seed": 8453010,
-      "sha256": "48fd074516874fb502f8adf11eda2f358b18f6bbf510cab216e19dd1a23f6bec"
+      "sha256": "20c4d9a5460c6d70cab483257c90bef7976a0e2522507b26c6c455960d71c586"
     },
     {
       "id": "010-eventhorizon-xlv60",
@@ -254,7 +254,7 @@
         "role": "wizard"
       },
       "seed": 8453010,
-      "sha256": "8ec3ac42b6c54d7c2f28262ff7380eec2742edaf3cfba17c564b3b187efe22d7"
+      "sha256": "5bf8333b045a4dab3d8f11f693ca43644200208398139e7b041ebcd3194b01a6"
     },
     {
       "id": "010-juggernautxl-ragnarokby",
@@ -268,7 +268,7 @@
         "role": "wizard"
       },
       "seed": 8453010,
-      "sha256": "03a0c6bcd4d41b7240eab108daa2973ad30bba06bf81782427a079ea3138c27d"
+      "sha256": "b6fec972c762042aa30086a107d34aeb22d29e32f32d767e6c8e348f35b9e8f2"
     },
     {
       "id": "010-realityboundxl-soulgripv10",
@@ -282,7 +282,7 @@
         "role": "wizard"
       },
       "seed": 8453010,
-      "sha256": "54188e09c9df84e8f6e627fe7dc70431659e3059e2c2dfefda84878e547171a1"
+      "sha256": "89d2b0867c43d62dcde74d7b1cd26afdb6f67c7bc903192ff0458027659911bd"
     },
     {
       "id": "010-flux1-schnell-fp8-e4m3fn",
@@ -296,7 +296,7 @@
         "role": "wizard"
       },
       "seed": 8453010,
-      "sha256": "ee80e5649ea070a3d34038a6348f6790ac2908d65514f2c405b8841520229f2e"
+      "sha256": "05d6e0ebb8ae3dd8f0564b93df77e4a39d7d9c28337b6465eaedc16076114198"
     },
     {
       "id": "010-flux-2-klein-9b-fp8",
@@ -310,7 +310,7 @@
         "role": "wizard"
       },
       "seed": 8453010,
-      "sha256": "ba6820579d5ee719e90c6c61be3c2e38c423df55f4bc67780cef50f174db838e"
+      "sha256": "911dd09c25bfe0096c35d3c755165320b80d110e28d4ded0aade7e8e3569cc57"
     },
     {
       "id": "010-sd3-5-large-fp8-scaled",
@@ -324,7 +324,7 @@
         "role": "wizard"
       },
       "seed": 8453010,
-      "sha256": "933ae057549e9c95725d8e936d500949e30fb1b65107964f8f2e9cc5965edcbc"
+      "sha256": "b82d060b5530d0bf6232d815af8957c6499451876041de856131b9e3777d511f"
     },
     {
       "id": "019-flux1-dev-fp8",
@@ -338,7 +338,7 @@
         "role": "wizard"
       },
       "seed": 8453019,
-      "sha256": "b530a19782ff256484c5bbfe3ef4b2693e6ba415ea6e09cf1d565dfeedc90b01"
+      "sha256": "e8759a21fc933bbdc482d08121a2092edf18b25f2ca143eeb090935c5b8bdb78"
     },
     {
       "id": "019-aureanuancexl-v2",
@@ -352,7 +352,7 @@
         "role": "wizard"
       },
       "seed": 8453019,
-      "sha256": "0a103ed55b3bd60f17dba5d867666628d82525350c3f849d08c389ee4e40908f"
+      "sha256": "a9b0e62f9c318faa48c553ce35a7d6b9273ea17f7bcf5c910a1e11e9ac2d9380"
     },
     {
       "id": "019-biglove-xl2",
@@ -366,7 +366,7 @@
         "role": "wizard"
       },
       "seed": 8453019,
-      "sha256": "bc19c92da4415c597c768040504907a2e188c5ffcf8b45baf3ecfb4cf2acb502"
+      "sha256": "96a4d986400591a24839c516c34ce6cf56cc76826d6e7332c70c6db1c4cfabdc"
     },
     {
       "id": "019-cyberrealisticxl-desirev20",
@@ -380,7 +380,7 @@
         "role": "wizard"
       },
       "seed": 8453019,
-      "sha256": "8a98f7439c53c39a830e33b25ffbee27c9fc2f57a77373a03aa33e6962742030"
+      "sha256": "fa9816583927c2f58e6ad557504638823f8e1300c5efcc77b1ef3e6eb9c26eaa"
     },
     {
       "id": "019-epicrealismxl-purefix",
@@ -394,7 +394,7 @@
         "role": "wizard"
       },
       "seed": 8453019,
-      "sha256": "e502f62483eb6fb38ba8dc6d3cb47abd43d9b445b7074e1f0c16c71ccecd5a7d"
+      "sha256": "e1e64207afd65dce667155754927169b3c89b39488c5361fbb34b345bb186f2a"
     },
     {
       "id": "019-eventhorizon-xlv60",
@@ -408,7 +408,7 @@
         "role": "wizard"
       },
       "seed": 8453019,
-      "sha256": "f098495297c9dd9b202aa8fe5e3f48323eac16738064ac577fe4b390ca583d2a"
+      "sha256": "9d460d07d734cf0418f378398d12815432d2fab15542a130a6db9757c38c12ac"
     },
     {
       "id": "019-juggernautxl-ragnarokby",
@@ -422,7 +422,7 @@
         "role": "wizard"
       },
       "seed": 8453019,
-      "sha256": "ef10acc7cacfa9905e5f4d41520beeca36c86afae8eb2c0c550dd644e1d2f3ec"
+      "sha256": "41b1ea610cb97fe17e76cee1681871a61788740979dc83aa5984fc750af1132a"
     },
     {
       "id": "019-realityboundxl-soulgripv10",
@@ -436,7 +436,7 @@
         "role": "wizard"
       },
       "seed": 8453019,
-      "sha256": "9799f08d858ed03a613bd4f0603cfd7d2c7d0313d3245533f158dcc9ec016ee5"
+      "sha256": "dc5d8b0599664062b4df945d7d21982eb2b8398d79fa3a4f49ddb3a0ab3cb894"
     },
     {
       "id": "019-flux1-schnell-fp8-e4m3fn",
@@ -450,7 +450,7 @@
         "role": "wizard"
       },
       "seed": 8453019,
-      "sha256": "15e89d507d650cccc2c9825c983ac5ca4bb260e37809e22e99e22ae44c9e81e2"
+      "sha256": "97586186671383f550732122eed622d5913e74f5ddb28b4cccb71acaf28b493b"
     },
     {
       "id": "019-flux-2-klein-9b-fp8",
@@ -464,7 +464,7 @@
         "role": "wizard"
       },
       "seed": 8453019,
-      "sha256": "06b9537b093eb9f1618a5009f4389480dc20efc427b0474b5191a69d79b6a0cb"
+      "sha256": "fd296082594ffedd9954b3fcfd9044167fbd4c9731dff84e04471b99896e4fd8"
     },
     {
       "id": "019-sd3-5-large-fp8-scaled",
@@ -478,7 +478,7 @@
         "role": "wizard"
       },
       "seed": 8453019,
-      "sha256": "55095fdcefade334a225ba08c17edd61ccc61bf78991aa0210aeec54635ebfe7"
+      "sha256": "2d353ce2c7447cbe0c17755328227abf05c72e50aa5cf8d27d0f2052df26ee12"
     },
     {
       "id": "028-flux1-dev-fp8",
@@ -492,7 +492,7 @@
         "role": "knight"
       },
       "seed": 8453028,
-      "sha256": "ab7adaf54f1b23368d53c47d34b5632ca268f6fac8b12eb4ddb4a526787c2b93"
+      "sha256": "28b8f017c291ad0a98c9b9c60f862acaec86ea6ade66bed00ef6006d07452351"
     },
     {
       "id": "028-aureanuancexl-v2",
@@ -506,7 +506,7 @@
         "role": "knight"
       },
       "seed": 8453028,
-      "sha256": "f0156b629a90d69b275eca79d504106ba8c2cad674f8901e7c635e139244803e"
+      "sha256": "9a1f9cad05504d8b0b3244daf3baeaf8541101cb212a26cbb981f0dd799eb3e8"
     },
     {
       "id": "028-biglove-xl2",
@@ -520,7 +520,7 @@
         "role": "knight"
       },
       "seed": 8453028,
-      "sha256": "ca2d5b6e794fb97e72c1ee576b54a84e986ef084e117eedb02814bc6e8999545"
+      "sha256": "33344191882bc0567f1e5312f3d5506cf514ddf119ef711ddf6d8e0d29084804"
     },
     {
       "id": "028-cyberrealisticxl-desirev20",
@@ -534,7 +534,7 @@
         "role": "knight"
       },
       "seed": 8453028,
-      "sha256": "a230f4e6b504797f3f82728231895e2ec5b8159eaa43d6b2de8f0e7f70e0cd42"
+      "sha256": "4ee256d088519589b7f6171b2c2965badbc1c0f9e50042d1b36859acac60f37d"
     },
     {
       "id": "028-epicrealismxl-purefix",
@@ -548,7 +548,7 @@
         "role": "knight"
       },
       "seed": 8453028,
-      "sha256": "9e1508e26d32a4d58e7ba147ce2ad2dd98e454dc515fea545248a4efd6d43766"
+      "sha256": "73c6f2a81965d60ab30ffdc34e4cb6ed0af8ff492f021713d954f211cfe7b5cf"
     },
     {
       "id": "028-eventhorizon-xlv60",
@@ -562,7 +562,7 @@
         "role": "knight"
       },
       "seed": 8453028,
-      "sha256": "65eb4adcfb4f230695edf6c665ab31e525233ae159876f42644b3535385fdcaf"
+      "sha256": "7675627dd93dfbcdd773b576a66c23e6a6fc42daecdca1d867cd6a0d0a79dfd4"
     },
     {
       "id": "028-juggernautxl-ragnarokby",
@@ -576,7 +576,7 @@
         "role": "knight"
       },
       "seed": 8453028,
-      "sha256": "3c88841dc6a500362a9c5647e0e8d43424e26125ace03ed0915f9ebeda19db80"
+      "sha256": "04fe6e8ff291b0b99ee673fdda45b248b312d641c42f4d3cb7529e042f01fae4"
     },
     {
       "id": "028-realityboundxl-soulgripv10",
@@ -590,7 +590,7 @@
         "role": "knight"
       },
       "seed": 8453028,
-      "sha256": "d9fde10ec8361cd2f50bf8f4eb56f1e084bcff913b9eb9ac93a245b45dd97a0a"
+      "sha256": "4bc71f59c77df0c6c39bd5f7e41a47efe95edae9aa04c65e6d056e8174d98a4f"
     },
     {
       "id": "028-flux1-schnell-fp8-e4m3fn",
@@ -604,7 +604,7 @@
         "role": "knight"
       },
       "seed": 8453028,
-      "sha256": "aa4605eb3fe0f65e60c584d432fdef17d29e3ba275f5fa425cc8c81721c2dffb"
+      "sha256": "6c50679c65cd45b6eb34674c44f74b331fc2661aa2a33bdc93e8445fa24ca772"
     },
     {
       "id": "028-flux-2-klein-9b-fp8",
@@ -618,7 +618,7 @@
         "role": "knight"
       },
       "seed": 8453028,
-      "sha256": "5e6dd800afd7815039775e2929f95726356640f52e3486e99b89e88b7252d8b6"
+      "sha256": "eb25ea1f40730d6f6e685ef2d4fdd069ab6071f02891ee247568a3d5b9da0036"
     },
     {
       "id": "028-sd3-5-large-fp8-scaled",
@@ -632,7 +632,7 @@
         "role": "knight"
       },
       "seed": 8453028,
-      "sha256": "f2bc6e258fb9c8b8c24ce66c5c4249f8f53d5175fe6d3066886ed6cd1ae5ef47"
+      "sha256": "cc2548d0328d4a8411cb3d2577cc8050c50e2e12d3bfb219887e8e445d955d22"
     },
     {
       "id": "037-flux1-dev-fp8",
@@ -646,7 +646,7 @@
         "role": "ranger"
       },
       "seed": 8453037,
-      "sha256": "0583944e750ac5d674d4452102f96140cfd091d888fb15e0f2ffc12157fcfe98"
+      "sha256": "e0a87e58b39492178af21b8d856e1952fc6da952d7e2ec11e33fdcc026da9624"
     },
     {
       "id": "037-aureanuancexl-v2",
@@ -660,7 +660,7 @@
         "role": "ranger"
       },
       "seed": 8453037,
-      "sha256": "adc09cedf82868227e345f49cd2520c8c8bbc8c43189c507eb8ef7fe87516553"
+      "sha256": "5faf405e78c4d0083162a419579ea03b19da25c6d949e784100953f1bae80ecd"
     },
     {
       "id": "037-biglove-xl2",
@@ -674,7 +674,7 @@
         "role": "ranger"
       },
       "seed": 8453037,
-      "sha256": "15208d2622138b426091394dd1b8ce946043d64f872a68f00deaae9f61c5079c"
+      "sha256": "e26c30b32c4aa1b5a8a603113b992fa12dd1aa318e51888ce14de6bac8e4ebc7"
     },
     {
       "id": "037-cyberrealisticxl-desirev20",
@@ -688,7 +688,7 @@
         "role": "ranger"
       },
       "seed": 8453037,
-      "sha256": "71a7ce47da1330021eb5a61cc7235c571ef2d354cc7b10b9cdd540d276ea0780"
+      "sha256": "45cb09f4896916ee0cf0658488ea62d85a5cae78a9f37b6a5300c7c46b575eaf"
     },
     {
       "id": "037-epicrealismxl-purefix",
@@ -702,7 +702,7 @@
         "role": "ranger"
       },
       "seed": 8453037,
-      "sha256": "4086644795f409e5573b0c066981822162e7e9c80d031629c5f062b1f27ceedb"
+      "sha256": "14a80290e6edf115f3760c60977ee7e19db0320c7b83db893c28fcd172513cdb"
     },
     {
       "id": "037-eventhorizon-xlv60",
@@ -716,7 +716,7 @@
         "role": "ranger"
       },
       "seed": 8453037,
-      "sha256": "18859e749eae250f8752f8c0a3e88fb9b57da7ccba52847644565cd76eb52c95"
+      "sha256": "3f9acb6d907ab3836e74fa8ac3ac19de725dc683bf36829c419d9c7f66ba69d1"
     },
     {
       "id": "037-juggernautxl-ragnarokby",
@@ -730,7 +730,7 @@
         "role": "ranger"
       },
       "seed": 8453037,
-      "sha256": "f5e01937d4c7632dd86cc25bdd3eb57f77c2f53215db25a118487313d6dd7004"
+      "sha256": "cb998c0cecd2bf270bd3ff32d88f9aeecfdab5056edab4d2cf0fa8f17aee190d"
     },
     {
       "id": "037-realityboundxl-soulgripv10",
@@ -744,7 +744,7 @@
         "role": "ranger"
       },
       "seed": 8453037,
-      "sha256": "b0932f1fd559443d5bfd466cf2b940b4fe29ea4b6d8b660b280c115b22455946"
+      "sha256": "f51bd5b0c065691c726cc37ef77e3a48e2f8bc099aaebfdee39f817ee3b0f238"
     },
     {
       "id": "037-flux1-schnell-fp8-e4m3fn",
@@ -758,7 +758,7 @@
         "role": "ranger"
       },
       "seed": 8453037,
-      "sha256": "327689b583c99b42d8aec6bbeb8d662c34bbe8ea6223775f16ae13ef6f2c6c92"
+      "sha256": "aba67e3e6596cf2c56be0e3a47c9722b056da9ca63a8b88d84d917a7d2337b88"
     },
     {
       "id": "037-flux-2-klein-9b-fp8",
@@ -772,7 +772,7 @@
         "role": "ranger"
       },
       "seed": 8453037,
-      "sha256": "cb51ca66ab58af90a8541ba3d6c1e12ec205de0165bce38ec22635da763b2030"
+      "sha256": "a0e8ce161a717c448dad3b325bba4fe01ecf7f0f8e480af87a0e4b4d9a989c48"
     },
     {
       "id": "037-sd3-5-large-fp8-scaled",
@@ -786,7 +786,7 @@
         "role": "ranger"
       },
       "seed": 8453037,
-      "sha256": "d20135c2812ffedfc245068555a332127567f8fce132a490fee8e533b99857d5"
+      "sha256": "cfab9afb93e5d43173e09a9eb2387b5abdffd91972d4777963e19c0e3d63960e"
     },
     {
       "id": "047-flux1-dev-fp8",
@@ -800,7 +800,7 @@
         "role": "knight"
       },
       "seed": 8453047,
-      "sha256": "17bd3d21c0c3503e52fabab83a620666e792835ecfaf776340eeb211adb8e1e2"
+      "sha256": "37576b4e615d76874f3f8aa1582c39aeb0aaaa7a04ed2bb30d720d644212faf8"
     },
     {
       "id": "047-aureanuancexl-v2",
@@ -814,7 +814,7 @@
         "role": "knight"
       },
       "seed": 8453047,
-      "sha256": "95948e2fcfebfab36f536313613e6ee8bd2b55ac3230afae00dd6acd0504c46d"
+      "sha256": "4e92d4149af5710684d2908bdce21d75fa450dac061cb369e0ac7355f99e2e6c"
     },
     {
       "id": "047-biglove-xl2",
@@ -828,7 +828,7 @@
         "role": "knight"
       },
       "seed": 8453047,
-      "sha256": "0c3fbaafc5511667a5b8a9d19c2b7345df98f7ed15457274d56f4568a5831649"
+      "sha256": "0c1ce6c00c9961a81703f3c0103d7603e70c960ca59166ab6d57cf908e6c5076"
     },
     {
       "id": "047-cyberrealisticxl-desirev20",
@@ -842,7 +842,7 @@
         "role": "knight"
       },
       "seed": 8453047,
-      "sha256": "2b37a7a31e0ff68d90b20d82da9b58dfd664bd5a77d8b4a0f0de1d88922cff23"
+      "sha256": "30941af65bcaf6b3af19127fb158873477f04ce9edfc5f5a27de8818f737381a"
     },
     {
       "id": "047-epicrealismxl-purefix",
@@ -856,7 +856,7 @@
         "role": "knight"
       },
       "seed": 8453047,
-      "sha256": "05ff8deead78f2b769fc779a5e2368dac7fd75bbceab7a5c65db0837f4aaef2e"
+      "sha256": "9fc927f0c077e8a11dd156262f169aa5a6a2e6449477a0387ec574cb54adbc56"
     },
     {
       "id": "047-eventhorizon-xlv60",
@@ -870,7 +870,7 @@
         "role": "knight"
       },
       "seed": 8453047,
-      "sha256": "6239199b19c9da1c7467a26b1741c4f49c5e53047cd7d5b9419b177fb0862561"
+      "sha256": "6ab8acb72e9faffa09a2e1d146b5ce1a9b55473643894aee2a3ab1f0d76fd2bf"
     },
     {
       "id": "047-juggernautxl-ragnarokby",
@@ -884,7 +884,7 @@
         "role": "knight"
       },
       "seed": 8453047,
-      "sha256": "e82d3b012e0861a569c749b17fda85c2c79c038e186c9896bc67a2679bc6a5f7"
+      "sha256": "d61f8e126d966944444612adfab2c03369f296ec78567149512fd24ec3e9f3ff"
     },
     {
       "id": "047-realityboundxl-soulgripv10",
@@ -898,7 +898,7 @@
         "role": "knight"
       },
       "seed": 8453047,
-      "sha256": "9d4786d5a2160781fb4c3eb618d4561c1d17fef45c7a4085f2818dd451c69558"
+      "sha256": "876caedd66db5a6c733ec0a12f010b1d7347894b886991a0cc28e6c560938a37"
     },
     {
       "id": "047-flux1-schnell-fp8-e4m3fn",
@@ -912,7 +912,7 @@
         "role": "knight"
       },
       "seed": 8453047,
-      "sha256": "2d50db7193e6a21ae23428e0db5b5740a69a61f520a35aa63cd0759bb474a331"
+      "sha256": "9659caddb23e5bdfbd7189ac043d477daff45003d06f967ba9c657d2655527dd"
     },
     {
       "id": "047-flux-2-klein-9b-fp8",
@@ -926,7 +926,7 @@
         "role": "knight"
       },
       "seed": 8453047,
-      "sha256": "ad307b840b8f51e133c10033061fe120434998551e7d9df195fd0849dee791c7"
+      "sha256": "f94e072397db8bf9f2776bb2d5784adbaff19742002bf1ab305fdbec14dc5e18"
     },
     {
       "id": "047-sd3-5-large-fp8-scaled",
@@ -940,7 +940,7 @@
         "role": "knight"
       },
       "seed": 8453047,
-      "sha256": "6b6d7daa683ce4aa262ef2f42c5bf57cadaa070f3f18358046d4d73b425272db"
+      "sha256": "05df61dc3450d3b91450e4062f677cba0e7f231d5449805de25c1a97a0227c37"
     }
   ]
 }

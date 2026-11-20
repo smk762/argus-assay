@@ -76,6 +76,16 @@ What is real and what isn't:
 
 `record_demo.py --until` and `--cache` resume as for cards.
 
+### The re-record at argus-mint `b0c308e` (0.3.1.dev4, wire 1.17), 2026-11-20
+
+Recorded with `--real --cache --reject-notes`, with the maintainer's approval for the new renders. The final run was `--no-render`: every render came from the cache.
+
+- **Cards and bios:** all 19 card renders and 22 bios from the cache. Harbour Bard's bio is new: an earlier run lost its cached bio to darkroom's `unchecked`, and the model wrote another, which passed every check.
+- **Backgrounds:** argus-mint #67 changed `lamp-room`'s file, and with it the scene's hash, which is part of the cache key. So all six backgrounds rendered again, at the same seeds. Each came out byte-identical to the `cb910c6` recording, since the box isn't part of darkroom's request.
+- **T1:** under #67's box (`y: 512`, `height: 512`), three of four tries cut the keeper's head off at the box's top edge. argus-mint #72 moved the box to `{x: 128, y: 256, width: 272, height: 768}`. T1 at its first derived seed (1493373799) is one adult keeper, standing whole inside the box, checked by eye.
+- **T2** is now in the project's own frame, `example-teasers/harbour-feed` (with its effects). The recorder copies the project's `frames/` into the server's project directory, marked approved like the global frames, because a project's frames have no editor over HTTP.
+- **`unchecked`:** darkroom answers this when SingGuard gave no verdict. It is not a judgement of the text, so the recorder now asks again, up to 3 times, with the same text and policy.
+
 ## What the sample tape is
 
 `make sample-fixture` (no GPU, no network):

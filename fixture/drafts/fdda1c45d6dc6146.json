@@ -1,0 +1,115 @@
+{
+  "id": "fdda1c45d6dc6146",
+  "status": "approved",
+  "awaiting": [],
+  "draft": {
+    "format": 1,
+    "kind": "card",
+    "request": {
+      "template_id": "demo-cast",
+      "template_version": 1,
+      "template_hash": "0x781f2f17e65402cef5c46a2b7767947951a8eced410d01aa104927bd7283d8f1",
+      "model": "sdxl/aureanuanceXL_v2/aureanuanceXL_v2.safetensors",
+      "loras": [],
+      "sampling": {
+        "sampler": "euler",
+        "scheduler": "normal",
+        "steps": 25,
+        "cfg": 6.0,
+        "clip_skip": 1,
+        "guidance": null
+      },
+      "width": 1152,
+      "height": 896,
+      "prompt": "waist-up portrait of one (non-binary:1.4) (in their thirties with clearly adult features:1.3) wiry starship pilot in a flight suit, the only subject in the picture, centered and facing the viewer, clothing and colour scheme amber orange, piloting, background: starship bridge, painted fantasy and science-fiction illustration, full bleed, detailed",
+      "negative": "text, letters, words, caption, title, label, logo, watermark, signature, border, frame, card frame, trading card, playing card, game ui, icons, badges, numbers, two people, second person, multiple people, crowd, companion, child, teenager, empty scene, landscape, gore, blood, weapon pointed at viewer, cross, crucifix, halo, religious symbol, nudity",
+      "variables": {
+        "age": "in their thirties with clearly adult features",
+        "background": "starship bridge",
+        "build": "wiry",
+        "colour": "amber orange",
+        "gender": "non-binary",
+        "pose": "piloting",
+        "role": "starship pilot in a flight suit"
+      },
+      "seed": 8505,
+      "init_image": null
+    },
+    "attempts": [
+      {
+        "seed": 8505,
+        "outcome": "ok",
+        "ref": "6db4ca97a56644daa81fa0152c175f31",
+        "detail": "",
+        "workflow": {
+          "name": "sdxl",
+          "sha256": "02e08f842f7a66e0e1be2ebc506ab8339f3b39df639beb86fc04dc240f3ef38d"
+        }
+      }
+    ],
+    "renderer": "darkroom",
+    "asset_id": "0x4fd5539fea72d89a1c0e3fa02a3b264b2febda8e02cd3ccb8e0dff98a298b580",
+    "to": "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
+    "name": "Amber Pilot",
+    "description": "Amber control panels glow, Amber Pilot steers the stars. They hum melodies only the cosmos knows. Among the hum, a peculiar habit: they pet their co-pilot, a sentient AI in the shape of a tiny, glowing sun.",
+    "external_url": null,
+    "consumer": "argus-mint",
+    "teaser": null,
+    "frame": {
+      "id": "card-green",
+      "version": 1,
+      "hash": "0xed8933833831ea63e4f8c91eea897814159af3a7b21acfb560c70162366ccf37"
+    },
+    "bio": {
+      "ref": {
+        "id": "demo-bio",
+        "version": 1,
+        "hash": "0xfee903b50f7131012c3fef6bb3c89daff4fc67e9ad3a1584fe44693f0774e861",
+        "model": "mistral-nemo:12b-instruct-2407-q4_K_M"
+      },
+      "text": "Amber control panels glow, Amber Pilot steers the stars. They hum melodies only the cosmos knows. Among the hum, a peculiar habit: they pet their co-pilot, a sentient AI in the shape of a tiny, glowing sun.",
+      "attempts": [
+        {
+          "outcome": "ok",
+          "detail": "",
+          "text": "Amber control panels glow, {name} steers the stars. They hum melodies only the cosmos knows. Among the hum, a peculiar habit: they pet their co-pilot, a sentient AI in the shape of a tiny, glowing sun."
+        }
+      ],
+      "edited": false
+    },
+    "texts": {
+      "class": "Pilot · Amber",
+      "stats": "No. 10"
+    },
+    "style": null,
+    "library": null,
+    "made_with": {
+      "argus-mint": "0.3.1.dev4+gb0c308e90"
+    },
+    "edits": [],
+    "auto_check": null,
+    "art_sha256": "2eb73af7c82a30ce984ea56d1962c2a5ac6a09f8c33864c88e118eb9f03068bc",
+    "image_sha256": "e3e6354ea858ab4f91f480303ddfdb19cf3d82d569891333276dcdca95c350b6",
+    "created_at": "2026-11-20T15:26:50.197724Z",
+    "reviews": [
+      {
+        "role": "moderator",
+        "decision": "approved",
+        "by": "moderator-1",
+        "at": "2026-11-20T15:26:50.217269Z",
+        "image_sha256": "e3e6354ea858ab4f91f480303ddfdb19cf3d82d569891333276dcdca95c350b6",
+        "note": ""
+      },
+      {
+        "role": "owner",
+        "decision": "approved",
+        "by": "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
+        "at": "2026-11-20T15:26:50.266208Z",
+        "image_sha256": "e3e6354ea858ab4f91f480303ddfdb19cf3d82d569891333276dcdca95c350b6",
+        "note": ""
+      }
+    ]
+  },
+  "published": null,
+  "posts": []
+}

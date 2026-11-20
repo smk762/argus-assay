@@ -1,6 +1,7 @@
 /**
  * A teaser project's own frames are named `<project>/<name>` (argus-mint wire 1.16), so a frame id can hold a `/`
- * (argus-assay#55). The committed fixture has none yet, so this test adds a hand-made one to a copy of it and checks:
+ * (argus-assay#55). The committed fixture records the example project's `harbour-feed`; this test takes a copy of
+ * the fixture with that frame back at draft (or a hand-made one, for a fixture without it) and checks:
  *   - the tape path: nested directories (`frames/<project>/<name>/<v>/…`), the same in make_tape.mjs, lib/tape.ts and
  *     the client's static branch, while the live client still sends the id encoded (`%2F`), which argus-mint takes;
  *   - parity: the mock and the in-browser argus-mint route the two-part id alike, with the `/` plain or encoded.
@@ -26,17 +27,25 @@ let dir = "";
 let mock: ChildProcess;
 let base = "";
 
-/** fixture/ with one project frame added, its files where record_demo.py would write them. */
+/** fixture/ with the project frame as a draft, so the review walk below can approve it and then retire it.
+ * A fixture recorded before argus-mint's project frames has none: one is hand-made from FROM, its files where
+ * record_demo.py writes them. */
 function withProjectFrame(): string {
   const out = mkdtempSync(join(tmpdir(), "assay-frame-ids-"));
   cpSync(FIXTURE, out, { recursive: true });
   const frames = JSON.parse(readFileSync(join(out, "frames.json"), "utf8")) as FrameInfo[];
-  const from = frames.find((f) => f.frame.id === FROM)!;
-  const frame = { ...structuredClone(from.frame), id: ID, version: 1, status: "draft" as const, approved_by: null, approved_at: null };
-  frame.effects = [{ type: "scanlines", spacing: 4, thickness: 1, opacity: 0.18 }];
-  frames.push({ ...from, frame, project: "example-teasers", file: "example-teasers/frames/harbour-feed-v1.yaml" });
+  const draft = { status: "draft" as const, approved_by: null, approved_at: null };
+  const recorded = frames.find((f) => f.frame.id === ID);
+  if (recorded) {
+    recorded.frame = { ...recorded.frame, ...draft };
+  } else {
+    const from = frames.find((f) => f.frame.id === FROM)!;
+    const frame = { ...structuredClone(from.frame), id: ID, version: 1, ...draft };
+    frame.effects = [{ type: "scanlines", spacing: 4, thickness: 1, opacity: 0.18 }];
+    frames.push({ ...from, frame, project: "example-teasers", file: "example-teasers/frames/harbour-feed-v1.yaml" });
+    cpSync(join(out, "frames", FROM, "1"), join(out, ...frameDir(ID, 1).split("/")), { recursive: true });
+  }
   writeFileSync(join(out, "frames.json"), JSON.stringify(frames));
-  cpSync(join(out, "frames", FROM, "1"), join(out, ...frameDir(ID, 1).split("/")), { recursive: true });
   return out;
 }
 

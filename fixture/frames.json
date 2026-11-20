@@ -4,6 +4,7 @@
     "file": "card-green-v1.yaml",
     "width": 969,
     "height": 1352,
+    "project": null,
     "frame": {
       "id": "card-green",
       "version": 1,
@@ -75,7 +76,8 @@
           "line_spacing": 1.15
         }
       },
-      "style_locked": false
+      "style_locked": false,
+      "effects": []
     }
   },
   {
@@ -83,6 +85,7 @@
     "file": "example-plain-v1.yaml",
     "width": 1000,
     "height": 1400,
+    "project": null,
     "frame": {
       "id": "example-plain",
       "version": 1,
@@ -112,7 +115,8 @@
           "line_spacing": 1.15
         }
       },
-      "style_locked": false
+      "style_locked": false,
+      "effects": []
     }
   },
   {
@@ -120,6 +124,7 @@
     "file": "example-teaser-v1.yaml",
     "width": 1024,
     "height": 1024,
+    "project": null,
     "frame": {
       "id": "example-teaser",
       "version": 1,
@@ -177,7 +182,100 @@
           "line_spacing": 1.15
         }
       },
-      "style_locked": true
+      "style_locked": true,
+      "effects": []
+    }
+  },
+  {
+    "hash": "0xe1de78fed0a4b41250735c10962af44ea3cf1df2ff1e6e9ce6015a976e920b9f",
+    "file": "example-teasers/frames/harbour-feed-v1.yaml",
+    "width": 1024,
+    "height": 1024,
+    "project": "example-teasers",
+    "frame": {
+      "id": "example-teasers/harbour-feed",
+      "version": 1,
+      "status": "approved",
+      "approved_by": "maintainer",
+      "approved_at": "2026-11-15",
+      "overlay": "harbour-feed-v1.png",
+      "window": {
+        "x": 0,
+        "y": 0,
+        "width": 1024,
+        "height": 1024
+      },
+      "texts": {
+        "quote": {
+          "x": 72,
+          "y": 700,
+          "width": 880,
+          "height": 220,
+          "font": "fonts/CrimsonText-Italic.ttf",
+          "size": 46,
+          "min_size": 24,
+          "colour": "#ffffff",
+          "align": "center",
+          "valign": "middle",
+          "wrap": true,
+          "line_spacing": 1.15
+        },
+        "attribution": {
+          "x": 72,
+          "y": 930,
+          "width": 880,
+          "height": 52,
+          "font": "fonts/CrimsonText-Regular.ttf",
+          "size": 30,
+          "min_size": 18,
+          "colour": "#d6ecd6",
+          "align": "right",
+          "valign": "middle",
+          "wrap": false,
+          "line_spacing": 1.15
+        },
+        "label": {
+          "x": 712,
+          "y": 46,
+          "width": 200,
+          "height": 32,
+          "font": "fonts/CrimsonText-Regular.ttf",
+          "size": 22,
+          "min_size": 14,
+          "colour": "#ffffff",
+          "align": "center",
+          "valign": "middle",
+          "wrap": false,
+          "line_spacing": 1.15
+        }
+      },
+      "style_locked": true,
+      "effects": [
+        {
+          "type": "barrel",
+          "strength": 0.12
+        },
+        {
+          "type": "chromatic_aberration",
+          "shift": 2
+        },
+        {
+          "type": "scanlines",
+          "spacing": 4,
+          "thickness": 1,
+          "opacity": 0.18
+        },
+        {
+          "type": "noise",
+          "amount": 0.06,
+          "monochrome": true
+        },
+        {
+          "type": "vignette",
+          "strength": 0.45,
+          "start": 0.55
+        }
+      ]
     }
   }
 ]

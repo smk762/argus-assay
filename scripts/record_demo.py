@@ -447,7 +447,7 @@ class OllamaWriter:
             print(f"couldn't unload {model}: {e}", file=sys.stderr)
 
 
-GATE = {"darkroom": ""}  # darkroom's URL in a real run: the gate waits for it to be idle
+GATE: dict[str, DarkroomClient | None] = {"darkroom": None}  # a real run's darkroom: the gate waits for it to be idle
 OOM = ("out of memory", "would exceed allowed memory")
 
 
@@ -456,6 +456,8 @@ def gpu_window(real: bool) -> None:
     release it), nor while darkroom is busy with someone else's job."""
     if not real:
         return
+    gate = GATE["darkroom"]
+    assert gate is not None, "a real run sets GATE before any GPU work"
     while True:
         now = datetime.now(UTC)
         if UNTIL and f"{now:%H:%M}" >= UNTIL:
@@ -466,7 +468,7 @@ def gpu_window(real: bool) -> None:
             time.sleep(wait)
             continue
         try:
-            busy = httpx.get(f"{GATE['darkroom'].rstrip('/')}/health", timeout=10).json().get("generating", False)
+            busy = gate.health().get("generating", False)
         except (httpx.HTTPError, ValueError):
             busy = True
         if not busy:
@@ -769,7 +771,7 @@ def plan(real: bool) -> str:
 def reachable(darkroom: str, ollama: str, model: str) -> None:
     """Stop before any work unless darkroom answers and Ollama has the bio model (neither call uses the GPU)."""
     try:
-        httpx.get(f"{darkroom.rstrip('/')}/health", timeout=10).raise_for_status()
+        DarkroomClient(darkroom, timeout=10).health()
         tags = httpx.get(f"{ollama.rstrip('/')}/api/tags", timeout=10).json()
     except (httpx.HTTPError, ValueError) as e:
         sys.exit(f"the GPU host isn't ready: {e}")
@@ -819,8 +821,8 @@ def main(a: argparse.Namespace) -> None:
         default = t.model if t.model in {e.model for e in entries} else entries[0].model
 
         if a.real:
-            GATE["darkroom"] = a.darkroom
             darkroom, writer = DarkroomClient(a.darkroom), OllamaWriter(a.ollama)
+            GATE["darkroom"] = DarkroomClient(a.darkroom, timeout=10)
         else:
             darkroom = StandInDarkroom([landscape(images[e.id]) for e in entries if e.model == default])
             writer = StandInWriter()

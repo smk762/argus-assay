@@ -36,4 +36,12 @@ describe("CardPreview", () => {
     expect(refs[0]).not.toBe(refs[1]);
     for (const ref of refs) expect(ids).toContain(ref);
   });
+
+  it("says effects aren't previewed when the frame lists any, and only then", () => {
+    const plain = renderToStaticMarkup(<CardPreview frame={frame} artUrl="a.png" layout={layout} style={{}} />);
+    expect(plain).not.toContain("effects not previewed");
+    const withEffects = { ...frame, frame: { ...frame.frame, effects: [{ type: "vignette" as const, strength: 0.45, start: 0.55 }] } } satisfies FrameInfo;
+    const html = renderToStaticMarkup(<CardPreview frame={withEffects} artUrl="a.png" layout={layout} style={{}} />);
+    expect(html).toContain("effects not previewed: the baked PNG is what&#x27;s reviewed");
+  });
 });

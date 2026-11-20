@@ -5,6 +5,7 @@ import Link from "next/link";
 import { CatalogueBadge, DocLink, Hash, PageTitle, useLoad } from "@/components/bits";
 import { Card, Notice, SectionTitle, Spinner } from "@/components/ui";
 import { getBios, getFrames, getTemplates } from "@/lib/api";
+import { catalogueHref } from "@/lib/catalogueRoute";
 import type { CatalogueStatus } from "@/lib/types";
 
 function Row({ href, title, status, hash, detail }: { href: string; title: string; status: CatalogueStatus; hash: string; detail: string }) {
@@ -39,7 +40,7 @@ export default function CataloguePage() {
           <SectionTitle className="mb-2">Templates</SectionTitle>
           <ul>
             {templates.map(({ template: t, hash, combinations }) => (
-              <Row key={`${t.id}@${t.version}`} href={`/catalogue/template/${t.id}/${t.version}`} title={`${t.id} v${t.version}`} status={t.status} hash={hash} detail={`${combinations.toLocaleString()} combinations · ${t.width}×${t.height}`} />
+              <Row key={`${t.id}@${t.version}`} href={catalogueHref("template", t.id, t.version)} title={`${t.id} v${t.version}`} status={t.status} hash={hash} detail={`${combinations.toLocaleString()} combinations · ${t.width}×${t.height}`} />
             ))}
           </ul>
         </Card>
@@ -47,7 +48,7 @@ export default function CataloguePage() {
           <SectionTitle className="mb-2">Frames</SectionTitle>
           <ul>
             {frames.map(({ frame: f, hash, width, height }) => (
-              <Row key={`${f.id}@${f.version}`} href={`/catalogue/frame/${f.id}/${f.version}`} title={`${f.id} v${f.version}`} status={f.status} hash={hash} detail={`${width}×${height} · ${Object.keys(f.texts ?? {}).join(", ") || "no text"}`} />
+              <Row key={`${f.id}@${f.version}`} href={catalogueHref("frame", f.id, f.version)} title={`${f.id} v${f.version}`} status={f.status} hash={hash} detail={`${width}×${height} · ${Object.keys(f.texts ?? {}).join(", ") || "no text"}`} />
             ))}
           </ul>
         </Card>
@@ -55,7 +56,7 @@ export default function CataloguePage() {
           <SectionTitle className="mb-2">Bio templates</SectionTitle>
           <ul>
             {bios.map(({ bio: b, hash }) => (
-              <Row key={`${b.id}@${b.version}`} href={`/catalogue/bio/${b.id}/${b.version}`} title={`${b.id} v${b.version}`} status={b.status} hash={hash} detail={b.model} />
+              <Row key={`${b.id}@${b.version}`} href={catalogueHref("bio", b.id, b.version)} title={`${b.id} v${b.version}`} status={b.status} hash={hash} detail={b.model} />
             ))}
           </ul>
         </Card>

@@ -1,7 +1,7 @@
 import { mintUrl } from "./config";
 import { staticDemo, tapeBase } from "./demo";
 import { DemoMint, type DemoResponse } from "./demoMint";
-import { parseTape } from "./tape";
+import { frameTapeDir, parseTape } from "./tape";
 import { getToken } from "./token";
 import type {
   CatalogueEntry,
@@ -141,7 +141,7 @@ export const draftImage = (id: string, which: "image" | "art", version = ""): st
 export const sampleImage = (id: string, n: number, which: "art" | "framed"): string =>
   staticDemo() ? tapeFile(`samples/${encodeURIComponent(id)}/${n}-${which}.png`) : imageUrl(`/samples/${encodeURIComponent(id)}/${n}/${which}`);
 export const frameOverlay = (id: string, version: number): string =>
-  staticDemo() ? tapeFile(`frames/${encodeURIComponent(id)}/${version}/overlay.png`) : imageUrl(`/frames/${encodeURIComponent(id)}/${version}/overlay`);
+  staticDemo() ? tapeFile(`${frameTapeDir(id, version)}/overlay.png`) : imageUrl(`/frames/${encodeURIComponent(id)}/${version}/overlay`);
 
 export const getTemplates = (): Promise<TemplateInfo[]> => getJson("/templates");
 export const getLibrary = (): Promise<LibraryListing> => getJson("/library");
@@ -218,8 +218,8 @@ export const frameLayout = (id: string, version: number, texts: Record<string, s
 
 /** A font the frame names, by the path the frame gives it. */
 export const frameFont = (id: string, version: number, font: string): string => {
-  const rel = `${encodeURIComponent(id)}/${version}/fonts/${font.split("/").map(encodeURIComponent).join("/")}`;
-  return staticDemo() ? tapeFile(`frames/${rel}`) : imageUrl(`/frames/${rel}`);
+  const fontPath = font.split("/").map(encodeURIComponent).join("/");
+  return staticDemo() ? tapeFile(`${frameTapeDir(id, version)}/fonts/${fontPath}`) : imageUrl(`/frames/${encodeURIComponent(id)}/${version}/fonts/${fontPath}`);
 };
 
 export async function publishDraft(id: string, price = 0): Promise<DraftDetail> {

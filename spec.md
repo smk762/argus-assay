@@ -32,6 +32,7 @@ The standalone review UI for [argus-mint](https://github.com/smk762/argus-mint),
        - Text goes where `POST /frames/…/layout` says, in the frame's fonts.
        - Text is set with unhinted advances (`text-rendering: geometricPrecision`), as Pillow lays a line out.
        - A glow is blurred as Pillow blurs it, colour and alpha separately, so it darkens as it fades.
+       - A frame's `effects` (lens, scanlines, noise, colour fringing, vignette) aren't drawn. When the frame's `effects` (from `GET /frames`) isn't empty, the preview says "effects not previewed: the baked PNG is what's reviewed". Nothing else decides it.
      - **Confirm:** signing with the card's wallet sends one edit, and argus-mint bakes the PNG. That PNG is what the moderator and the owner then review.
      - **The moderator never edits.**
    - **How it was made:** the template, frame, seed, checkpoint, LoRAs, the library entry (when the art came from the library), render attempts, bio and bio attempts, display texts, and reviews.
@@ -48,10 +49,11 @@ The standalone review UI for [argus-mint](https://github.com/smk762/argus-mint),
 4. **Library** (`/library`). The pre-rendered portraits, when the server has them.
    - One row per variable combination, one column per checkpoint, with the columns grouped by family when there is more than one. A row uses the same variables and seed on every checkpoint.
    - A portrait opens full size, with a link to make a card from it.
-5. **Catalogue** (`/catalogue`, `/catalogue/{template|frame|bio}/{id}/{version}`). Every file, every status, with its hash.
+5. **Catalogue** (`/catalogue`, `/catalogue/{template|frame|bio}/{id}/{version}`). Every file, every status, with its hash. A teaser project's own frame has a two-part id (`<project>/<name>`), so its page is one level deeper (`/catalogue/frame/<project>/<name>/{version}`).
    - **Template:** prompt, negative prompt, variable lists, size and the number of combinations; the default checkpoint and the others allowed; sampling and negative prompt, and each family's own; the LoRAs always applied, and the LoRA options with their weights, trigger words and checkpoints.
    - **Frame:**
      - The overlay with the art window and text slots drawn on it.
+     - The project it belongs to, for a project's own frame, and its effects in order, each with its parameters as recorded.
      - The best render size for the window, and a warning when square renders would be cropped.
      - A live preview on any draft's or sample's art, with editable name, bio and slot text.
    - **Bio template:** model, system prompt, prompt and limits.
@@ -63,6 +65,7 @@ The standalone review UI for [argus-mint](https://github.com/smk762/argus-mint),
    - **Each kind in its own section:** the project, identities, scenes, lines and teaser links. Each file shows its status (mark and word), hash, path, who approved it and when, and its content laid out to read (and as sent).
    - **Checks, as argus-mint reports them:** problems as its sentences; a spoiler hold only as "Held by spoiler rule N"; SingGuard's verdicts per file and field, with the policy, when each was checked and whether argus-mint still counts it. When no darkroom is configured, the page says nothing can be approved.
    - **Editors (moderator token, `capabilities.author_catalogue`):** structured fields per kind. Free text only for the authored texts (prompt, negative, a line's text, published wording and source, the title, attribution, alt text). Presence, provenance, a line's voice, frames, checkpoints, samplers and the files a teaser links (by id and version) are picked from lists; ids and labels are typed only as identifiers. A draft is saved over itself; an approved or retired file is saved as the next version.
+   - **Frames:** the project's own frames (`GET /frames` gives each its `project`), each with its status, hash and file, linked to its catalogue page, where it is reviewed. The editors offer the project's own frames and the global ones, grouped; another project's frame only when the file already names it (argus-mint reports that as a problem).
    - **Decision:** approve a draft file or retire an approved one, gated the same way. A refusal (409) is shown as argus-mint's message, word for word.
    - **References** show their argus-cortex provenance (kind, source, licence, release hash, generator) and never the person a consented one names. A reference problem is one of argus-mint's problems.
    - **Backgrounds, per scene** (`capabilities.backgrounds`, moderator token):
@@ -125,6 +128,7 @@ The standalone review UI for [argus-mint](https://github.com/smk762/argus-mint),
 - "Approve as demo owner" stands in for the wallet; the mock checks no signature
 
 **Hosted demo** (`make pages`, static). The same behaviour runs in the browser (`lib/demoMint.ts`) over a tape made from `fixture/` (`scripts/make_tape.mjs`). There is no server and no token, and state lasts until reload.
+- **Tape paths:** the images and fonts sit under the fixture's own paths. A project's own frame (`<project>/<name>`) is in nested directories, `frames/<project>/<name>/<version>/`, in `make_tape.mjs`, `lib/tape.ts` and the mock alike.
 - **Off:** drafts and samples can't be made (they need a GPU), the frame preview is hidden (argus-mint composites it), and teaser project files can't be saved or reviewed (the recorded example project is there to read). A teaser's layers are read-only too: its backgrounds, tracker, teaser drafts (which can be reviewed like cards), posts and training view are shown as recorded. Starting a job, reviewing a background, making a teaser draft, recording a post, the identity check and training are off.
 - **No wallet:** the demo owner signs instead, and wallet buttons are hidden.
 - **Label:** the header says Sample data or Recorded, from the tape. [docs/demo-recording.md](docs/demo-recording.md) covers what a real recording needs.

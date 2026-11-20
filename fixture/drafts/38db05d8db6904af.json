@@ -1,0 +1,146 @@
+{
+  "id": "38db05d8db6904af",
+  "status": "pending",
+  "awaiting": [
+    "owner"
+  ],
+  "draft": {
+    "format": 1,
+    "kind": "teaser",
+    "request": {
+      "template_id": "shoreline",
+      "template_version": 1,
+      "template_hash": "0x7aa7ce6d1cbae3a127100483b7b1bf139a5a56b89617172c2ca6149850df5fe8",
+      "model": "sdxl/juggernautXL_ragnarokBy/juggernautXL_ragnarokBy.safetensors",
+      "loras": [],
+      "sampling": {
+        "sampler": "euler",
+        "scheduler": "normal",
+        "steps": 25,
+        "cfg": 6.0,
+        "clip_skip": 1,
+        "guidance": null
+      },
+      "width": 1024,
+      "height": 1024,
+      "prompt": "a rocky shoreline at dusk seen from high above, waves breaking, a small boat far out, painted illustration, no people, no lettering",
+      "negative": "people, person, text, letters, watermark, signature",
+      "variables": {},
+      "seed": 3729655101,
+      "init_image": null
+    },
+    "attempts": [
+      {
+        "seed": 3729655101,
+        "outcome": "ok",
+        "ref": "5b1bd6165b0246c7a7254603161aff3f",
+        "detail": "",
+        "workflow": {
+          "name": "sdxl",
+          "sha256": "02e08f842f7a66e0e1be2ebc506ab8339f3b39df639beb86fc04dc240f3ef38d"
+        }
+      }
+    ],
+    "renderer": "darkroom",
+    "asset_id": null,
+    "to": "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
+    "name": "Lantern Coast T2",
+    "description": "",
+    "external_url": null,
+    "consumer": null,
+    "teaser": {
+      "project": {
+        "id": "example-teasers",
+        "version": 1,
+        "hash": "0xbadd2bd0e3596936d9fccc8ee26f5c8d17e51238fbc4ce51da36a43e1bab16fc"
+      },
+      "links": {
+        "id": "example-teasers",
+        "version": 2,
+        "hash": "0xf3d576f9912a476be5d242c7e681285fc187ef0f4de831adc1c8709a7470b6b7"
+      },
+      "number": "T2",
+      "line": {
+        "id": "every-boat",
+        "version": 1,
+        "hash": "0x6aa0283cc59ea81cccb8ba2bd4c5736597a764a8d89e63ce605d50da7b0a3bd2"
+      },
+      "identity": {
+        "id": "lamp",
+        "version": 1,
+        "hash": "0x51d07330a33132dff6a5ab7053e3459c2d46404343d87bf47a1b62649f412072"
+      },
+      "scene": {
+        "id": "shoreline",
+        "version": 1,
+        "hash": "0x7aa7ce6d1cbae3a127100483b7b1bf139a5a56b89617172c2ca6149850df5fe8"
+      },
+      "presence": "viewpoint",
+      "background": {
+        "id": "shoreline-v1-01",
+        "sha256": "5891f520d430238f07b72d9fe76011d8a54e470cf48c926bbafdfdfc7f8ae67e"
+      },
+      "alt": "Looking down from a lighthouse at dusk onto rocks, breaking waves and one small boat far out."
+    },
+    "frame": {
+      "id": "example-teasers/harbour-feed",
+      "version": 1,
+      "hash": "0xe1de78fed0a4b41250735c10962af44ea3cf1df2ff1e6e9ce6015a976e920b9f"
+    },
+    "bio": null,
+    "texts": {
+      "quote": "I see every boat. None of them see me until they need to.",
+      "label": "generated image"
+    },
+    "style": null,
+    "library": null,
+    "made_with": {
+      "argus-mint": "0.3.1.dev4+gb0c308e90"
+    },
+    "edits": [],
+    "auto_check": {
+      "at": "2026-11-20T15:28:58.185621Z",
+      "image_sha256": "725def1b9a92704e5b8c7873887550f42427965c03ad946fb7469a05d4398169",
+      "passed": false,
+      "checks": [
+        "art: darkroom's image guards passed it",
+        "word filter: name, text label, text quote clean",
+        "identity: identity lamp v1 is a viewpoint: nobody is painted in, so there is no figure to score"
+      ],
+      "held": [
+        "auto-moderation is off: the moderator decides"
+      ],
+      "identity": {
+        "at": "2026-11-20T15:28:58.167342Z",
+        "art_sha256": "5891f520d430238f07b72d9fe76011d8a54e470cf48c926bbafdfdfc7f8ae67e",
+        "presence": "viewpoint",
+        "outcome": "skipped",
+        "reason": "identity lamp v1 is a viewpoint: nobody is painted in, so there is no figure to score",
+        "metric": null,
+        "score": null,
+        "min_score": null,
+        "export": null,
+        "crop": null,
+        "proof_version": null,
+        "scorer": null,
+        "scorer_version": null,
+        "model_file": null
+      }
+    },
+    "art_sha256": "5891f520d430238f07b72d9fe76011d8a54e470cf48c926bbafdfdfc7f8ae67e",
+    "image_sha256": "725def1b9a92704e5b8c7873887550f42427965c03ad946fb7469a05d4398169",
+    "created_at": "2026-11-20T15:28:58.167285Z",
+    "reviews": [
+      {
+        "role": "moderator",
+        "decision": "approved",
+        "by": "moderator-1",
+        "at": "2026-11-20T15:28:58.205436Z",
+        "image_sha256": "725def1b9a92704e5b8c7873887550f42427965c03ad946fb7469a05d4398169",
+        "note": ""
+      }
+    ]
+  },
+  "published": null,
+  "posts": []
+}

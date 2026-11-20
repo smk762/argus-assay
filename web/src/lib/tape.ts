@@ -78,6 +78,13 @@ const isObject = (v: unknown): v is Record<string, unknown> => v != null && type
 /** Check tape.json enough that the page can trust its shape; throws with the first problem. */
 const TAPE_PATH = /^[A-Za-z0-9_-]+(?:\/[A-Za-z0-9_.-]+)*$/;
 
+/**
+ * Where a frame's files sit under the tape: `frames/<id>/<version>`. A project's own frame (`<project>/<name>`) takes
+ * nested directories, as record_demo.py writes them and scripts/make_tape.mjs frameDir checks; the version (digits)
+ * then a fixed name (`overlay.png`, `fonts`) keeps every path distinct. Each segment is URL-encoded for the fetch.
+ */
+export const frameTapeDir = (id: string, version: number): string => `frames/${id.split("/").map(encodeURIComponent).join("/")}/${version}`;
+
 export function parseTape(raw: unknown): Tape {
   if (!isObject(raw)) fail("tape.json must be an object");
   if (raw.format !== TAPE_FORMAT) fail(`format is ${JSON.stringify(raw.format)}, not ${TAPE_FORMAT}`);

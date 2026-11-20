@@ -1,0 +1,258 @@
+{
+  "id": "5b8b50a98274fa0a",
+  "status": "published",
+  "awaiting": [],
+  "draft": {
+    "format": 1,
+    "kind": "card",
+    "request": {
+      "template_id": "demo-cast",
+      "template_version": 1,
+      "template_hash": "0x781f2f17e65402cef5c46a2b7767947951a8eced410d01aa104927bd7283d8f1",
+      "model": "sdxl/aureanuanceXL_v2/aureanuanceXL_v2.safetensors",
+      "loras": [],
+      "sampling": {
+        "sampler": "euler",
+        "scheduler": "normal",
+        "steps": 25,
+        "cfg": 6.0,
+        "clip_skip": 1,
+        "guidance": null
+      },
+      "width": 1152,
+      "height": 896,
+      "prompt": "waist-up portrait of one (female:1.4) (elderly with white hair and a wrinkled face:1.3) heavyset alchemist, the only subject in the picture, centered and facing the viewer, clothing and colour scheme copper, brewing a potion, background: alchemy lab, painted fantasy and science-fiction illustration, full bleed, detailed",
+      "negative": "text, letters, words, caption, title, label, logo, watermark, signature, border, frame, card frame, trading card, playing card, game ui, icons, badges, numbers, two people, second person, multiple people, crowd, companion, child, teenager, empty scene, landscape, gore, blood, weapon pointed at viewer, cross, crucifix, halo, religious symbol, nudity",
+      "variables": {
+        "age": "elderly with white hair and a wrinkled face",
+        "background": "alchemy lab",
+        "build": "heavyset",
+        "colour": "copper",
+        "gender": "female",
+        "pose": "brewing a potion",
+        "role": "alchemist"
+      },
+      "seed": 8574,
+      "init_image": null
+    },
+    "attempts": [
+      {
+        "seed": 8574,
+        "outcome": "ok",
+        "ref": "6465a1e12c3c4d98b0383ba111df2057",
+        "detail": "",
+        "workflow": {
+          "name": "sdxl",
+          "sha256": "02e08f842f7a66e0e1be2ebc506ab8339f3b39df639beb86fc04dc240f3ef38d"
+        }
+      }
+    ],
+    "renderer": "darkroom",
+    "asset_id": "0x20266aba100befaf308ff827acc91d3b4b436ace9bba7ffb36f9c750d11816ed",
+    "to": "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
+    "name": "Copper Alchemist",
+    "description": "Copper vials clink, Copper Alchemist mixes. Her gloves match her lab's brass. Every concoction, she whistles. A tune only chemicals understand. She adds a dash of dragon's breath, just because she can.",
+    "external_url": null,
+    "consumer": "argus-mint",
+    "teaser": null,
+    "frame": {
+      "id": "card-green",
+      "version": 1,
+      "hash": "0xed8933833831ea63e4f8c91eea897814159af3a7b21acfb560c70162366ccf37"
+    },
+    "bio": {
+      "ref": {
+        "id": "demo-bio",
+        "version": 1,
+        "hash": "0xfee903b50f7131012c3fef6bb3c89daff4fc67e9ad3a1584fe44693f0774e861",
+        "model": "mistral-nemo:12b-instruct-2407-q4_K_M"
+      },
+      "text": "Copper vials clink, Copper Alchemist mixes. Her gloves match her lab's brass. Every concoction, she whistles. A tune only chemicals understand. She adds a dash of dragon's breath, just because she can.",
+      "attempts": [
+        {
+          "outcome": "ok",
+          "detail": "",
+          "text": "Copper vials clink, {name} mixes. Her gloves match her lab's brass. Every concoction, she whistles. A tune only chemicals understand. She adds a dash of dragon's breath, just because she can."
+        }
+      ],
+      "edited": false
+    },
+    "texts": {
+      "class": "Alchemist · Copper",
+      "stats": "No. 14"
+    },
+    "style": null,
+    "library": null,
+    "made_with": {
+      "argus-mint": "0.3.1.dev4+gb0c308e90"
+    },
+    "edits": [],
+    "auto_check": null,
+    "art_sha256": "f6d8caa8f95cef9677d83cdc1eb6212f00a19308ea21472f5c7060e88496d485",
+    "image_sha256": "aee1931f489bc6147903734cbfe30ce4a7d6b8fc0dc69374e2c07692f239203e",
+    "created_at": "2026-11-20T15:26:53.436633Z",
+    "reviews": [
+      {
+        "role": "moderator",
+        "decision": "approved",
+        "by": "moderator-1",
+        "at": "2026-11-20T15:26:53.449415Z",
+        "image_sha256": "aee1931f489bc6147903734cbfe30ce4a7d6b8fc0dc69374e2c07692f239203e",
+        "note": ""
+      },
+      {
+        "role": "owner",
+        "decision": "approved",
+        "by": "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
+        "at": "2026-11-20T15:26:53.482851Z",
+        "image_sha256": "aee1931f489bc6147903734cbfe30ce4a7d6b8fc0dc69374e2c07692f239203e",
+        "note": ""
+      }
+    ]
+  },
+  "published": {
+    "signer": "0x70997970C51812dc3A010C7d01b50e0d17dc79C8",
+    "render": {
+      "renderer": "darkroom",
+      "prompt": "waist-up portrait of one (female:1.4) (elderly with white hair and a wrinkled face:1.3) heavyset alchemist, the only subject in the picture, centered and facing the viewer, clothing and colour scheme copper, brewing a potion, background: alchemy lab, painted fantasy and science-fiction illustration, full bleed, detailed",
+      "seed": 8574,
+      "attempts": [
+        {
+          "seed": 8574,
+          "outcome": "ok",
+          "ref": "6465a1e12c3c4d98b0383ba111df2057",
+          "detail": "",
+          "workflow": {
+            "name": "sdxl",
+            "sha256": "02e08f842f7a66e0e1be2ebc506ab8339f3b39df639beb86fc04dc240f3ef38d"
+          }
+        }
+      ],
+      "art_cid": "bafkreihw3dfkr6k456lhpwb43qplmijpacqzgchkefds6xdqmduijfwuqu",
+      "image_cid": "bafkreifo4gjr6se3yykhsa3tjs76gdheu7llr7any2jxjywao2jpeojahy"
+    },
+    "reviews": [
+      {
+        "role": "moderator",
+        "decision": "approved",
+        "by": "moderator-1",
+        "at": "2026-11-20T15:26:53.449415Z",
+        "image_sha256": "aee1931f489bc6147903734cbfe30ce4a7d6b8fc0dc69374e2c07692f239203e",
+        "note": ""
+      },
+      {
+        "role": "owner",
+        "decision": "approved",
+        "by": "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
+        "at": "2026-11-20T15:26:53.482851Z",
+        "image_sha256": "aee1931f489bc6147903734cbfe30ce4a7d6b8fc0dc69374e2c07692f239203e",
+        "note": ""
+      }
+    ],
+    "metadata": {
+      "name": "Copper Alchemist",
+      "description": "Copper vials clink, Copper Alchemist mixes. Her gloves match her lab's brass. Every concoction, she whistles. A tune only chemicals understand. She adds a dash of dragon's breath, just because she can.",
+      "image": "ipfs://bafkreifo4gjr6se3yykhsa3tjs76gdheu7llr7any2jxjywao2jpeojahy",
+      "attributes": [],
+      "provenance": {
+        "template": "demo-cast",
+        "template_version": 1,
+        "template_hash": "0x781f2f17e65402cef5c46a2b7767947951a8eced410d01aa104927bd7283d8f1",
+        "seed": 8574,
+        "attempts": 1,
+        "asset_id": "0x20266aba100befaf308ff827acc91d3b4b436ace9bba7ffb36f9c750d11816ed",
+        "consumer": "argus-mint",
+        "frame": {
+          "id": "card-green",
+          "version": 1,
+          "hash": "0xed8933833831ea63e4f8c91eea897814159af3a7b21acfb560c70162366ccf37"
+        },
+        "art": "ipfs://bafkreihw3dfkr6k456lhpwb43qplmijpacqzgchkefds6xdqmduijfwuqu",
+        "bio": {
+          "id": "demo-bio",
+          "version": 1,
+          "hash": "0xfee903b50f7131012c3fef6bb3c89daff4fc67e9ad3a1584fe44693f0774e861",
+          "model": "mistral-nemo:12b-instruct-2407-q4_K_M"
+        },
+        "variables": {
+          "age": "elderly with white hair and a wrinkled face",
+          "background": "alchemy lab",
+          "build": "heavyset",
+          "colour": "copper",
+          "gender": "female",
+          "pose": "brewing a potion",
+          "role": "alchemist"
+        },
+        "model": "sdxl/aureanuanceXL_v2/aureanuanceXL_v2.safetensors"
+      }
+    },
+    "metadata_cid": "bafkreifrun65gzgsosnch2v7w7r36iqlq4ghasnognrw7a4v5meg7tkevi",
+    "voucher": {
+      "to": "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
+      "asset_id": "0x20266aba100befaf308ff827acc91d3b4b436ace9bba7ffb36f9c750d11816ed",
+      "content_hash": "0xa23ad28e77bcbce61a65d9bbfa8ccb95ab08094f73909991da693cac1cd9331c",
+      "price": 0,
+      "deadline": 1900000000
+    },
+    "signature": "0xa9a7e2909f369ac59d7e780d72ff2778f3511ca95220a2800c1e2b02d25d0274155496021fd9ce228d18ff06841dceeb4a879652325adedf77bded3307b511411c",
+    "typed_data": {
+      "types": {
+        "EIP712Domain": [
+          {
+            "name": "name",
+            "type": "string"
+          },
+          {
+            "name": "version",
+            "type": "string"
+          },
+          {
+            "name": "chainId",
+            "type": "uint256"
+          },
+          {
+            "name": "verifyingContract",
+            "type": "address"
+          }
+        ],
+        "MintVoucher": [
+          {
+            "name": "to",
+            "type": "address"
+          },
+          {
+            "name": "assetId",
+            "type": "bytes32"
+          },
+          {
+            "name": "contentHash",
+            "type": "bytes32"
+          },
+          {
+            "name": "price",
+            "type": "uint256"
+          },
+          {
+            "name": "deadline",
+            "type": "uint64"
+          }
+        ]
+      },
+      "primaryType": "MintVoucher",
+      "domain": {
+        "name": "argus-mint Card",
+        "version": "1",
+        "chainId": 84532,
+        "verifyingContract": "0xCAa3573b5550870A5e15C47c650b8700D70a8fA7"
+      },
+      "message": {
+        "to": "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
+        "assetId": "0x20266aba100befaf308ff827acc91d3b4b436ace9bba7ffb36f9c750d11816ed",
+        "contentHash": "0xa23ad28e77bcbce61a65d9bbfa8ccb95ab08094f73909991da693cac1cd9331c",
+        "price": 0,
+        "deadline": 1900000000
+      }
+    }
+  },
+  "posts": []
+}

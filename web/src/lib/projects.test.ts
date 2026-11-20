@@ -4,6 +4,7 @@ import {
   currentVerdicts,
   fileLabel,
   filesOf,
+  groupFrames,
   identityVoices,
   isId,
   knownVoices,
@@ -19,7 +20,7 @@ import {
   storedVerdicts,
   teaserOrder,
 } from "./projects";
-import type { ProjectDetail, ProjectFile } from "./types";
+import type { FrameInfo, ProjectDetail, ProjectFile } from "./types";
 
 const file = (kind: ProjectFile["kind"], id: string, version: number, status: ProjectFile["status"], doc: Record<string, unknown> = {}): ProjectFile => ({
   kind,
@@ -121,5 +122,27 @@ describe("references and teaser numbers", () => {
     expect(nextTeaser({})).toBe("T1");
     expect(nextTeaser({ T1: 1, T3: 1 })).toBe("T2");
     expect(teaserOrder({ T10: 1, T2: 1, T1: 1 })).toEqual(["T1", "T2", "T10"]);
+  });
+});
+
+describe("a project's frames, grouped as GET /frames labels them", () => {
+  const frame = (id: string, project?: string | null): FrameInfo =>
+    ({ file: `${id}.yaml`, hash: "h", width: 1, height: 1, project, frame: { id, version: 1, status: "draft", overlay: "o.png", texts: {}, window: { x: 0, y: 0, width: 1, height: 1 } } }) as FrameInfo;
+  const frames = [frame("card-green"), frame("example-teaser", null), frame("example-teasers/harbour-feed", "example-teasers"), frame("other/cam", "other")];
+
+  it("puts the project's own apart from the global ones, and leaves another project's out", () => {
+    const g = groupFrames(frames, "example-teasers");
+    expect(g.own.map((f) => f.frame.id)).toEqual(["example-teasers/harbour-feed"]);
+    expect(g.global.map((f) => f.frame.id)).toEqual(["card-green", "example-teaser"]);
+    expect(g.other).toEqual([]);
+  });
+
+  it("keeps another project's frame only where the file already names it, so it can be seen and taken out", () => {
+    expect(groupFrames(frames, "example-teasers", [null, { id: "other/cam", version: 1 }]).other.map((f) => f.frame.id)).toEqual(["other/cam"]);
+    expect(groupFrames(frames, "other").own.map((f) => f.frame.id)).toEqual(["other/cam"]);
+  });
+
+  it("round-trips a two-part id through a picker's value", () => {
+    expect(parseRef(refValue({ id: "example-teasers/harbour-feed", version: 2 }))).toEqual({ id: "example-teasers/harbour-feed", version: 2 });
   });
 });

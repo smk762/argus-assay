@@ -254,6 +254,10 @@ def shared_run(a: str, b: str, n: int) -> str | None:
     return None
 
 
+UNCHECKED_RETRIES = 3  # darkroom's text check answering "unchecked" (no verdict) is asked again this often
+UNCHECKED_WAIT = 20  # seconds between those tries
+
+
 class FitGuard:
     """argus-mint's text guard, plus the demo's: the bio fills its box, and no other card's repeats in it.
 
@@ -328,6 +332,15 @@ class FitGuard:
             print(f"  bio for {self.name} rejected: {why}", file=sys.stderr)
             return False, f"demo fit: {why}"
         ok, detail = self.inner.check_text(text)
+        # "unchecked" is darkroom saying SingGuard gave no verdict (it timed out or was busy), not a judgement
+        # of the text. Ask again, the same text under the same policy: the check stays, only its outage is
+        # retried. Without this a cached bio that still passes is dropped and the model writes a new one.
+        for _ in range(UNCHECKED_RETRIES):
+            if ok or detail != "unchecked":
+                break
+            print(f"  bio for {self.name}: darkroom's text check gave no verdict (unchecked); asking again", file=sys.stderr)
+            time.sleep(UNCHECKED_WAIT)
+            ok, detail = self.inner.check_text(text)
         if ok:
             self.taken.append((self.name, text))
             self.on_keep(text)
@@ -617,11 +630,19 @@ BG_REJECT_NOTES = {
 POST_WHERE = "demo"
 
 
-def author_project(c: TestClient, src: Path, by: str) -> None:
+def author_project(c: TestClient, src: Path, by: str, projects_dir: Path) -> None:
     """Author argus-mint's example teaser project over HTTP, as the moderator does from assay's editors: each
     file is saved as a draft (argus-mint checks it and SingGuard judges its texts under the project's policy),
     then a few are approved. No spoiler list is configured, so nothing is held; the page shows a hold as
-    "held by spoiler rule N" only. Nothing renders from a project file here."""
+    "held by spoiler rule N" only. Nothing renders from a project file here.
+
+    The project's own frames (``frames/``, ids ``<project>/<name>``) have no editor over HTTP: they are copied
+    into the project's directory as files, each marked approved for the recording like the global frames."""
+    if (src / "frames").is_dir():
+        dst = projects_dir / PROJECT / "frames"
+        shutil.copytree(src / "frames", dst, ignore=shutil.ignore_patterns("*.yaml", "*.yml", "src"))
+        for f in sorted((src / "frames").glob("*.yaml")):
+            approved(f, dst / f.name, by)
     files = [("project", src / "project.yaml")]
     for kind, sub in (("identity", "identities"), ("scene", "scenes"), ("line", "lines"), ("teasers", "teasers")):
         files += [(kind, f) for f in sorted((src / sub).iterdir()) if f.suffix in (".yaml", ".json")]
@@ -946,7 +967,7 @@ def main(a: argparse.Namespace) -> None:
         if job["status"] != "done":
             sys.exit(f"sample job {job_id} ended {job['status']}: {job.get('error') or 'argus-mint gave no reason'}")
 
-        author_project(c, mint / "projects" / PROJECT, by)
+        author_project(c, mint / "projects" / PROJECT, by, work / "projects")
         if TEASER_SEEDS:  # a re-roll of a teaser's figure: argus-mint derives its seed, so the recorder sets it here
             derived = teasers_mod.teaser_seed
             teasers_mod.teaser_seed = lambda project, number, sha: TEASER_SEEDS.get(number, derived(project, number, sha))

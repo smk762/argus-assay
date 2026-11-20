@@ -14,10 +14,10 @@
       "background": "lamp-room-v1-01",
       "drafts": [
         {
-          "id": "0260feab2ed156a6",
+          "id": "b83bab90017063b7",
           "status": "published",
           "awaiting": [],
-          "created_at": "2026-11-18T15:09:27.561610Z",
+          "created_at": "2026-11-20T15:28:57.268215Z",
           "links_version": 2,
           "background": "lamp-room-v1-01",
           "current": true
@@ -36,12 +36,12 @@
       "background": "shoreline-v1-01",
       "drafts": [
         {
-          "id": "7f285b699a2fd40e",
+          "id": "38db05d8db6904af",
           "status": "pending",
           "awaiting": [
             "owner"
           ],
-          "created_at": "2026-11-18T15:09:28.575378Z",
+          "created_at": "2026-11-20T15:28:58.167285Z",
           "links_version": 2,
           "background": "shoreline-v1-01",
           "current": true

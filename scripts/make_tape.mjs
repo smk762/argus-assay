@@ -214,6 +214,13 @@ export function projectsOf(fixtureDir) {
   return { projects, project_details: projects.projects.map((p) => read(`projects/${p.id}.json`)), project_layers: readLayers(fixtureDir) };
 }
 
+/**
+ * Where a frame's files sit in the fixture and the tape: `frames/<id>/<version>`. A project's own frame
+ * (`<project>/<name>`, wire 1.16) takes nested directories, as record_demo.py writes them; lib/tape.ts frameTapeDir
+ * builds the same path in the page, and scripts/mock_mint.mjs reads it there.
+ */
+export const frameDir = (id, version) => `frames/${id}/${version}`;
+
 /** The tape for `fixtureDir`, and the image and font paths to copy beside it. Throws on anything not public. */
 export function buildTape(fixtureDir, { kind, note } = {}) {
   if (!existsSync(join(fixtureDir, "health.json"))) throw new Error(`no fixture at ${fixtureDir}`);
@@ -236,6 +243,9 @@ export function buildTape(fixtureDir, { kind, note } = {}) {
   for (const d of drafts) if (existsSync(join(fixtureDir, "drafts", d.id, "layout.json"))) layouts[d.id] = read(`drafts/${d.id}/layout.json`);
   const samples = read("samples.json").items.map((job) => read(`samples/${job.id}.json`)).reverse();
   const frames = read("frames.json");
+  // Every frame's overlay is on the tape where the page will ask for it (a project's frame in nested directories).
+  const missing = frames.filter((f) => !existsSync(join(fixtureDir, frameDir(f.frame.id, f.frame.version), "overlay.png")));
+  if (missing.length) throw new Error(`no overlay for frame(s) ${missing.map((f) => `${f.frame.id} v${f.frame.version}`).join(", ")} (want ${frameDir("<id>", "<version>")}/overlay.png)`);
   const slotOf = (ref) => frames.find((f) => f.frame.id === ref?.id && f.frame.version === ref?.version)?.frame.texts[BIO_FIT.slot];
   const bios = [
     ...drafts.filter((d) => d.draft.bio).map((d) => ({

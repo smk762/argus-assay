@@ -6,14 +6,14 @@
       "id": "example-teasers",
       "version": 1,
       "status": "approved",
-      "hash": "0x6aac1d2f9c156a954b89e0deefbbfa02bc572202870a4b5cf71afaca4fe7705b",
+      "hash": "0xbadd2bd0e3596936d9fccc8ee26f5c8d17e51238fbc4ce51da36a43e1bab16fc",
       "file": "project.yaml",
       "doc": {
         "id": "example-teasers",
         "version": 1,
         "status": "approved",
         "approved_by": "maintainer",
-        "approved_at": "2026-11-18",
+        "approved_at": "2026-11-20",
         "guard": [
           {
             "field": "title",
@@ -21,7 +21,7 @@
             "policy": "default",
             "passed": true,
             "detail": "",
-            "checked_at": "2026-11-18T15:06:55.071910Z"
+            "checked_at": "2026-11-20T15:27:54.802278Z"
           }
         ],
         "title": "Lantern Coast",
@@ -30,6 +30,10 @@
         "frames": [
           {
             "id": "example-teaser",
+            "version": 1
+          },
+          {
+            "id": "example-teasers/harbour-feed",
             "version": 1
           }
         ],
@@ -43,29 +47,29 @@
       "id": "keeper",
       "version": 1,
       "status": "approved",
-      "hash": "0x78e64003abb710d9279566c408647bda157220c33b5dc5f278d53635fd43e2cf",
+      "hash": "0xc0282a6116cee01d55ca60b34d76f166b3bc81119b29e85e589835a66ee0c08d",
       "file": "identities/keeper-v1.yaml",
       "doc": {
         "id": "keeper",
         "version": 1,
         "status": "approved",
         "approved_by": "maintainer",
-        "approved_at": "2026-11-18",
+        "approved_at": "2026-11-20",
         "guard": [
           {
             "field": "prompt",
-            "sha256": "8582ac6cdd1b9ab40f446d979c9a776f65f68fb72ca7a3786ea58d28e8bd98c0",
+            "sha256": "17cea1024e808709dbbc916cb016e94dc6d7523f214351a21b931a5dd234b5ac",
             "policy": "default",
             "passed": true,
             "detail": "",
-            "checked_at": "2026-11-18T15:07:16.144008Z"
+            "checked_at": "2026-11-20T15:27:54.999110Z"
           }
         ],
         "project": "example-teasers",
         "voice": "keeper",
         "presence": "embodied",
-        "prompt": "an elderly lighthouse keeper, weathered face, short grey beard, dark oilskin coat, knitted cap",
-        "negative": "nude, nudity, text, letters, watermark, signature",
+        "prompt": "three-quarter length figure of an elderly lighthouse keeper standing in a dim room at night, seen from a few steps away, weathered face, short grey beard, dark oilskin coat, knitted cap, lit warmly from one side by lamplight, painted illustration",
+        "negative": "close-up, headshot, portrait, cropped head, flat front lighting, nude, nudity, text, letters, watermark, signature",
         "frame": null,
         "lora": null,
         "proof_run": null,
@@ -101,21 +105,21 @@
       "id": "lamp",
       "version": 1,
       "status": "approved",
-      "hash": "0x876aef0b915d31ab0f633e1932944b7f68a8f1017d91874fb02419be7e9b2c80",
+      "hash": "0x51d07330a33132dff6a5ab7053e3459c2d46404343d87bf47a1b62649f412072",
       "file": "identities/lamp-v1.yaml",
       "doc": {
         "id": "lamp",
         "version": 1,
         "status": "approved",
         "approved_by": "maintainer",
-        "approved_at": "2026-11-18",
+        "approved_at": "2026-11-20",
         "project": "example-teasers",
         "voice": "lamp",
         "presence": "viewpoint",
         "prompt": "",
         "negative": "",
         "frame": {
-          "id": "example-teaser",
+          "id": "example-teasers/harbour-feed",
           "version": 1
         },
         "lora": null,
@@ -132,14 +136,14 @@
       "id": "lamp-room",
       "version": 1,
       "status": "approved",
-      "hash": "0x9968b9ba353c43278a534af61cb9adc532bc1b5dcae2ed3cb29f04752c165c16",
+      "hash": "0x891af9044a2a9f4677ee8d0690b128775b241090d0bb77d0cf8a4ac44cf52290",
       "file": "scenes/lamp-room-v1.yaml",
       "doc": {
         "id": "lamp-room",
         "version": 1,
         "status": "approved",
         "approved_by": "maintainer",
-        "approved_at": "2026-11-18",
+        "approved_at": "2026-11-20",
         "guard": [
           {
             "field": "prompt",
@@ -147,7 +151,7 @@
             "policy": "default",
             "passed": true,
             "detail": "",
-            "checked_at": "2026-11-18T15:07:16.360712Z"
+            "checked_at": "2026-11-20T15:27:55.241832Z"
           }
         ],
         "project": "example-teasers",
@@ -166,10 +170,10 @@
         "negative": "people, person, figure, text, letters, watermark, signature",
         "backgrounds": 3,
         "character_area": {
-          "x": 320,
+          "x": 128,
           "y": 256,
-          "width": 448,
-          "height": 704
+          "width": 272,
+          "height": 768
         },
         "max_attempts": 4
       }
@@ -179,14 +183,14 @@
       "id": "shoreline",
       "version": 1,
       "status": "approved",
-      "hash": "0x7402e8fa92c90ddf0cdcf857e83544f3a3cddb5be054c6cddf797d37fcc672d3",
+      "hash": "0x7aa7ce6d1cbae3a127100483b7b1bf139a5a56b89617172c2ca6149850df5fe8",
       "file": "scenes/shoreline-v1.yaml",
       "doc": {
         "id": "shoreline",
         "version": 1,
         "status": "approved",
         "approved_by": "maintainer",
-        "approved_at": "2026-11-18",
+        "approved_at": "2026-11-20",
         "guard": [
           {
             "field": "prompt",
@@ -194,7 +198,7 @@
             "policy": "default",
             "passed": true,
             "detail": "",
-            "checked_at": "2026-11-18T15:07:16.569074Z"
+            "checked_at": "2026-11-20T15:27:55.486604Z"
           }
         ],
         "project": "example-teasers",
@@ -221,14 +225,14 @@
       "id": "every-boat",
       "version": 1,
       "status": "approved",
-      "hash": "0xdd4e22ac5b9a2b864d4361b7a99c357d71ad0f4d27715f8106d883ecb0b10c7a",
+      "hash": "0x6aa0283cc59ea81cccb8ba2bd4c5736597a764a8d89e63ce605d50da7b0a3bd2",
       "file": "lines/every-boat-v1.yaml",
       "doc": {
         "id": "every-boat",
         "version": 1,
         "status": "approved",
         "approved_by": "maintainer",
-        "approved_at": "2026-11-18",
+        "approved_at": "2026-11-20",
         "guard": [
           {
             "field": "text",
@@ -236,7 +240,7 @@
             "policy": "default",
             "passed": true,
             "detail": "",
-            "checked_at": "2026-11-18T15:07:16.764582Z"
+            "checked_at": "2026-11-20T15:27:55.713220Z"
           }
         ],
         "project": "example-teasers",
@@ -251,14 +255,14 @@
       "id": "keep-it-lit",
       "version": 1,
       "status": "approved",
-      "hash": "0x5b9a5d595b31dbe0e35b6e38cb90f54378b265edd464df4eb3b1ea6609204071",
+      "hash": "0x1755df2814d2fbebfd6e160f3056b4e855d2b5e15e6765662c229cdd3fae7a3c",
       "file": "lines/keep-it-lit-v1.yaml",
       "doc": {
         "id": "keep-it-lit",
         "version": 1,
         "status": "approved",
         "approved_by": "maintainer",
-        "approved_at": "2026-11-18",
+        "approved_at": "2026-11-20",
         "guard": [
           {
             "field": "text",
@@ -266,7 +270,7 @@
             "policy": "default",
             "passed": true,
             "detail": "",
-            "checked_at": "2026-11-18T15:07:16.963255Z"
+            "checked_at": "2026-11-20T15:27:55.946679Z"
           },
           {
             "field": "published",
@@ -274,7 +278,7 @@
             "policy": "default",
             "passed": true,
             "detail": "",
-            "checked_at": "2026-11-18T15:07:16.963255Z"
+            "checked_at": "2026-11-20T15:27:55.946679Z"
           }
         ],
         "project": "example-teasers",
@@ -289,7 +293,7 @@
       "id": "example-teasers",
       "version": 1,
       "status": "draft",
-      "hash": "0x4cb69b54cb381d4d0de118a910c160e7e95db601d936a002ef4bb878d56aabab",
+      "hash": "0xd924bc9d5dba62d5f04a781c2c6be2eba3388856452b2f745e4a4ab84ada5110",
       "file": "teasers/example-teasers-v1.json",
       "doc": {
         "id": "example-teasers",
@@ -304,7 +308,7 @@
             "policy": "default",
             "passed": true,
             "detail": "",
-            "checked_at": "2026-11-18T15:07:17.349170Z"
+            "checked_at": "2026-11-20T15:27:56.351179Z"
           },
           {
             "field": "T2.alt",
@@ -312,7 +316,7 @@
             "policy": "default",
             "passed": true,
             "detail": "",
-            "checked_at": "2026-11-18T15:07:17.349170Z"
+            "checked_at": "2026-11-20T15:27:56.351179Z"
           }
         ],
         "project": "example-teasers",
@@ -351,7 +355,7 @@
               "version": 1
             },
             "frame": {
-              "id": "example-teaser",
+              "id": "example-teasers/harbour-feed",
               "version": 1
             },
             "alt": "Looking down from a lighthouse at dusk onto rocks, breaking waves and one small boat far out.",
@@ -365,14 +369,14 @@
       "id": "example-teasers",
       "version": 2,
       "status": "approved",
-      "hash": "0x466892652ea283c6a74cabdbb6d015a8ab76ca9ffe9622396ac268fb94ff8ac6",
+      "hash": "0xf3d576f9912a476be5d242c7e681285fc187ef0f4de831adc1c8709a7470b6b7",
       "file": "teasers/example-teasers-v2.json",
       "doc": {
         "id": "example-teasers",
         "version": 2,
         "status": "approved",
         "approved_by": "maintainer",
-        "approved_at": "2026-11-18",
+        "approved_at": "2026-11-20",
         "guard": [
           {
             "field": "T1.alt",
@@ -380,7 +384,7 @@
             "policy": "default",
             "passed": true,
             "detail": "",
-            "checked_at": "2026-11-18T15:07:22.227577Z"
+            "checked_at": "2026-11-20T15:28:01.368034Z"
           },
           {
             "field": "T2.alt",
@@ -388,7 +392,7 @@
             "policy": "default",
             "passed": true,
             "detail": "",
-            "checked_at": "2026-11-18T15:07:22.227577Z"
+            "checked_at": "2026-11-20T15:28:01.368034Z"
           }
         ],
         "project": "example-teasers",
@@ -427,7 +431,7 @@
               "version": 1
             },
             "frame": {
-              "id": "example-teaser",
+              "id": "example-teasers/harbour-feed",
               "version": 1
             },
             "alt": "Looking down from a lighthouse at dusk onto rocks, breaking waves and one small boat far out.",

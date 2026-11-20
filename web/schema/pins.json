@@ -1,15 +1,15 @@
 {
   "mint": {
     "repo": "smk762/argus-mint",
-    "tag": "cb910c67cf9623c513f53200bdce27e003d0e229",
-    "sha256": "e08c79d53b77c05d4c6021227b3d311168aee0087ed2d78524483346b79b8209",
-    "version": "0.2.3.dev38+gcb910c67c",
+    "tag": "b0c308e904c6d20c211905021e82fdcccbcd7396",
+    "sha256": "bb52b639ee6c82709ffa1878b8c0a859aa00f7d982464fc244565e332b40bf79",
+    "version": "0.3.1.dev4+gb0c308e90",
     "docs": {
       "docs/review.md": "372a6a600f428730990991bf0aadbdc7bad2bec713294786e05e091ef8268bc4",
       "docs/drafts.md": "660ab17f48bac28345d7e8e8e2b3dc243e4980add1610332c7ddad7813e7dbf4",
-      "docs/catalogue.md": "670ea99a8b83efaf5ffb1cc5d029a3549dceebb46a71c828c4137b74eda17b89",
-      "docs/customise.md": "a44373fcfd785227207982b1e2610adc279a1b047f604f06dde5c4468e37bbc1",
-      "docs/projects.md": "dd8d2439c2def0537f3dcd3ac6767d154b0d2c04c79b88a49ec6881747abedd6",
+      "docs/catalogue.md": "823c3b7d64cfad76dd2c7957bf8549797ef9f8110f3601ad121c3224dc461678",
+      "docs/customise.md": "c6dd23ff5905dd9918c89d9566e1f47b5457541ef2a6adf8d717ab4f9fd4b029",
+      "docs/projects.md": "93f5092296c7757c7180ec914b949193912592538ec13e3bb2aa6d37e1371ac4",
       "docs/api.md": "e739d05c15736d86e218d0fcd994e55ee0ac40371e541cf5e3ca8b39a711742a",
       "docs/cli.md": "0d5a4b10290eccbad5e243dab80b9d9e301f5fb428b5f9f698f20864101bb28a"
     }

@@ -11,6 +11,7 @@ import { Lightbox } from "@/components/Lightbox";
 import { StepNav } from "@/components/StepNav";
 import { Card, Collapsible, Notice, Spinner } from "@/components/ui";
 import { getSample, getSamples, sampleImage } from "@/lib/api";
+import { catalogueHref } from "@/lib/catalogueRoute";
 import { staticDemo } from "@/lib/demo";
 import { step } from "@/lib/step";
 import { checkpointName, loraText, SAMPLE_STATUS, statusText } from "@/lib/status";
@@ -72,7 +73,7 @@ export default function SampleView() {
         {r.frame ? (
           <>
             Framed by{" "}
-            <Link className="underline" href={`/catalogue/frame/${r.frame.id}/${r.frame.version}`}>
+            <Link className="underline" href={catalogueHref("frame", r.frame.id, r.frame.version)}>
               {r.frame.id} v{r.frame.version}
             </Link>
             .{" "}
@@ -83,7 +84,7 @@ export default function SampleView() {
         {r.bio ? (
           <>
             Bios from{" "}
-            <Link className="underline" href={`/catalogue/bio/${r.bio.id}/${r.bio.version}`}>
+            <Link className="underline" href={catalogueHref("bio", r.bio.id, r.bio.version)}>
               {r.bio.id} v{r.bio.version}
             </Link>
             .{" "}
@@ -118,7 +119,7 @@ export default function SampleView() {
               {item.bio ? <p className="text-small italic">{item.bio}</p> : null}
               {item.bio_error ? <Notice tone="warning">{item.bio_error}</Notice> : null}
               {item.art && r.frame ? (
-                <Link className="text-caption underline" href={`/catalogue/frame/${r.frame.id}/${r.frame.version}?sample=${job.id}&n=${item.n}`}>
+                <Link className="text-caption underline" href={`${catalogueHref("frame", r.frame.id, r.frame.version)}?sample=${job.id}&n=${item.n}`}>
                   Preview the frame on this art
                 </Link>
               ) : null}

@@ -52,7 +52,7 @@ describe("the tape", () => {
     expect(checkPublic('"pinata_jwt": "x"', "x")[0]).toMatch(/key or token/);
     expect(checkPublic('"header": "Bearer abcdef123456"', "x")[0]).toMatch(/bearer token/);
     expect(checkPublic('"text": "every gear a secret shared"', "x")).toEqual([]);
-    expect(checkPublic('"url": "http://192.168.1.20:8108"', "x")[0]).toMatch(/LAN address/);
+    expect(checkPublic('"url": "http://192.168.200.20:8108"', "x")[0]).toMatch(/LAN address/);
     // A 32-byte hash is not an address.
     expect(checkPublic(`"hash": "0x${"ab".repeat(32)}"`, "x")).toEqual([]);
   });

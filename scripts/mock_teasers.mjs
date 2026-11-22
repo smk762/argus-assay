@@ -127,7 +127,12 @@ export function readyPosts(drafts, query, linksOf) {
 
 /** Where a GET under /projects is one of the layers': `{pid, what, ...}`, or null. */
 export function layerPath(pathname) {
-  const p = pathname.split("/").filter(Boolean).map(decodeURIComponent);
+  let p;
+  try {
+    p = pathname.split("/").filter(Boolean).map(decodeURIComponent);
+  } catch {
+    return null; // a malformed escape names no layer: not found
+  }
   if (p[0] !== "projects" || p.length < 3) return null;
   const pid = p[1];
   if (p.length === 3 && p[2] === "backgrounds") return { pid, what: "backgrounds" };

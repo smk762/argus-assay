@@ -13,6 +13,8 @@ import { describe, expect, it, vi } from "vitest";
 const FIXTURE = join(__dirname, "..", "..", "..", "..", "..", "..", "fixture");
 const read = (rel: string) => JSON.parse(readFileSync(join(FIXTURE, rel), "utf8"));
 
+const previewFrame = vi.hoisted(() => vi.fn<(...args: unknown[]) => Promise<string>>(async () => "preview.png"));
+
 vi.mock("next/navigation", () => ({
   useParams: () => ({ kind: "frame", ref: ["card-green", "1"] }),
   useSearchParams: () => new URLSearchParams("sample=gone&n=3"),
@@ -28,6 +30,7 @@ vi.mock("@/lib/api", async (original) => ({
   getDrafts: async () => read("drafts.json"),
   getSamples: async () => ({ items: [], total: 0 }),
   frameOverlay: () => "overlay.png",
+  previewFrame,
 }));
 
 describe("the frame preview's art", () => {
@@ -40,10 +43,16 @@ describe("the frame preview's art", () => {
     for (let i = 0; i < 3; i++) await act(async () => new Promise((r) => setTimeout(r, 0)));
     const select = [...el.querySelectorAll("select")].find((s) => s.querySelector("option")?.textContent?.startsWith("Draft: "))!;
     expect(select, "the art picker").toBeDefined();
-    expect(select.value).toBe(select.options[0].value);
+    // pack-argus-assay-02b229c631: a controlled <select> whose value matches no option shows the first one anyway,
+    // so select.value can't tell a fallback from none. What Preview sends can: the first art the picker lists.
+    const first = (read("drafts.json") as { items: { id: string }[] }).items[0].id;
+    expect(select.options[0].value).toBe(`d:${first}`);
     const preview = [...el.querySelectorAll("button")].find((b) => b.textContent?.trim().startsWith("Preview"))!;
     expect(preview, "the Preview button").toBeDefined();
     expect(preview.disabled).toBe(false);
+    await act(async () => preview.click());
+    expect(previewFrame).toHaveBeenCalledTimes(1);
+    expect(previewFrame.mock.calls[0][2]).toEqual({ draft: first });
     act(() => root.unmount());
   });
 });

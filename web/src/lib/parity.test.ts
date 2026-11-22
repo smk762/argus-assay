@@ -123,6 +123,16 @@ describe("the in-browser argus-mint and the mock answer alike", { timeout: 20_00
     for (const path of ["/projects/nope/backgrounds", "/projects/nope/tracker", "/projects/nope/identities/x/1/training"]) await same(m, "GET", path);
   });
 
+  it("answer a malformed escape in a project path as not found, not a crash", async () => {
+    // pack-argus-assay-278bb49d16: decodeURIComponent throws on `%ZZ` or a cut-short sequence.
+    const m = demo();
+    for (const path of ["/projects/%ZZ/tracker", "/projects/example-teasers/scenes/%E0%A4%A/1/backgrounds"]) {
+      expect(() => m.get(path), path).not.toThrow();
+      expect(m.get(path).status, path).toBe(404);
+      await same(m, "GET", path);
+    }
+  });
+
   it("serve the same teaser layers: backgrounds, the tracker, training views and posts ready", async () => {
     const m = demo();
     const list = (await same(m, "GET", "/projects")) as ProjectList;

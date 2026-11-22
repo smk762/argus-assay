@@ -18,6 +18,7 @@ import {
   saveTarget,
   spoilerText,
   storedVerdicts,
+  withProvenanceKind,
   teaserOrder,
 } from "./projects";
 import type { FrameInfo, ProjectDetail, ProjectFile } from "./types";
@@ -144,5 +145,22 @@ describe("a project's frames, grouped as GET /frames labels them", () => {
 
   it("round-trips a two-part id through a picker's value", () => {
     expect(parseRef(refValue({ id: "example-teasers/harbour-feed", version: 2 }))).toEqual({ id: "example-teasers/harbour-feed", version: 2 });
+  });
+});
+
+// pack-argus-assay-fd49ac6b09: the editor hides the subject and release hash once the kind isn't consented.
+describe("withProvenanceKind", () => {
+  const consented = { kind: "consented", source: "studio shoot", license: "release", subject: "A. Person", release_sha256: "a".repeat(64) };
+
+  it("drops the subject and the release when the kind moves off consented", () => {
+    const next = withProvenanceKind(consented, "stock");
+    expect(next).toEqual({ kind: "stock", source: "studio shoot", license: "release" });
+    expect("subject" in next || "release_sha256" in next).toBe(false);
+    expect(consented.subject, "the old provenance is left alone").toBe("A. Person");
+  });
+
+  it("keeps them while the kind is consented, and starts a missing provenance", () => {
+    expect(withProvenanceKind(consented, "consented")).toEqual(consented);
+    expect(withProvenanceKind(undefined, "synthetic")).toEqual({ kind: "synthetic", source: "" });
   });
 });

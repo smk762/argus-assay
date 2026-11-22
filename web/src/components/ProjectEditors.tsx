@@ -35,6 +35,7 @@ import {
   saveDoc,
   saveTarget,
   teaserOrder,
+  withProvenanceKind,
   type Area,
   type IdentityDoc,
   type LineDoc,
@@ -235,7 +236,7 @@ function ReferenceRow({ r, set, remove }: { r: Reference; set: (r: Reference) =>
         hint="argus-cortex's kind. argus-mint approves only cleared kinds, and checks a consented one against its release."
         value={r.provenance?.kind ?? ""}
         options={withCurrent([...PROVENANCE], r.provenance?.kind).map((p) => ({ value: p, label: PROVENANCE_TEXT[p as keyof typeof PROVENANCE_TEXT] ?? p }))}
-        onChange={(kind) => set({ ...r, provenance: { ...r.provenance, kind } })}
+        onChange={(kind) => set({ ...r, provenance: withProvenanceKind(r.provenance, kind) })}
       />
       <AuthoredText label="Source" hint="Where the image came from, such as a studio shoot." value={r.provenance?.source ?? ""} onChange={(source) => set({ ...r, provenance: { ...r.provenance, source } })} required max={200} />
       <AuthoredText label="Licence" value={r.provenance?.license ?? ""} onChange={(license) => set({ ...r, provenance: { ...r.provenance, license } })} max={200} />

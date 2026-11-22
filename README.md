@@ -76,6 +76,21 @@ ASSAY_MINT_PROXY=http://127.0.0.1:8108 npx next start -H 0.0.0.0 -p 3108
 
 Add assay's LAN origin (e.g. `http://<LAN_HOST>:3108`; the real host/IP is in the local `.env`) to `ARGUS_MINT_CORS_ORIGINS`, and set `ARGUS_MINT_SIWE_DOMAIN` to its host (`<LAN_HOST>:3108`). Some wallets only sign on `localhost` or HTTPS origins.
 
+**HTTPS on the LAN, for wallets that want it.** Put a TLS proxy in front of the build above; Caddy's internal CA is enough on a LAN. With assay on `127.0.0.1:3108`:
+
+```
+https://<LAN_HOST>:3443 {
+	tls internal
+	reverse_proxy 127.0.0.1:3108
+}
+```
+
+Then the page's origin is `https://<LAN_HOST>:3443`: list that in `ARGUS_MINT_CORS_ORIGINS` and set `ARGUS_MINT_SIWE_DOMAIN=<LAN_HOST>:3443` (host and port, no scheme). A browser that hasn't trusted Caddy's root certificate shows a warning before the page loads; trust it (`caddy trust`, or import its root into the browser) for a clean demo.
+
+**When the owner can't sign.** argus-mint signs nothing in the browser and can't see the page, so it accepts any signature over the challenge it issued. The domain check is the wallet's: it compares the sign-in's domain with the page's host and warns or refuses when they differ. A refused sign-in shows the wallet's own error, and when the two hosts differ assay adds which domain the sign-in named and the `ARGUS_MINT_SIWE_DOMAIN` value the page needs.
+
+Making a draft takes as long as darkroom's render and the bio (half a minute to a few minutes). The `/mint` proxy waits up to 10 minutes for argus-mint, longer than Next's 30-second default.
+
 **`make dev` from another machine.** `next dev` refuses its own assets to any host but localhost. Name the address you open it as in `ASSAY_DEV_ORIGINS` (comma-separated, e.g. `ASSAY_DEV_ORIGINS=<LAN_HOST> make dev`). The production build above doesn't need it.
 
 In docker: `docker compose up` (with `COMPOSE_PROFILES=mock` from `.env.example` for the mock).

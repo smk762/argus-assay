@@ -16,6 +16,8 @@ import type { NextConfig } from "next";
 // argus-mint then sees writes from assay's origin: list it in ARGUS_MINT_CORS_ORIGINS.
 const staticDemo = process.env.ASSAY_STATIC === "1" || process.env.NEXT_PUBLIC_ASSAY_STATIC === "1";
 const proxy = process.env.ASSAY_MINT_PROXY?.replace(/\/+$/, "");
+/** The /mint proxy's wait for argus-mint: longer than any draft, sample or background render. */
+const MINT_PROXY_TIMEOUT_MS = 10 * 60_000;
 
 const live: NextConfig = {
   // `next dev` refuses its own assets to any host but localhost. Name the LAN
@@ -40,6 +42,10 @@ const live: NextConfig = {
   async rewrites() {
     return proxy ? [{ source: "/mint/:path*", destination: `${proxy}/:path*` }] : [];
   },
+  // How long the /mint proxy waits for argus-mint. Next's default is 30 s, and making a draft (a darkroom render
+  // and a bio, retried on refusal) takes longer, so the proxy hung up while argus-mint kept going: the draft was
+  // made, the browser got a 500 and never reached it (argus-assay#4).
+  experimental: { proxyTimeout: MINT_PROXY_TIMEOUT_MS },
 };
 
 const nextConfig: NextConfig = {

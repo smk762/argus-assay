@@ -44,10 +44,10 @@ export function TeaserMade({ d }: { d: DraftDetail }) {
       </div>
       <p className="mb-2 text-small text-text-secondary">
         Teaser <strong className="font-mono">{t.number}</strong> of{" "}
-        <Link href={`/projects/${project}`} className={LINK}>
+        <Link href={`/projects/${encodeURIComponent(project)}`} className={LINK}>
           {t.project.id}
         </Link>{" "}
-        (<Link href={`/projects/${project}/tracker`} className={LINK}>tracker</Link>), made by argus-mint{draft.made_with?.["argus-mint"] ? ` ${draft.made_with["argus-mint"]}` : ""}
+        (<Link href={`/projects/${encodeURIComponent(project)}/tracker`} className={LINK}>tracker</Link>), made by argus-mint{draft.made_with?.["argus-mint"] ? ` ${draft.made_with["argus-mint"]}` : ""}
         {draft.made_with?.darkroom ? ` via darkroom ${draft.made_with.darkroom}` : ""}. Its text is the reviewed line&apos;s, so it isn&apos;t edited.
       </p>
       <dl>
@@ -63,7 +63,7 @@ export function TeaserMade({ d }: { d: DraftDetail }) {
         ) : null}
         <Kv label="Presence">{PRESENCE[t.presence] ?? t.presence}</Kv>
         <Kv label="Background">
-          <Link href={`/projects/${project}#bg-${t.background.id}`} className={`font-mono ${LINK}`}>
+          <Link href={`/projects/${encodeURIComponent(project)}#bg-${t.background.id}`} className={`font-mono ${LINK}`}>
             {t.background.id}
           </Link>{" "}
           <Hash value={t.background.sha256} />

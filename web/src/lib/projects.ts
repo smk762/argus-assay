@@ -58,6 +58,19 @@ export interface Provenance {
   generator?: { model?: string; seed?: number; prompt?: string; [k: string]: unknown } | null;
 }
 
+/**
+ * A reference's provenance with its kind changed. Only a consented kind carries a release: moving off it drops the
+ * subject (a real person) and the release hash, whose fields the editor then hides, so they are not saved unseen.
+ */
+export function withProvenanceKind(p: Provenance | undefined, kind: string): Provenance {
+  const next: Provenance = { ...(p ?? { source: "" }), kind };
+  if (kind !== "consented") {
+    delete next.subject;
+    delete next.release_sha256;
+  }
+  return next;
+}
+
 /** Written by argus-mint alone: a saved document may not carry them. */
 export const REVIEW_KEYS = ["status", "approved_by", "approved_at", "guard"] as const;
 

@@ -32,6 +32,43 @@ function exportsOf(text: string): Map<string, string> {
   return out;
 }
 
+/**
+ * Where the bracket opened at `text[open]` closes, skipping quoted strings: the end index, or -1. Enough of a scanner
+ * for these checks to read a whole JSX attribute value or call argument, arrows and nested braces included.
+ */
+function closing(text: string, open: number): number {
+  const pairs: Record<string, string> = { "{": "}", "(": ")", "[": "]" };
+  const stack: string[] = [];
+  for (let i = open; i < text.length; i++) {
+    const c = text[i];
+    if (c === '"' || c === "'" || c === "`") {
+      const end = text.indexOf(c, i + 1);
+      if (end < 0) return -1;
+      i = end;
+    } else if (pairs[c]) stack.push(pairs[c]);
+    else if (c === stack.at(-1)) {
+      stack.pop();
+      if (!stack.length) return i;
+    }
+  }
+  return -1;
+}
+
+/** Each opening JSX tag of these elements, whole: `{...}` attribute values (an arrow's `=>` too) don't end it. */
+function openingTags(text: string, names: string[]): string[] {
+  const out: string[] = [];
+  for (const m of text.matchAll(new RegExp(`<(?:${names.join("|")})\\b`, "g"))) {
+    let i = m.index + m[0].length;
+    for (; i < text.length && text[i] !== ">"; i++) {
+      if (text[i] === "{") i = closing(text, i);
+      else if (text[i] === '"' || text[i] === "'") i = text.indexOf(text[i], i + 1);
+      if (i < 0) break;
+    }
+    out.push(i < 0 ? text.slice(m.index) : text.slice(m.index, i + 1));
+  }
+  return out;
+}
+
 afterEach(() => vi.unstubAllGlobals());
 
 describe("every write is gated on /health before it reaches the wire (rule 2)", () => {
@@ -140,8 +177,15 @@ describe("no free-text prompts outside catalogue authoring (rule 3)", () => {
    * from until the file is approved. Adding a file here widens rule 3, so it needs the same review as CLAUDE.md.
    */
   const AUTHORING = ["components/ProjectEditors.tsx"];
-  const TEXT_FIELD = /<(input|textarea)\b[^>]*>/g;
+  const TEXT_FIELDS = ["input", "textarea"];
   const PROMPTISH = /variable|prompt|negative/i;
+
+  it("reads a text field's whole tag, past a handler's arrow", () => {
+    // pack-argus-assay-8d49d48022: a `[^>]*` scan stopped at the `>` of `=>`, so a name after a handler went unread.
+    const [tag] = openingTags(`<input value={v} onChange={(e) => set({ v: e.target.value })} name="prompt" />`, TEXT_FIELDS);
+    expect(tag).toMatch(/name="prompt" \/>$/);
+    expect(openingTags(`<textarea onChange={(e) => f(e)} aria-label="negative">x</textarea>`, TEXT_FIELDS)).toEqual([`<textarea onChange={(e) => f(e)} aria-label="negative">`]);
+  });
 
   it("has no prompt field to send in a draft or a sample request", () => {
     // tsc fails here if argus-mint's wire ever grows one: then the UI must not fill it from a text box.
@@ -154,7 +198,7 @@ describe("no free-text prompts outside catalogue authoring (rule 3)", () => {
     for (const file of sources.filter((f) => f.endsWith(".tsx") && !AUTHORING.includes(f))) {
       const text = read(file);
       // A variable's value is only ever set from a <select> of the template's list: no text field names one or a prompt.
-      for (const m of text.matchAll(TEXT_FIELD)) expect(m[0], `${file}: ${m[0].slice(0, 80)}`).not.toMatch(PROMPTISH);
+      for (const tag of openingTags(text, TEXT_FIELDS)) expect(tag, `${file}: ${tag.slice(0, 80)}`).not.toMatch(PROMPTISH);
       // Nor does a field component get one passed in by label (AuthoredText, say).
       expect(text, `${file} renders the authoring module's text fields`).not.toMatch(/<AuthoredText\b/);
     }
@@ -180,6 +224,34 @@ describe("no free-text prompts outside catalogue authoring (rule 3)", () => {
   });
 });
 
+/** Each use of `spoiler_rules` in a page that could show a hold other than through spoilerText. */
+function spoilerUses(text: string): string[] {
+  const bad: string[] = [];
+  for (const m of text.matchAll(/spoiler_rules(?:\??\.(\w+))?/g)) {
+    const at = m.index + m[0].length;
+    const shown = text.slice(m.index, at + 60);
+    if (m[1] === "length") continue;
+    if (m[1] !== "map" || text[at] !== "(") {
+      bad.push(shown);
+      continue;
+    }
+    const end = closing(text, at);
+    const arg = text.slice(at + 1, end < 0 ? undefined : end).trim();
+    if (arg === "spoilerText") continue;
+    const param = arg.match(/^\(?\s*(\w+)\s*\)?\s*=>/)?.[1];
+    if (!param) {
+      bad.push(shown);
+      continue;
+    }
+    const body = arg.slice(arg.indexOf("=>") + 2);
+    const all = body.match(new RegExp(`\\b${param}\\b`, "g"))?.length ?? 0;
+    const through = body.match(new RegExp(`spoilerText\\(${param}\\)`, "g"))?.length ?? 0;
+    const keys = body.match(new RegExp(`\\bkey=\\{${param}\\}`, "g"))?.length ?? 0;
+    if (!through || all !== through + keys) bad.push(shown);
+  }
+  return bad;
+}
+
 describe("spoiler terms never appear: a hold is a rule number (projects)", () => {
   it("reads nothing about spoilers but argus-mint's rule numbers", () => {
     for (const file of sources) {
@@ -192,11 +264,14 @@ describe("spoiler terms never appear: a hold is a rule number (projects)", () =>
   it("shows each hold through spoilerText, which says the number and nothing else", () => {
     const shown = sources.filter((f) => f.endsWith(".tsx") && /spoiler_rules/.test(read(f)));
     expect(shown.length).toBeGreaterThan(0);
-    for (const file of shown) {
-      for (const m of read(file).matchAll(/spoiler_rules\.map\(\((\w+)\)\s*=>([\s\S]{0,120})/g)) {
-        expect(m[2], `${file} renders a spoiler rule`).toMatch(new RegExp(`spoilerText\\(${m[1]}\\)`));
-      }
-      expect(read(file), `${file} renders spoiler_rules other than by .map(spoilerText)`).not.toMatch(/\{[\w.?]*spoiler_rules[^.]/);
+    // pack-argus-assay-fcfb7032a1: allow what is known to be safe rather than refuse a few unsafe shapes. Each use is
+    // its count, `.map(spoilerText)`, or a `.map` whose parameter is only a key or spoilerText's argument.
+    for (const file of shown) expect(spoilerUses(read(file)), file).toEqual([]);
+    for (const bad of ["{d.spoiler_rules.map(r => <span>{r}</span>)}", "{d.spoiler_rules.join(\", \")}", "{d.spoiler_rules.map(String)}", "{d.spoiler_rules}", "{d.spoiler_rules?.map((n) => <li key={n}>{spoilerText(n)} {n}</li>)}"]) {
+      expect(spoilerUses(bad), bad).toHaveLength(1);
+    }
+    for (const good of ["{d.spoiler_rules?.length ? 1 : 0}", "{d.spoiler_rules.map(spoilerText)}", "{d.spoiler_rules.map(n => <li key={n}>{spoilerText(n)}</li>)}"]) {
+      expect(spoilerUses(good), good).toEqual([]);
     }
     expect(spoilerText(3)).toBe("Held by spoiler rule 3");
   });

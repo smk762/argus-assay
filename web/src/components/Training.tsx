@@ -188,7 +188,11 @@ export function TrainingPanel({ projectId, file }: { projectId: string; file: Pr
   const off = useTrainingOff();
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  // The view as it stood when a step was started: until argus-mint's next answer replaces it, its `next` is the
+  // step just started, so the button stays off rather than offer to start that step a second time.
+  const [startedOn, setStartedOn] = useState<{ data: IdentityTrainingView | null; error: string | null } | null>(null);
   const v = view.data;
+  const waiting = startedOn !== null && startedOn.data === view.data && startedOn.error === view.error;
   const live = Boolean(v && Object.values(v.steps).some((s) => s === "queued" || s === "running"));
   const { reload } = view;
   useEffect(() => {
@@ -256,13 +260,14 @@ export function TrainingPanel({ projectId, file }: { projectId: string; file: Pr
               <Button
                 small
                 tone="primary"
-                disabled={Boolean(off) || busy}
+                disabled={Boolean(off) || busy || waiting}
                 title={off ?? undefined}
                 onClick={async () => {
                   setBusy(true);
                   setError(null);
                   try {
                     await startTrainingStep(projectId, file.id, file.version, v.next!);
+                    setStartedOn({ data: view.data, error: view.error });
                     reload();
                   } catch (e) {
                     setError(e instanceof Error ? e.message : String(e));
@@ -276,7 +281,7 @@ export function TrainingPanel({ projectId, file }: { projectId: string; file: Pr
             ) : (
               <p className="text-small text-text-muted">argus-mint allows no step to start now.</p>
             )}
-            {busy ? <Spinner /> : null}
+            {busy || waiting ? <Spinner /> : null}
           </div>
           {off ? <p className="text-caption text-text-muted">{off}</p> : null}
           {error ? <Notice tone="error">argus-mint refused: {error}</Notice> : null}

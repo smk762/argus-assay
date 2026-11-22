@@ -106,6 +106,16 @@ describe("a frame id with a '/' (a project's own frame)", { timeout: 20_000 }, (
     expect(tape.frames.find((f) => f.frame.id === ID)?.project).toBe("example-teasers");
   });
 
+  it("keeps a frame's files under frames/: no id that climbs out reaches a path or a tape", () => {
+    // pack-argus-assay-e5c0890ccc: encodeURIComponent leaves `.` alone, so `../../x` would leave the tape directory.
+    for (const bad of ["../../x", "a/..", ".", "..", "a/b/c", "A"]) {
+      expect(() => frameTapeDir(bad, 1), bad).toThrow(/no place on the tape/);
+      const tape = buildTape(dir);
+      tape.frames[0].frame.id = bad;
+      expect(() => parseTape(tape), bad).toThrow(/a frame has no usable id/);
+    }
+  });
+
   it("refuses a tape whose frame has no overlay where the page would ask", () => {
     const broken = mkdtempSync(join(tmpdir(), "assay-frame-ids-"));
     try {

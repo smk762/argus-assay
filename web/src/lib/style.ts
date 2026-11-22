@@ -60,9 +60,11 @@ export function hexToHsv(hex: string): { h: number; s: number; v: number } {
 
 export const isHex = (v: string): boolean => /^#[0-9a-fA-F]{6}$/.test(v);
 
-/** A style with nothing set is no style: argus-mint stores none. */
+/** A style that changes nothing is no style: argus-mint stores none. Judged on the canonical form, as sameStyle is. */
 export function isPlain(style: CardStyle | null | undefined): boolean {
-  return !style || (!style.tint && Object.keys(style.slots ?? {}).length === 0);
+  if (!style) return true;
+  const n = normalise(style);
+  return !n.tint && Object.keys(n.slots ?? {}).length === 0;
 }
 
 /**

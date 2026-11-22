@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { hexToHsv, hsvToHex, isPlain, normalise, sameStyle, svgMatrix, tintMatrix } from "./style";
+import { type CardStyle, hexToHsv, hsvToHex, isPlain, normalise, sameStyle, svgMatrix, tintMatrix } from "./style";
 
 describe("tint matches argus-mint's bake", () => {
   it("is the same matrix, number for number", () => {
@@ -29,6 +29,13 @@ describe("colour wheel conversions", () => {
 describe("plain styles", () => {
   it("treats untouched slots as no style", () => {
     expect(isPlain(normalise({ slots: { name: { effect: "none" } } }))).toBe(true);
+    // pack-argus-assay-72c240e2dd: plain before normalising too, so isPlain and sameStyle agree.
+    const plain: CardStyle[] = [{ slots: { name: {} } }, { slots: { name: { effect: "none" } } }, { slots: { name: { effect_colour: "#ffffff" } } }];
+    for (const style of plain) {
+      expect(isPlain(style), JSON.stringify(style)).toBe(true);
+      expect(sameStyle(style, null)).toBe(true);
+    }
+    expect(isPlain({ slots: { name: { colour: "#ffffff" } } })).toBe(false);
     expect(sameStyle({ slots: { name: {} } }, null)).toBe(true);
     expect(sameStyle({ tint: { colour: "#000000" } }, null)).toBe(false);
   });

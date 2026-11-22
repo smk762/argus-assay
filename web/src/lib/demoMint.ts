@@ -209,7 +209,12 @@ export class DemoMint {
 
   /** A read of a project's layers (scripts/mock_teasers.mjs readLayer), or null when the path isn't one. */
   private layer(pathname: string): DemoResponse | null {
-    const p = pathname.split("/").filter(Boolean).map(decodeURIComponent);
+    let p: string[];
+    try {
+      p = pathname.split("/").filter(Boolean).map(decodeURIComponent);
+    } catch {
+      return null; // a malformed escape names no layer: not found, as frameRoute answers
+    }
     if (p[0] !== "projects" || p.length < 3) return null;
     const pid = p[1];
     const detail = this.tape.project_details.find((d) => d.id === pid);

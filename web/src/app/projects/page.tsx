@@ -41,7 +41,7 @@ export default function ProjectsPage() {
           <ul className="mb-6 space-y-2">
             {list.data.projects.map((p) => (
               <li key={p.id}>
-                <Link href={`/projects/${p.id}`} className="block">
+                <Link href={`/projects/${encodeURIComponent(p.id)}`} className="block">
                   <Card className="flex flex-wrap items-center gap-x-3 gap-y-1 hover:border-interactive">
                     <span className="font-medium">{p.title}</span>
                     <CatalogueBadge status={p.status} />

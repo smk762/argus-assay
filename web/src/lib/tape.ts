@@ -78,12 +78,19 @@ const isObject = (v: unknown): v is Record<string, unknown> => v != null && type
 /** Check tape.json enough that the page can trust its shape; throws with the first problem. */
 const TAPE_PATH = /^[A-Za-z0-9_-]+(?:\/[A-Za-z0-9_.-]+)*$/;
 
+/** A frame's id: a global frame's, or a project's own (`<project>/<name>`), as argus-mint's FRAME_ID_PATTERN. */
+const FRAME_ID = /^(?:[a-z0-9][a-z0-9-]{0,63}\/)?[a-z0-9][a-z0-9-]{0,63}$/;
+
 /**
  * Where a frame's files sit under the tape: `frames/<id>/<version>`. A project's own frame (`<project>/<name>`) takes
  * nested directories, as record_demo.py writes them and scripts/make_tape.mjs frameDir checks; the version (digits)
  * then a fixed name (`overlay.png`, `fonts`) keeps every path distinct. Each segment is URL-encoded for the fetch.
  */
-export const frameTapeDir = (id: string, version: number): string => `frames/${id.split("/").map(encodeURIComponent).join("/")}/${version}`;
+export const frameTapeDir = (id: string, version: number): string => {
+  // An id outside argus-mint's grammar (`.` or `..` segments above all) would name a path outside frames/.
+  if (!FRAME_ID.test(id) || !Number.isInteger(version)) throw new Error(`frame ${JSON.stringify(id)} v${version} has no place on the tape`);
+  return `frames/${id.split("/").map(encodeURIComponent).join("/")}/${version}`;
+};
 
 export function parseTape(raw: unknown): Tape {
   if (!isObject(raw)) fail("tape.json must be an object");
@@ -122,6 +129,10 @@ export function parseTape(raw: unknown): Tape {
     if (typeof f !== "string" || !TAPE_PATH.test(f) || f.split("/").some((seg) => seg === "." || seg === "..")) {
       fail(`file ${JSON.stringify(f)} is not a tape path`);
     }
+  }
+  for (const f of raw.frames as unknown[]) {
+    const ref = isObject(f) && isObject(f.frame) ? f.frame : null;
+    if (!ref || typeof ref.id !== "string" || !FRAME_ID.test(ref.id) || !Number.isInteger(ref.version)) fail("a frame has no usable id and version");
   }
   for (const d of raw.drafts as unknown[]) {
     if (!isObject(d) || typeof d.id !== "string" || !/^[0-9a-f]{8,32}$/.test(d.id)) fail("a draft has no usable id");

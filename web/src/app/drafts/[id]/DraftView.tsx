@@ -221,15 +221,17 @@ function MadeWith({ draft }: { draft: DraftDetail["draft"] }) {
 
 /** One draft; `?status=` is the queue filter it was opened from, which Prev and Next step through. */
 export default function DraftView() {
+  // Prev and Next keep this page mounted and change only the id: keyed on it, a draft's own state (a review's
+  // result, the unframed view, the open editor) starts fresh with each draft rather than showing the last one's.
+  const { id } = useParams<{ id: string }>();
   return (
     <Suspense fallback={<Spinner />}>
-      <Draft />
+      <Draft key={id} id={id} />
     </Suspense>
   );
 }
 
-function Draft() {
-  const { id } = useParams<{ id: string }>();
+function Draft({ id }: { id: string }) {
   const filter = parseFilter(useSearchParams().get("status"));
   const { data, error } = useLoad(() => getDraft(id), [id]);
   const queue = useLoad(() => getDrafts(), [id]);

@@ -6,14 +6,14 @@
       "id": "example-teasers",
       "version": 1,
       "status": "approved",
-      "hash": "0xbadd2bd0e3596936d9fccc8ee26f5c8d17e51238fbc4ce51da36a43e1bab16fc",
+      "hash": "0x1efbaa8b3ee9798477b22ce2fecb25da0d7a087b85382bc6fb2310151de76718",
       "file": "project.yaml",
       "doc": {
         "id": "example-teasers",
         "version": 1,
         "status": "approved",
         "approved_by": "maintainer",
-        "approved_at": "2026-11-20",
+        "approved_at": "2026-11-23",
         "guard": [
           {
             "field": "title",
@@ -21,7 +21,7 @@
             "policy": "default",
             "passed": true,
             "detail": "",
-            "checked_at": "2026-11-20T15:27:54.802278Z"
+            "checked_at": "2026-11-23T03:29:06.264993Z"
           }
         ],
         "title": "Lantern Coast",
@@ -47,14 +47,14 @@
       "id": "keeper",
       "version": 1,
       "status": "approved",
-      "hash": "0xc0282a6116cee01d55ca60b34d76f166b3bc81119b29e85e589835a66ee0c08d",
+      "hash": "0xa418658c78bb4c0b8595a4547ff2e2acc06c01a14414e68e10862331c0f57a0c",
       "file": "identities/keeper-v1.yaml",
       "doc": {
         "id": "keeper",
         "version": 1,
         "status": "approved",
         "approved_by": "maintainer",
-        "approved_at": "2026-11-20",
+        "approved_at": "2026-11-23",
         "guard": [
           {
             "field": "prompt",
@@ -62,7 +62,7 @@
             "policy": "default",
             "passed": true,
             "detail": "",
-            "checked_at": "2026-11-20T15:27:54.999110Z"
+            "checked_at": "2026-11-23T03:29:06.794122Z"
           }
         ],
         "project": "example-teasers",
@@ -105,14 +105,14 @@
       "id": "lamp",
       "version": 1,
       "status": "approved",
-      "hash": "0x51d07330a33132dff6a5ab7053e3459c2d46404343d87bf47a1b62649f412072",
+      "hash": "0xe8f5732b681a6c4aa7cd5ff9ebc0de86adeaa2c336d505558c351d1cad0a7ff7",
       "file": "identities/lamp-v1.yaml",
       "doc": {
         "id": "lamp",
         "version": 1,
         "status": "approved",
         "approved_by": "maintainer",
-        "approved_at": "2026-11-20",
+        "approved_at": "2026-11-23",
         "project": "example-teasers",
         "voice": "lamp",
         "presence": "viewpoint",
@@ -136,14 +136,14 @@
       "id": "lamp-room",
       "version": 1,
       "status": "approved",
-      "hash": "0x891af9044a2a9f4677ee8d0690b128775b241090d0bb77d0cf8a4ac44cf52290",
+      "hash": "0xe6b33c39824a43235a51e124a41392d49c5c59f1c18a86d2a4f5c9937a2f8766",
       "file": "scenes/lamp-room-v1.yaml",
       "doc": {
         "id": "lamp-room",
         "version": 1,
         "status": "approved",
         "approved_by": "maintainer",
-        "approved_at": "2026-11-20",
+        "approved_at": "2026-11-23",
         "guard": [
           {
             "field": "prompt",
@@ -151,7 +151,7 @@
             "policy": "default",
             "passed": true,
             "detail": "",
-            "checked_at": "2026-11-20T15:27:55.241832Z"
+            "checked_at": "2026-11-23T03:29:07.376449Z"
           }
         ],
         "project": "example-teasers",
@@ -183,14 +183,14 @@
       "id": "shoreline",
       "version": 1,
       "status": "approved",
-      "hash": "0x7aa7ce6d1cbae3a127100483b7b1bf139a5a56b89617172c2ca6149850df5fe8",
+      "hash": "0xd73a4c2f4c4b8b485d6ca414c1efc19033a9683fbd4c482525b5e4b6b3bca87e",
       "file": "scenes/shoreline-v1.yaml",
       "doc": {
         "id": "shoreline",
         "version": 1,
         "status": "approved",
         "approved_by": "maintainer",
-        "approved_at": "2026-11-20",
+        "approved_at": "2026-11-23",
         "guard": [
           {
             "field": "prompt",
@@ -198,7 +198,7 @@
             "policy": "default",
             "passed": true,
             "detail": "",
-            "checked_at": "2026-11-20T15:27:55.486604Z"
+            "checked_at": "2026-11-23T03:29:07.937453Z"
           }
         ],
         "project": "example-teasers",
@@ -225,14 +225,14 @@
       "id": "every-boat",
       "version": 1,
       "status": "approved",
-      "hash": "0x6aa0283cc59ea81cccb8ba2bd4c5736597a764a8d89e63ce605d50da7b0a3bd2",
+      "hash": "0x6a80d7d67e1e8b7076b8fa3dcfb5cab54e86727489fb1ea23fbf1111f9e69d1d",
       "file": "lines/every-boat-v1.yaml",
       "doc": {
         "id": "every-boat",
         "version": 1,
         "status": "approved",
         "approved_by": "maintainer",
-        "approved_at": "2026-11-20",
+        "approved_at": "2026-11-23",
         "guard": [
           {
             "field": "text",
@@ -240,7 +240,7 @@
             "policy": "default",
             "passed": true,
             "detail": "",
-            "checked_at": "2026-11-20T15:27:55.713220Z"
+            "checked_at": "2026-11-23T03:29:08.480855Z"
           }
         ],
         "project": "example-teasers",
@@ -255,14 +255,14 @@
       "id": "keep-it-lit",
       "version": 1,
       "status": "approved",
-      "hash": "0x1755df2814d2fbebfd6e160f3056b4e855d2b5e15e6765662c229cdd3fae7a3c",
+      "hash": "0x7e8e17e410cc31d10c91e007517d3f550f545aba7b284f939b3c514e17a2b730",
       "file": "lines/keep-it-lit-v1.yaml",
       "doc": {
         "id": "keep-it-lit",
         "version": 1,
         "status": "approved",
         "approved_by": "maintainer",
-        "approved_at": "2026-11-20",
+        "approved_at": "2026-11-23",
         "guard": [
           {
             "field": "text",
@@ -270,7 +270,7 @@
             "policy": "default",
             "passed": true,
             "detail": "",
-            "checked_at": "2026-11-20T15:27:55.946679Z"
+            "checked_at": "2026-11-23T03:29:09.018038Z"
           },
           {
             "field": "published",
@@ -278,7 +278,7 @@
             "policy": "default",
             "passed": true,
             "detail": "",
-            "checked_at": "2026-11-20T15:27:55.946679Z"
+            "checked_at": "2026-11-23T03:29:09.018038Z"
           }
         ],
         "project": "example-teasers",
@@ -308,7 +308,7 @@
             "policy": "default",
             "passed": true,
             "detail": "",
-            "checked_at": "2026-11-20T15:27:56.351179Z"
+            "checked_at": "2026-11-23T03:29:10.109637Z"
           },
           {
             "field": "T2.alt",
@@ -316,7 +316,7 @@
             "policy": "default",
             "passed": true,
             "detail": "",
-            "checked_at": "2026-11-20T15:27:56.351179Z"
+            "checked_at": "2026-11-23T03:29:10.109637Z"
           }
         ],
         "project": "example-teasers",
@@ -369,14 +369,14 @@
       "id": "example-teasers",
       "version": 2,
       "status": "approved",
-      "hash": "0xf3d576f9912a476be5d242c7e681285fc187ef0f4de831adc1c8709a7470b6b7",
+      "hash": "0x29f112330bccb432708fce6a8ca6d7cbd4d079624590cd05b083fefe40eab351",
       "file": "teasers/example-teasers-v2.json",
       "doc": {
         "id": "example-teasers",
         "version": 2,
         "status": "approved",
         "approved_by": "maintainer",
-        "approved_at": "2026-11-20",
+        "approved_at": "2026-11-23",
         "guard": [
           {
             "field": "T1.alt",
@@ -384,7 +384,7 @@
             "policy": "default",
             "passed": true,
             "detail": "",
-            "checked_at": "2026-11-20T15:28:01.368034Z"
+            "checked_at": "2026-11-23T03:31:02.485302Z"
           },
           {
             "field": "T2.alt",
@@ -392,7 +392,7 @@
             "policy": "default",
             "passed": true,
             "detail": "",
-            "checked_at": "2026-11-20T15:28:01.368034Z"
+            "checked_at": "2026-11-23T03:31:02.485302Z"
           }
         ],
         "project": "example-teasers",

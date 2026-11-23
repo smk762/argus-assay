@@ -1,9 +1,9 @@
 {
   "mint": {
     "repo": "smk762/argus-mint",
-    "tag": "b0c308e904c6d20c211905021e82fdcccbcd7396",
+    "tag": "fd7685ed7ed4631ca794bffba7e8972b2723534e",
     "sha256": "bb52b639ee6c82709ffa1878b8c0a859aa00f7d982464fc244565e332b40bf79",
-    "version": "0.3.1.dev4+gb0c308e90",
+    "version": "0.3.1.dev18+gfd7685ed7",
     "docs": {
       "docs/review.md": "372a6a600f428730990991bf0aadbdc7bad2bec713294786e05e091ef8268bc4",
       "docs/drafts.md": "660ab17f48bac28345d7e8e8e2b3dc243e4980add1610332c7ddad7813e7dbf4",

@@ -86,6 +86,15 @@ Recorded with `--real --cache --reject-notes`, with the maintainer's approval fo
 - **T2** is now in the project's own frame, `example-teasers/harbour-feed` (with its effects). The recorder copies the project's `frames/` into the server's project directory, marked approved like the global frames, because a project's frames have no editor over HTTP.
 - **`unchecked`:** darkroom answers this when SingGuard gave no verdict. It is not a judgement of the text, so the recorder now asks again, up to 3 times, with the same text and policy.
 
+### The re-record at argus-mint `fd7685e` (0.3.1.dev18, wire 1.17), 2026-11-23
+
+Recorded with `--real --cache --reject-notes`. The wire schema and the imported docs are unchanged from `b0c308e` (wire 1.17). Every draft's `made_with` and `fixture/health.json` are `0.3.1.dev18+gfd7685ed7`.
+
+- **Cards:** 21 of the 22 card renders are byte-identical to the `b0c308e` fixture. Brass Butler's seeds 8502 and 3943511226 were omitted (`sfw-exposed`); seed 2665159690 passed and is the published card: one brass automaton, checked by eye. Both omitted records were purged (`f14e59586dc84048841084f55eae48e2`, `18b4cc441cb44d0c9d3feb36a7816dca`).
+- **Bios:** the card bios were offered from the previous recording's cache and checked again by darkroom. The sample job's two bios were written on this run.
+- **Reject notes:** the five rejected cards' art is unchanged, so the notes written for those renders were reused.
+- **Backgrounds, T1, samples:** all six backgrounds, T1's art (seed 1493373799) and both sample images are byte-identical to the `b0c308e` recording. No figure in a background. T1 is one adult keeper, standing whole. T2 renders nothing.
+
 ## What the sample tape is
 
 `make sample-fixture` (no GPU, no network):
@@ -139,7 +148,7 @@ All of it stays in the tab until a reload.
 
 ## Recording
 
-One command, from this repo, with an argus-mint checkout at the pinned commit (`MINT`, default `../argus-mint`; `web/schema/pins.json`, now `aba0d2f`, 0.2.2, wire 1.9):
+One command, from this repo, with an argus-mint checkout at the pinned commit (`MINT`, default `../argus-mint`; `web/schema/pins.json`, now `fd7685e`, 0.3.1.dev18, wire 1.17):
 
 ```sh
 make record MINT=<argus-mint checkout> DARKROOM_URL=<GPU host's argus-darkroom> OLLAMA_URL=<GPU host's Ollama>

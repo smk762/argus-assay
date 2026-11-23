@@ -12,8 +12,9 @@ import { describe, expect, it, vi } from "vitest";
 
 const FIXTURE = join(__dirname, "..", "..", "..", "..", "..", "fixture");
 const read = (rel: string) => JSON.parse(readFileSync(join(FIXTURE, rel), "utf8"));
-const A = "0d4d3368b4aad58f";
-const B = "2a28c196e4117bf5";
+// Lantern Keeper, then Owl Scholar. A re-record gives every draft a new id.
+const A = "35cd98c1373a1b1e";
+const B = "46e83c2405f63292";
 const nav = vi.hoisted(() => ({ id: "" }));
 
 vi.mock("next/navigation", () => ({

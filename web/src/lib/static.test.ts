@@ -191,6 +191,44 @@ describe("the in-browser argus-mint", () => {
     expect(layout.slots.class.lines).toHaveLength(1);
   });
 
+  it("keeps a recorded layout on the frame it was measured for", () => {
+    // pack-argus-assay-69fbdc0c93: a cache keyed only by slot and text handed one frame's lines to another.
+    const box = { x: 10, y: 20, width: 400, height: 80, size: 40, align: "left" as const, font: "fonts/Test.ttf" };
+    const placed = (x: number, font: string) => ({
+      font, size: 20, ascent: 16, descent: 4, effects: { shadow: 1, outline: 1, glow: 2 }, lines: [{ text: "Same words", x, y: 30 }],
+    });
+    const draft = (id: string, frameId: string, version: number) => ({
+      id, status: "pending" as const, awaiting: [] as string[], draft: { frame: { id: frameId, version, hash: "h" } },
+    });
+    const frame = (id: string, version: number) => ({
+      width: 969, height: 1352, file: "f", hash: "h", frame: { id, version, status: "approved", texts: { quote: { ...box } } },
+    });
+    const m = new DemoMint({
+      health: { capabilities: {} },
+      drafts: [
+        draft("aaaaaaaaaaaaaaaa", "card-a", 1),
+        draft("bbbbbbbbbbbbbbbb", "card-b", 1),
+        draft("cccccccccccccccc", "card-a", 2),
+      ],
+      layouts: {
+        aaaaaaaaaaaaaaaa: { width: 969, height: 1352, slots: { quote: placed(11, "fonts/A.ttf") } },
+        bbbbbbbbbbbbbbbb: { width: 969, height: 1352, slots: { quote: placed(77, "fonts/B.ttf") } },
+        cccccccccccccccc: { width: 969, height: 1352, slots: { quote: placed(5, "fonts/A2.ttf") } },
+      },
+      frames: [frame("card-a", 1), frame("card-b", 1), frame("card-a", 2), frame("card-c", 1)],
+    } as unknown as Tape);
+    const quote = (id: string, version: number, text: string) => {
+      const res = m.post(`/frames/${id}/${version}/layout`, { texts: { quote: text } });
+      expect(res.status).toBe(200);
+      return (res.body as { slots: { quote: { font: string | null; lines: { x: number }[] } } }).slots.quote;
+    };
+    expect(quote("card-a", 1, "Same words")).toMatchObject({ font: "fonts/A.ttf", lines: [{ x: 11 }] });
+    expect(quote("card-b", 1, "Same   words")).toMatchObject({ font: "fonts/B.ttf", lines: [{ x: 77 }] });
+    expect(quote("card-a", 2, "Same words")).toMatchObject({ font: "fonts/A2.ttf", lines: [{ x: 5 }] });
+    // No recording for this frame: approximate from its box, rather than reuse another frame's lines.
+    expect(quote("card-c", 1, "Same words")).toMatchObject({ font: "fonts/Test.ttf", lines: [{ x: 10 }] });
+  });
+
   it("keeps catalogue decisions, and refuses the writes that need a GPU", () => {
     const m = mint();
     const draft = tape().templates.find((e) => e.template.status === "draft")!.template;

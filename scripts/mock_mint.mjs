@@ -46,13 +46,17 @@ for (const item of [...read("drafts.json").items].reverse()) {
   drafts.set(item.id, read(`drafts/${item.id}.json`));
   images.set(item.id, { image: png(`drafts/${item.id}/image.png`), art: png(`drafts/${item.id}/art.png`) });
 }
-// Recorded layouts (Pillow's, from argus-mint), reused when a slot's text matches exactly.
-const recordedLayouts = new Map(); // `${slot}\u0000${text}` -> slot layout
+// Recorded layouts (Pillow's, from argus-mint), reused when that frame's slot text matches exactly.
+// The key includes the frame: the same slot and words on another frame are a different placement
+// (lib/demoMint.ts layoutKey is the same).
+const recordedLayouts = new Map(); // `${frame}@${version}\u0000${slot}\u0000${text}` -> slot layout
 for (const id of drafts.keys()) {
   const f = join(root, "drafts", id, "layout.json");
   if (!existsSync(f)) continue;
+  const frame = drafts.get(id)?.draft?.frame;
+  if (!frame) continue;
   for (const [slot, l] of Object.entries(JSON.parse(readFileSync(f, "utf8")).slots ?? {})) {
-    recordedLayouts.set(`${slot}\u0000${l.lines.map((x) => x.text).join(" ")}`, l);
+    recordedLayouts.set(`${frame.id}@${frame.version}\u0000${slot}\u0000${l.lines.map((x) => x.text).join(" ")}`, l);
   }
 }
 
@@ -255,7 +259,7 @@ createServer(async (req, res) => {
       for (const [slot, text] of Object.entries(b.texts ?? {})) {
         const box = entry.frame.texts?.[slot];
         if (!box) return fail(res, 422, `no text slot ${slot}`);
-        if (text) slots[slot] = recordedLayouts.get(`${slot}\u0000${text.split(/\s+/).join(" ")}`) ?? approxLayout(box, text);
+        if (text) slots[slot] = recordedLayouts.get(`${fr.id}@${fr.version}\u0000${slot}\u0000${text.split(/\s+/).join(" ")}`) ?? approxLayout(box, text);
       }
       return send(res, 200, { width: entry.width, height: entry.height, slots });
     }

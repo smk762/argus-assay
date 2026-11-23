@@ -34,6 +34,14 @@ function defaultHex(bytes: number): string {
   return Array.from(buf, (b) => b.toString(16).padStart(2, "0")).join("");
 }
 
+/**
+ * A recorded placement, keyed by the frame it was measured on. The same slot and words on another
+ * frame (or another version of this one) sit in a different box. scripts/mock_mint.mjs uses this key.
+ */
+function layoutKey(frameId: string, version: number, slot: string, text: string): string {
+  return `${frameId}@${version}\u0000${slot}\u0000${text}`;
+}
+
 /** Without Pillow, a new text gets an approximate layout: average glyph width ~0.5em (as the mock). */
 export function approxLayout(box: Box, text: string): SlotLayout {
   const size = box.size ?? 48;
@@ -179,8 +187,13 @@ export class DemoMint {
       },
     } as Health;
     for (const d of this.tape.drafts) this.drafts.set(d.id, d);
-    for (const layout of Object.values(tape.layouts)) {
-      for (const [slot, l] of Object.entries(layout.slots ?? {})) this.layouts.set(`${slot}\u0000${l.lines.map((x) => x.text).join(" ")}`, l);
+    // tape.layouts is keyed by draft id (make_tape.mjs). The draft names the frame those lines were measured for.
+    for (const [draftId, layout] of Object.entries(tape.layouts)) {
+      const frame = tape.drafts.find((d) => d.id === draftId)?.draft.frame;
+      if (!frame) continue;
+      for (const [slot, l] of Object.entries(layout.slots ?? {})) {
+        this.layouts.set(layoutKey(frame.id, frame.version, slot, l.lines.map((x) => x.text).join(" ")), l);
+      }
     }
     this.published = tape.drafts.find((d) => d.published)?.published ?? null;
   }
@@ -410,7 +423,7 @@ export class DemoMint {
     for (const [slot, text] of Object.entries(texts)) {
       const box = entry.frame.texts?.[slot] as Box | undefined;
       if (!box) return fail(422, `no text slot ${slot}`);
-      if (text) slots[slot] = this.layouts.get(`${slot}\u0000${text.split(/\s+/).join(" ")}`) ?? approxLayout(box, text);
+      if (text) slots[slot] = this.layouts.get(layoutKey(id, version, slot, text.split(/\s+/).join(" "))) ?? approxLayout(box, text);
     }
     return ok({ width: entry.width, height: entry.height, slots } as FrameLayout);
   }

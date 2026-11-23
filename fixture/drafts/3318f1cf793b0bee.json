@@ -1,0 +1,254 @@
+{
+  "id": "3318f1cf793b0bee",
+  "status": "published",
+  "awaiting": [],
+  "draft": {
+    "format": 1,
+    "kind": "card",
+    "request": {
+      "template_id": "demo-portrait",
+      "template_version": 1,
+      "template_hash": "0xd659b69292f4422d56ee789cbff7d585bd39f6a4527ff2c2ac5b5d0cd245573c",
+      "model": "sdxl/aureanuanceXL_v2/aureanuanceXL_v2.safetensors",
+      "loras": [],
+      "sampling": {
+        "sampler": "euler",
+        "scheduler": "normal",
+        "steps": 25,
+        "cfg": 6.0,
+        "clip_skip": 1,
+        "guidance": null
+      },
+      "width": 1152,
+      "height": 896,
+      "prompt": "waist-up portrait of one female wizard in long flowing robes, alone in the picture, centered and facing the viewer, clothing and colour scheme emerald green, casting a spell, background: library, painted fantasy illustration, full bleed, detailed",
+      "negative": "text, letters, words, caption, title, label, logo, watermark, signature, border, frame, card frame, trading card, playing card, game ui, icons, badges, numbers, two people, second person, multiple people, crowd, companion, robot beside, empty scene, landscape, gore, cross, crucifix, mitre, rosary, halo, church, religious symbol, nudity",
+      "variables": {
+        "background": "library",
+        "colour": "emerald green",
+        "gender": "female",
+        "pose": "casting a spell",
+        "role": "wizard in long flowing robes"
+      },
+      "seed": 8461,
+      "init_image": null
+    },
+    "attempts": [
+      {
+        "seed": 8461,
+        "outcome": "ok",
+        "ref": "b82e061935634195bf58003517487804",
+        "detail": "",
+        "workflow": {
+          "name": "sdxl",
+          "sha256": "02e08f842f7a66e0e1be2ebc506ab8339f3b39df639beb86fc04dc240f3ef38d"
+        }
+      }
+    ],
+    "renderer": "darkroom",
+    "asset_id": "0x26e9840acf58ba86690e67c03e21cf541cefc52f8c6aee1d8fde5986f89180a2",
+    "to": "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
+    "name": "Emerald Wizard",
+    "description": "Emerald velvet whispers, Emerald Wizard weaves spells in library's hush. Her emerald eyes sparkle like trapped moonlight. She hums to books when she thinks they're not listening.",
+    "external_url": null,
+    "consumer": "argus-mint",
+    "teaser": null,
+    "frame": {
+      "id": "card-green",
+      "version": 1,
+      "hash": "0xed8933833831ea63e4f8c91eea897814159af3a7b21acfb560c70162366ccf37"
+    },
+    "bio": {
+      "ref": {
+        "id": "demo-bio",
+        "version": 1,
+        "hash": "0xfee903b50f7131012c3fef6bb3c89daff4fc67e9ad3a1584fe44693f0774e861",
+        "model": "mistral-nemo:12b-instruct-2407-q4_K_M"
+      },
+      "text": "Emerald velvet whispers, Emerald Wizard weaves spells in library's hush. Her emerald eyes sparkle like trapped moonlight. She hums to books when she thinks they're not listening.",
+      "attempts": [
+        {
+          "outcome": "ok",
+          "detail": "",
+          "text": "Emerald velvet whispers, {name} weaves spells in library's hush. Her emerald eyes sparkle like trapped moonlight. She hums to books when she thinks they're not listening."
+        }
+      ],
+      "edited": false
+    },
+    "texts": {
+      "class": "Wizard · Emerald",
+      "stats": "No. 1"
+    },
+    "style": null,
+    "library": null,
+    "made_with": {
+      "argus-mint": "0.3.1.dev18+gfd7685ed7"
+    },
+    "edits": [],
+    "auto_check": null,
+    "art_sha256": "bc999469a8c6c3f2a9173184d0e9f1c5a5a7e0b00200f3c6bdae2289119afd61",
+    "image_sha256": "97aa835059bb5a03693af0fbb81c3ad7d0513e1daae21e687af9cdbfaf68191d",
+    "created_at": "2026-11-23T03:11:57.528307Z",
+    "reviews": [
+      {
+        "role": "moderator",
+        "decision": "approved",
+        "by": "moderator-1",
+        "at": "2026-11-23T03:11:57.536404Z",
+        "image_sha256": "97aa835059bb5a03693af0fbb81c3ad7d0513e1daae21e687af9cdbfaf68191d",
+        "note": ""
+      },
+      {
+        "role": "owner",
+        "decision": "approved",
+        "by": "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
+        "at": "2026-11-23T03:11:57.560363Z",
+        "image_sha256": "97aa835059bb5a03693af0fbb81c3ad7d0513e1daae21e687af9cdbfaf68191d",
+        "note": ""
+      }
+    ]
+  },
+  "published": {
+    "signer": "0x70997970C51812dc3A010C7d01b50e0d17dc79C8",
+    "render": {
+      "renderer": "darkroom",
+      "prompt": "waist-up portrait of one female wizard in long flowing robes, alone in the picture, centered and facing the viewer, clothing and colour scheme emerald green, casting a spell, background: library, painted fantasy illustration, full bleed, detailed",
+      "seed": 8461,
+      "attempts": [
+        {
+          "seed": 8461,
+          "outcome": "ok",
+          "ref": "b82e061935634195bf58003517487804",
+          "detail": "",
+          "workflow": {
+            "name": "sdxl",
+            "sha256": "02e08f842f7a66e0e1be2ebc506ab8339f3b39df639beb86fc04dc240f3ef38d"
+          }
+        }
+      ],
+      "art_cid": "bafkreif4tgkgtkggypzksfzrqtiot4ofuwt6bmacadz4npnoekerdgx5me",
+      "image_cid": "bafkreiexvkbvawn3libwsoxq7o4byowx2bit4hnk4ipgq6xzzw7262azdu"
+    },
+    "reviews": [
+      {
+        "role": "moderator",
+        "decision": "approved",
+        "by": "moderator-1",
+        "at": "2026-11-23T03:11:57.536404Z",
+        "image_sha256": "97aa835059bb5a03693af0fbb81c3ad7d0513e1daae21e687af9cdbfaf68191d",
+        "note": ""
+      },
+      {
+        "role": "owner",
+        "decision": "approved",
+        "by": "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
+        "at": "2026-11-23T03:11:57.560363Z",
+        "image_sha256": "97aa835059bb5a03693af0fbb81c3ad7d0513e1daae21e687af9cdbfaf68191d",
+        "note": ""
+      }
+    ],
+    "metadata": {
+      "name": "Emerald Wizard",
+      "description": "Emerald velvet whispers, Emerald Wizard weaves spells in library's hush. Her emerald eyes sparkle like trapped moonlight. She hums to books when she thinks they're not listening.",
+      "image": "ipfs://bafkreiexvkbvawn3libwsoxq7o4byowx2bit4hnk4ipgq6xzzw7262azdu",
+      "attributes": [],
+      "provenance": {
+        "template": "demo-portrait",
+        "template_version": 1,
+        "template_hash": "0xd659b69292f4422d56ee789cbff7d585bd39f6a4527ff2c2ac5b5d0cd245573c",
+        "seed": 8461,
+        "attempts": 1,
+        "asset_id": "0x26e9840acf58ba86690e67c03e21cf541cefc52f8c6aee1d8fde5986f89180a2",
+        "consumer": "argus-mint",
+        "frame": {
+          "id": "card-green",
+          "version": 1,
+          "hash": "0xed8933833831ea63e4f8c91eea897814159af3a7b21acfb560c70162366ccf37"
+        },
+        "art": "ipfs://bafkreif4tgkgtkggypzksfzrqtiot4ofuwt6bmacadz4npnoekerdgx5me",
+        "bio": {
+          "id": "demo-bio",
+          "version": 1,
+          "hash": "0xfee903b50f7131012c3fef6bb3c89daff4fc67e9ad3a1584fe44693f0774e861",
+          "model": "mistral-nemo:12b-instruct-2407-q4_K_M"
+        },
+        "variables": {
+          "background": "library",
+          "colour": "emerald green",
+          "gender": "female",
+          "pose": "casting a spell",
+          "role": "wizard in long flowing robes"
+        },
+        "model": "sdxl/aureanuanceXL_v2/aureanuanceXL_v2.safetensors"
+      }
+    },
+    "metadata_cid": "bafkreibks3y2jzeyqhsnb56vyae7nluegfdowy2pbn33nx7twwqbzpubai",
+    "voucher": {
+      "to": "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
+      "asset_id": "0x26e9840acf58ba86690e67c03e21cf541cefc52f8c6aee1d8fde5986f89180a2",
+      "content_hash": "0x1020faf66dc58df1bd7481bda53e445e7159408e907278e95346b0219fb74b40",
+      "price": 0,
+      "deadline": 1900000000
+    },
+    "signature": "0xa7f015323c355159cbaeb3f4c796258be0a78a4dfebcbab1403cfcff507af13b7c49d3fc522deb3b566feec65843137ceb612a19acb6d65211b7119eb02518651c",
+    "typed_data": {
+      "types": {
+        "EIP712Domain": [
+          {
+            "name": "name",
+            "type": "string"
+          },
+          {
+            "name": "version",
+            "type": "string"
+          },
+          {
+            "name": "chainId",
+            "type": "uint256"
+          },
+          {
+            "name": "verifyingContract",
+            "type": "address"
+          }
+        ],
+        "MintVoucher": [
+          {
+            "name": "to",
+            "type": "address"
+          },
+          {
+            "name": "assetId",
+            "type": "bytes32"
+          },
+          {
+            "name": "contentHash",
+            "type": "bytes32"
+          },
+          {
+            "name": "price",
+            "type": "uint256"
+          },
+          {
+            "name": "deadline",
+            "type": "uint64"
+          }
+        ]
+      },
+      "primaryType": "MintVoucher",
+      "domain": {
+        "name": "argus-mint Card",
+        "version": "1",
+        "chainId": 84532,
+        "verifyingContract": "0xCAa3573b5550870A5e15C47c650b8700D70a8fA7"
+      },
+      "message": {
+        "to": "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
+        "assetId": "0x26e9840acf58ba86690e67c03e21cf541cefc52f8c6aee1d8fde5986f89180a2",
+        "contentHash": "0x1020faf66dc58df1bd7481bda53e445e7159408e907278e95346b0219fb74b40",
+        "price": 0,
+        "deadline": 1900000000
+      }
+    }
+  },
+  "posts": []
+}

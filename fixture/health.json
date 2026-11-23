@@ -1,6 +1,6 @@
 {
   "service": "argus-mint",
-  "version": "0.3.1.dev4+gb0c308e90",
+  "version": "0.3.1.dev18+gfd7685ed7",
   "wire_version": "1.17",
   "read_only": false,
   "network": "base_sepolia",

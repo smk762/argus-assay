@@ -1,0 +1,327 @@
+{
+  "id": "d280527d5c9d0826",
+  "status": "published",
+  "awaiting": [],
+  "draft": {
+    "format": 1,
+    "kind": "teaser",
+    "request": {
+      "template_id": "keeper",
+      "template_version": 1,
+      "template_hash": "0xa418658c78bb4c0b8595a4547ff2e2acc06c01a14414e68e10862331c0f57a0c",
+      "model": "sdxl/juggernautXL_ragnarokBy/juggernautXL_ragnarokBy.safetensors",
+      "loras": [],
+      "sampling": {
+        "sampler": "euler",
+        "scheduler": "normal",
+        "steps": 25,
+        "cfg": 6.0,
+        "clip_skip": 1,
+        "guidance": null
+      },
+      "width": 1024,
+      "height": 1024,
+      "prompt": "three-quarter length figure of an elderly lighthouse keeper standing in a dim room at night, seen from a few steps away, weathered face, short grey beard, dark oilskin coat, knitted cap, lit warmly from one side by lamplight, painted illustration",
+      "negative": "close-up, headshot, portrait, cropped head, flat front lighting, nude, nudity, text, letters, watermark, signature",
+      "variables": {},
+      "seed": 1493373799,
+      "init_image": {
+        "sha256": "e5594a06b6054aa4c308cd41914e02167a3f9e7b1d7f868c3c16eb2934f72b8a",
+        "mask_sha256": "ba932cd2ced883cab1512633f89d6a3a1483f9bf01e1c51779b7fc285e0fcff5",
+        "denoise": 1.0
+      }
+    },
+    "attempts": [
+      {
+        "seed": 1493373799,
+        "outcome": "ok",
+        "ref": "25e4582668a74ac5ac2785975efb1f24",
+        "detail": "",
+        "workflow": {
+          "name": "sdxl+inpaint",
+          "sha256": "d7435cd4f164317f69653675f198093832cb0a278aac248bd0ac934c273a1a75"
+        }
+      }
+    ],
+    "renderer": "darkroom",
+    "asset_id": null,
+    "to": "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
+    "name": "Lantern Coast T1",
+    "description": "",
+    "external_url": null,
+    "consumer": null,
+    "teaser": {
+      "project": {
+        "id": "example-teasers",
+        "version": 1,
+        "hash": "0x1efbaa8b3ee9798477b22ce2fecb25da0d7a087b85382bc6fb2310151de76718"
+      },
+      "links": {
+        "id": "example-teasers",
+        "version": 2,
+        "hash": "0x29f112330bccb432708fce6a8ca6d7cbd4d079624590cd05b083fefe40eab351"
+      },
+      "number": "T1",
+      "line": {
+        "id": "keep-it-lit",
+        "version": 1,
+        "hash": "0x7e8e17e410cc31d10c91e007517d3f550f545aba7b284f939b3c514e17a2b730"
+      },
+      "identity": {
+        "id": "keeper",
+        "version": 1,
+        "hash": "0xa418658c78bb4c0b8595a4547ff2e2acc06c01a14414e68e10862331c0f57a0c"
+      },
+      "scene": {
+        "id": "lamp-room",
+        "version": 1,
+        "hash": "0xe6b33c39824a43235a51e124a41392d49c5c59f1c18a86d2a4f5c9937a2f8766"
+      },
+      "presence": "embodied",
+      "background": {
+        "id": "lamp-room-v1-01",
+        "sha256": "e5594a06b6054aa4c308cd41914e02167a3f9e7b1d7f868c3c16eb2934f72b8a"
+      },
+      "alt": "An old lighthouse keeper in an oilskin coat stands beside the great brass lens on a rainy night."
+    },
+    "frame": {
+      "id": "example-teaser",
+      "version": 1,
+      "hash": "0x76b98c5b79ea683223e277941df1bbc248ec3c6720d8869a655359ff951cbee7"
+    },
+    "bio": null,
+    "texts": {
+      "quote": "Forty years I've kept it lit, and not once has the sea said thank you.",
+      "label": "generated image"
+    },
+    "style": null,
+    "library": null,
+    "made_with": {
+      "argus-mint": "0.3.1.dev18+gfd7685ed7",
+      "darkroom": "0.1.4.dev76+g2977981da"
+    },
+    "edits": [],
+    "auto_check": {
+      "at": "2026-11-23T03:31:19.631840Z",
+      "image_sha256": "7472676bfa04356bf42eaf840f1eae22d32c9664b8762c127f66d7ed77274bd4",
+      "passed": false,
+      "checks": [
+        "art: darkroom's image guards passed it",
+        "word filter: name, text label, text quote clean"
+      ],
+      "held": [
+        "identity: identity keeper v1 has no proof_export yet (no LoRA of it has passed proof), so nothing to score against",
+        "auto-moderation is off: the moderator decides"
+      ],
+      "identity": {
+        "at": "2026-11-23T03:31:19.611644Z",
+        "art_sha256": "ef7cf43c6890d3014edb8e1f50159d61c8dcbc28059710daaea9e4e3d9fde400",
+        "presence": "embodied",
+        "outcome": "skipped",
+        "reason": "identity keeper v1 has no proof_export yet (no LoRA of it has passed proof), so nothing to score against",
+        "metric": "identity",
+        "score": null,
+        "min_score": null,
+        "export": null,
+        "crop": null,
+        "proof_version": null,
+        "scorer": null,
+        "scorer_version": null,
+        "model_file": null
+      }
+    },
+    "art_sha256": "ef7cf43c6890d3014edb8e1f50159d61c8dcbc28059710daaea9e4e3d9fde400",
+    "image_sha256": "7472676bfa04356bf42eaf840f1eae22d32c9664b8762c127f66d7ed77274bd4",
+    "created_at": "2026-11-23T03:31:19.611597Z",
+    "reviews": [
+      {
+        "role": "moderator",
+        "decision": "approved",
+        "by": "moderator-1",
+        "at": "2026-11-23T03:31:19.643852Z",
+        "image_sha256": "7472676bfa04356bf42eaf840f1eae22d32c9664b8762c127f66d7ed77274bd4",
+        "note": ""
+      },
+      {
+        "role": "owner",
+        "decision": "approved",
+        "by": "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
+        "at": "2026-11-23T03:31:19.666792Z",
+        "image_sha256": "7472676bfa04356bf42eaf840f1eae22d32c9664b8762c127f66d7ed77274bd4",
+        "note": ""
+      }
+    ]
+  },
+  "published": {
+    "signer": "0x70997970C51812dc3A010C7d01b50e0d17dc79C8",
+    "render": {
+      "renderer": "darkroom",
+      "prompt": "three-quarter length figure of an elderly lighthouse keeper standing in a dim room at night, seen from a few steps away, weathered face, short grey beard, dark oilskin coat, knitted cap, lit warmly from one side by lamplight, painted illustration",
+      "seed": 1493373799,
+      "attempts": [
+        {
+          "seed": 1493373799,
+          "outcome": "ok",
+          "ref": "25e4582668a74ac5ac2785975efb1f24",
+          "detail": "",
+          "workflow": {
+            "name": "sdxl+inpaint",
+            "sha256": "d7435cd4f164317f69653675f198093832cb0a278aac248bd0ac934c273a1a75"
+          }
+        }
+      ],
+      "art_cid": "bafkreihppt2dy2eq2mau5w4od5iblhlbzdolykafs4invlvj4tr5t7peaa",
+      "image_cid": "bafkreiduojtwx6qegvv7ilvpqqhr5lrc2mwjmzfyoywbe73g27wxoj2l2q"
+    },
+    "reviews": [
+      {
+        "role": "moderator",
+        "decision": "approved",
+        "by": "moderator-1",
+        "at": "2026-11-23T03:31:19.643852Z",
+        "image_sha256": "7472676bfa04356bf42eaf840f1eae22d32c9664b8762c127f66d7ed77274bd4",
+        "note": ""
+      },
+      {
+        "role": "owner",
+        "decision": "approved",
+        "by": "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
+        "at": "2026-11-23T03:31:19.666792Z",
+        "image_sha256": "7472676bfa04356bf42eaf840f1eae22d32c9664b8762c127f66d7ed77274bd4",
+        "note": ""
+      }
+    ],
+    "metadata": {
+      "name": "Lantern Coast T1",
+      "description": "An old lighthouse keeper in an oilskin coat stands beside the great brass lens on a rainy night.",
+      "image": "ipfs://bafkreiduojtwx6qegvv7ilvpqqhr5lrc2mwjmzfyoywbe73g27wxoj2l2q",
+      "attributes": [],
+      "provenance": {
+        "kind": "teaser",
+        "project": {
+          "id": "example-teasers",
+          "version": 1,
+          "hash": "0x1efbaa8b3ee9798477b22ce2fecb25da0d7a087b85382bc6fb2310151de76718"
+        },
+        "links": {
+          "id": "example-teasers",
+          "version": 2,
+          "hash": "0x29f112330bccb432708fce6a8ca6d7cbd4d079624590cd05b083fefe40eab351"
+        },
+        "number": "T1",
+        "line": {
+          "id": "keep-it-lit",
+          "version": 1,
+          "hash": "0x7e8e17e410cc31d10c91e007517d3f550f545aba7b284f939b3c514e17a2b730"
+        },
+        "identity": {
+          "id": "keeper",
+          "version": 1,
+          "hash": "0xa418658c78bb4c0b8595a4547ff2e2acc06c01a14414e68e10862331c0f57a0c"
+        },
+        "scene": {
+          "id": "lamp-room",
+          "version": 1,
+          "hash": "0xe6b33c39824a43235a51e124a41392d49c5c59f1c18a86d2a4f5c9937a2f8766"
+        },
+        "presence": "embodied",
+        "background": {
+          "id": "lamp-room-v1-01",
+          "sha256": "e5594a06b6054aa4c308cd41914e02167a3f9e7b1d7f868c3c16eb2934f72b8a"
+        },
+        "frame": {
+          "id": "example-teaser",
+          "version": 1,
+          "hash": "0x76b98c5b79ea683223e277941df1bbc248ec3c6720d8869a655359ff951cbee7"
+        },
+        "art": "ipfs://bafkreihppt2dy2eq2mau5w4od5iblhlbzdolykafs4invlvj4tr5t7peaa",
+        "asset_id": "0x1fda9a275da0b4bc10e6c5c4e104d80652bd76a56d2498a103072f81430f13c5",
+        "inpaint": {
+          "seed": 1493373799,
+          "attempts": 1,
+          "model": "sdxl/juggernautXL_ragnarokBy/juggernautXL_ragnarokBy.safetensors",
+          "image_sha256": "e5594a06b6054aa4c308cd41914e02167a3f9e7b1d7f868c3c16eb2934f72b8a",
+          "mask_sha256": "ba932cd2ced883cab1512633f89d6a3a1483f9bf01e1c51779b7fc285e0fcff5",
+          "denoise": 1
+        }
+      }
+    },
+    "metadata_cid": "bafkreia3sdaohad43ekzszbzuz6vr26qjorhcu7jgjb2twmtjltbtv7syq",
+    "voucher": {
+      "to": "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
+      "asset_id": "0x1fda9a275da0b4bc10e6c5c4e104d80652bd76a56d2498a103072f81430f13c5",
+      "content_hash": "0x9d339465e7c40d0d33e690eaa30be8e7c1db65479e77b625b7a836a4cf431cac",
+      "price": 0,
+      "deadline": 1900000000
+    },
+    "signature": "0x0fbecaf89189840ca9c0da2ed07578322ba0153ab69210501e0898fa57aa12644710f618d389e18865fce84d444494f0fb9e8295f9763715344636925969e6ad1b",
+    "typed_data": {
+      "types": {
+        "EIP712Domain": [
+          {
+            "name": "name",
+            "type": "string"
+          },
+          {
+            "name": "version",
+            "type": "string"
+          },
+          {
+            "name": "chainId",
+            "type": "uint256"
+          },
+          {
+            "name": "verifyingContract",
+            "type": "address"
+          }
+        ],
+        "MintVoucher": [
+          {
+            "name": "to",
+            "type": "address"
+          },
+          {
+            "name": "assetId",
+            "type": "bytes32"
+          },
+          {
+            "name": "contentHash",
+            "type": "bytes32"
+          },
+          {
+            "name": "price",
+            "type": "uint256"
+          },
+          {
+            "name": "deadline",
+            "type": "uint64"
+          }
+        ]
+      },
+      "primaryType": "MintVoucher",
+      "domain": {
+        "name": "argus-mint Card",
+        "version": "1",
+        "chainId": 84532,
+        "verifyingContract": "0xCAa3573b5550870A5e15C47c650b8700D70a8fA7"
+      },
+      "message": {
+        "to": "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
+        "assetId": "0x1fda9a275da0b4bc10e6c5c4e104d80652bd76a56d2498a103072f81430f13c5",
+        "contentHash": "0x9d339465e7c40d0d33e690eaa30be8e7c1db65479e77b625b7a836a4cf431cac",
+        "price": 0,
+        "deadline": 1900000000
+      }
+    }
+  },
+  "posts": [
+    {
+      "where": "demo",
+      "url": null,
+      "at": "2026-11-23T03:31:19.669020Z",
+      "sha256": "7472676bfa04356bf42eaf840f1eae22d32c9664b8762c127f66d7ed77274bd4",
+      "recorded_at": "2026-11-23T03:31:19.672678Z",
+      "by": "poster"
+    }
+  ]
+}

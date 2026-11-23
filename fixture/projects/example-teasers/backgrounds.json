@@ -5,7 +5,7 @@
       "project": "example-teasers",
       "scene": "lamp-room",
       "scene_version": 1,
-      "scene_hash": "0x891af9044a2a9f4677ee8d0690b128775b241090d0bb77d0cf8a4ac44cf52290",
+      "scene_hash": "0xe6b33c39824a43235a51e124a41392d49c5c59f1c18a86d2a4f5c9937a2f8766",
       "wanted": 3,
       "backgrounds": [
         {
@@ -15,7 +15,7 @@
           "request": {
             "template_id": "lamp-room",
             "template_version": 1,
-            "template_hash": "0x891af9044a2a9f4677ee8d0690b128775b241090d0bb77d0cf8a4ac44cf52290",
+            "template_hash": "0xe6b33c39824a43235a51e124a41392d49c5c59f1c18a86d2a4f5c9937a2f8766",
             "model": "sdxl/juggernautXL_ragnarokBy/juggernautXL_ragnarokBy.safetensors",
             "loras": [],
             "sampling": {
@@ -38,7 +38,7 @@
             {
               "seed": 3701882332,
               "outcome": "ok",
-              "ref": "8dab65ec05c947fe93326f12d2f90a20",
+              "ref": "027a220ac8e64270b9af88991b359fb2",
               "detail": "",
               "workflow": {
                 "name": "sdxl",
@@ -49,14 +49,15 @@
           "file": "lamp-room-v1-01.png",
           "sha256": "e5594a06b6054aa4c308cd41914e02167a3f9e7b1d7f868c3c16eb2934f72b8a",
           "made_with": {
-            "argus-mint": "0.3.1.dev4+gb0c308e90"
+            "argus-mint": "0.3.1.dev18+gfd7685ed7",
+            "darkroom": "0.1.4.dev76+g2977981da"
           },
-          "created_at": "2026-11-20T15:27:57.043829Z",
+          "created_at": "2026-11-23T03:29:49.506896Z",
           "status": "approved",
           "review": {
             "decision": "approved",
             "by": "maintainer",
-            "at": "2026-11-20T15:28:01.217851Z",
+            "at": "2026-11-23T03:31:02.392298Z",
             "image_sha256": "e5594a06b6054aa4c308cd41914e02167a3f9e7b1d7f868c3c16eb2934f72b8a",
             "note": ""
           }
@@ -68,7 +69,7 @@
           "request": {
             "template_id": "lamp-room",
             "template_version": 1,
-            "template_hash": "0x891af9044a2a9f4677ee8d0690b128775b241090d0bb77d0cf8a4ac44cf52290",
+            "template_hash": "0xe6b33c39824a43235a51e124a41392d49c5c59f1c18a86d2a4f5c9937a2f8766",
             "model": "sdxl/juggernautXL_ragnarokBy/juggernautXL_ragnarokBy.safetensors",
             "loras": [],
             "sampling": {
@@ -91,7 +92,7 @@
             {
               "seed": 3640844258,
               "outcome": "ok",
-              "ref": "45fd5bdac5d94f6997bbda4506a98b58",
+              "ref": "8898b22153024fca8b44b54cba0d0bc2",
               "detail": "",
               "workflow": {
                 "name": "sdxl",
@@ -102,14 +103,15 @@
           "file": "lamp-room-v1-02.png",
           "sha256": "1e42fdf38e781dcf766c0d36251d2d1d6bb108bc569689bc815c2925ec5f03f3",
           "made_with": {
-            "argus-mint": "0.3.1.dev4+gb0c308e90"
+            "argus-mint": "0.3.1.dev18+gfd7685ed7",
+            "darkroom": "0.1.4.dev76+g2977981da"
           },
-          "created_at": "2026-11-20T15:27:57.053822Z",
+          "created_at": "2026-11-23T03:30:05.926226Z",
           "status": "approved",
           "review": {
             "decision": "approved",
             "by": "maintainer",
-            "at": "2026-11-20T15:28:01.239442Z",
+            "at": "2026-11-23T03:31:02.406386Z",
             "image_sha256": "1e42fdf38e781dcf766c0d36251d2d1d6bb108bc569689bc815c2925ec5f03f3",
             "note": ""
           }
@@ -121,7 +123,7 @@
           "request": {
             "template_id": "lamp-room",
             "template_version": 1,
-            "template_hash": "0x891af9044a2a9f4677ee8d0690b128775b241090d0bb77d0cf8a4ac44cf52290",
+            "template_hash": "0xe6b33c39824a43235a51e124a41392d49c5c59f1c18a86d2a4f5c9937a2f8766",
             "model": "sdxl/juggernautXL_ragnarokBy/juggernautXL_ragnarokBy.safetensors",
             "loras": [],
             "sampling": {
@@ -144,7 +146,7 @@
             {
               "seed": 1937172164,
               "outcome": "ok",
-              "ref": "d5688da7a2304d2ea3b0db6a17c1bce9",
+              "ref": "bcfc0aac0207498d8aca77b3bab31957",
               "detail": "",
               "workflow": {
                 "name": "sdxl",
@@ -155,14 +157,15 @@
           "file": "lamp-room-v1-03.png",
           "sha256": "ed65c7fad8cbea9e820e4a19c7077b9e2d277806ada563b053e40a6bdd91bf27",
           "made_with": {
-            "argus-mint": "0.3.1.dev4+gb0c308e90"
+            "argus-mint": "0.3.1.dev18+gfd7685ed7",
+            "darkroom": "0.1.4.dev76+g2977981da"
           },
-          "created_at": "2026-11-20T15:27:57.063492Z",
+          "created_at": "2026-11-23T03:30:19.285339Z",
           "status": "rejected",
           "review": {
             "decision": "rejected",
             "by": "maintainer",
-            "at": "2026-11-20T15:28:01.259218Z",
+            "at": "2026-11-23T03:31:02.420492Z",
             "image_sha256": "ed65c7fad8cbea9e820e4a19c7077b9e2d277806ada563b053e40a6bdd91bf27",
             "note": "Rain falls inside the room, down the walls and across the lantern, and the oil lantern trails an electric cord."
           }
@@ -170,10 +173,10 @@
       ],
       "failed": [],
       "job": {
-        "id": "e8e9f79674b184d6",
+        "id": "46411a068bc359f8",
         "status": "done",
-        "created_at": "2026-11-20T15:27:57.011685Z",
-        "finished_at": "2026-11-20T15:27:57.064768Z",
+        "created_at": "2026-11-23T03:29:11.462009Z",
+        "finished_at": "2026-11-23T03:30:19.287301Z",
         "error": null,
         "numbers": [
           1,
@@ -187,7 +190,7 @@
       "project": "example-teasers",
       "scene": "shoreline",
       "scene_version": 1,
-      "scene_hash": "0x7aa7ce6d1cbae3a127100483b7b1bf139a5a56b89617172c2ca6149850df5fe8",
+      "scene_hash": "0xd73a4c2f4c4b8b485d6ca414c1efc19033a9683fbd4c482525b5e4b6b3bca87e",
       "wanted": 3,
       "backgrounds": [
         {
@@ -197,7 +200,7 @@
           "request": {
             "template_id": "shoreline",
             "template_version": 1,
-            "template_hash": "0x7aa7ce6d1cbae3a127100483b7b1bf139a5a56b89617172c2ca6149850df5fe8",
+            "template_hash": "0xd73a4c2f4c4b8b485d6ca414c1efc19033a9683fbd4c482525b5e4b6b3bca87e",
             "model": "sdxl/juggernautXL_ragnarokBy/juggernautXL_ragnarokBy.safetensors",
             "loras": [],
             "sampling": {
@@ -220,7 +223,7 @@
             {
               "seed": 3729655101,
               "outcome": "ok",
-              "ref": "5b1bd6165b0246c7a7254603161aff3f",
+              "ref": "08505b5f5ad84e1aa1d80816f9f0b57e",
               "detail": "",
               "workflow": {
                 "name": "sdxl",
@@ -231,14 +234,15 @@
           "file": "shoreline-v1-01.png",
           "sha256": "5891f520d430238f07b72d9fe76011d8a54e470cf48c926bbafdfdfc7f8ae67e",
           "made_with": {
-            "argus-mint": "0.3.1.dev4+gb0c308e90"
+            "argus-mint": "0.3.1.dev18+gfd7685ed7",
+            "darkroom": "0.1.4.dev76+g2977981da"
           },
-          "created_at": "2026-11-20T15:27:59.143206Z",
+          "created_at": "2026-11-23T03:30:34.381171Z",
           "status": "approved",
           "review": {
             "decision": "approved",
             "by": "maintainer",
-            "at": "2026-11-20T15:28:01.288077Z",
+            "at": "2026-11-23T03:31:02.435271Z",
             "image_sha256": "5891f520d430238f07b72d9fe76011d8a54e470cf48c926bbafdfdfc7f8ae67e",
             "note": ""
           }
@@ -250,7 +254,7 @@
           "request": {
             "template_id": "shoreline",
             "template_version": 1,
-            "template_hash": "0x7aa7ce6d1cbae3a127100483b7b1bf139a5a56b89617172c2ca6149850df5fe8",
+            "template_hash": "0xd73a4c2f4c4b8b485d6ca414c1efc19033a9683fbd4c482525b5e4b6b3bca87e",
             "model": "sdxl/juggernautXL_ragnarokBy/juggernautXL_ragnarokBy.safetensors",
             "loras": [],
             "sampling": {
@@ -273,7 +277,7 @@
             {
               "seed": 557845662,
               "outcome": "ok",
-              "ref": "a5a3de417cf64d1197043f53932418f4",
+              "ref": "073fe32a50d44d399695a2e3f216e2b4",
               "detail": "",
               "workflow": {
                 "name": "sdxl",
@@ -284,14 +288,15 @@
           "file": "shoreline-v1-02.png",
           "sha256": "7d842332309a091ce02da25feaea467562af1911116ccbbd3ebbf008dc057cd6",
           "made_with": {
-            "argus-mint": "0.3.1.dev4+gb0c308e90"
+            "argus-mint": "0.3.1.dev18+gfd7685ed7",
+            "darkroom": "0.1.4.dev76+g2977981da"
           },
-          "created_at": "2026-11-20T15:27:59.162300Z",
+          "created_at": "2026-11-23T03:30:50.329088Z",
           "status": "approved",
           "review": {
             "decision": "approved",
             "by": "maintainer",
-            "at": "2026-11-20T15:28:01.309482Z",
+            "at": "2026-11-23T03:31:02.449906Z",
             "image_sha256": "7d842332309a091ce02da25feaea467562af1911116ccbbd3ebbf008dc057cd6",
             "note": ""
           }
@@ -303,7 +308,7 @@
           "request": {
             "template_id": "shoreline",
             "template_version": 1,
-            "template_hash": "0x7aa7ce6d1cbae3a127100483b7b1bf139a5a56b89617172c2ca6149850df5fe8",
+            "template_hash": "0xd73a4c2f4c4b8b485d6ca414c1efc19033a9683fbd4c482525b5e4b6b3bca87e",
             "model": "sdxl/juggernautXL_ragnarokBy/juggernautXL_ragnarokBy.safetensors",
             "loras": [],
             "sampling": {
@@ -326,7 +331,7 @@
             {
               "seed": 192604687,
               "outcome": "ok",
-              "ref": "07676977347040a2a9a70f20ecb5e7ad",
+              "ref": "e47e207b92cc4afaa0d2649daee71b94",
               "detail": "",
               "workflow": {
                 "name": "sdxl",
@@ -337,14 +342,15 @@
           "file": "shoreline-v1-03.png",
           "sha256": "d63f61fa998f26a530f4fc190af1d3d7aab8e1b6b7c4d3e1a1bd600ad9951369",
           "made_with": {
-            "argus-mint": "0.3.1.dev4+gb0c308e90"
+            "argus-mint": "0.3.1.dev18+gfd7685ed7",
+            "darkroom": "0.1.4.dev76+g2977981da"
           },
-          "created_at": "2026-11-20T15:27:59.174277Z",
+          "created_at": "2026-11-23T03:31:02.174588Z",
           "status": "rejected",
           "review": {
             "decision": "rejected",
             "by": "maintainer",
-            "at": "2026-11-20T15:28:01.330460Z",
+            "at": "2026-11-23T03:31:02.464269Z",
             "image_sha256": "d63f61fa998f26a530f4fc190af1d3d7aab8e1b6b7c4d3e1a1bd600ad9951369",
             "note": "A calm sunset over a quiet sea, where the scene asks for a storm."
           }
@@ -352,10 +358,10 @@
       ],
       "failed": [],
       "job": {
-        "id": "1638e3efe17fc00b",
+        "id": "5e6725fdfd5548c0",
         "status": "done",
-        "created_at": "2026-11-20T15:27:59.125010Z",
-        "finished_at": "2026-11-20T15:27:59.176090Z",
+        "created_at": "2026-11-23T03:30:20.013515Z",
+        "finished_at": "2026-11-23T03:31:02.176897Z",
         "error": null,
         "numbers": [
           1,

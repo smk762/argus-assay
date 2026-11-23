@@ -1,10 +1,10 @@
 {
   "items": [
     {
-      "id": "38910859fda6dc1c",
+      "id": "1223d17adf873385",
       "status": "done",
-      "created_at": "2026-11-20T15:27:52.772893Z",
-      "finished_at": "2026-11-20T15:27:54.274924Z",
+      "created_at": "2026-11-23T03:26:53.973808Z",
+      "finished_at": "2026-11-23T03:29:05.984349Z",
       "error": null,
       "request": {
         "template": {
@@ -49,7 +49,7 @@
             {
               "seed": 121,
               "outcome": "ok",
-              "ref": "7afa4fc55fb14d1287bf6f064a2074ec",
+              "ref": "abeb8d6f03d34c01b1bf189e127e49d6",
               "detail": "",
               "workflow": {
                 "name": "sdxl",
@@ -57,12 +57,72 @@
               }
             }
           ],
-          "bio": "Brass gears whir in Sample's scales, mirroring the garden's silver sheen. They tend to the roses, humming softly as if teaching them to sing. Every petal, a tiny, gleaming trophy, they claim without a bite.",
+          "bio": "Silver scales glint in moon-kissed garden. Sample curls tail 'round blooming roses. Whispers to petals, \"Grow, my dears.\" Unexpectedly, they blink with eyes of opal.",
           "bio_attempts": [
+            {
+              "outcome": "rejected",
+              "detail": "demo fit: 211 characters; the bio box wants 160 to 210",
+              "text": "Silvery scales shimmer in the sunlight. {name} guards a glade, wings folded like secret doors. Her hoard, glistening dew, winks from between blooms. As she preens, petals flutter, each one a whisper of her name."
+            },
+            {
+              "outcome": "rejected",
+              "detail": "demo fit: 222 characters; the bio box wants 160 to 210",
+              "text": "Silver scales shimmer, {name} guards the garden's treasures. They hum like bees, wings folded tight. Their habit? Watering blossoms with hoard-melting tears. Twist? Lends a petal to thieves, for the scent of stolen blooms."
+            },
+            {
+              "outcome": "rejected",
+              "detail": "demo fit: 221 characters; the bio box wants 160 to 210",
+              "text": "In a moonlit garden, {name} guards their trove, scales gleaming like harvested moons. Their eyes, silver as the morning dew, watch over every blossom. As dawn breaks, they whisper secrets to the petals, making them dance."
+            },
+            {
+              "outcome": "rejected",
+              "detail": "demo fit: 133 characters; the bio box wants 160 to 210",
+              "text": "In gardens of silvered moonlight, {name} weaves. Her scales, mirrors to the stars, reflect the quiet dance of night-blooming flowers."
+            },
+            {
+              "outcome": "rejected",
+              "detail": "demo fit: leaves a quotation open",
+              "text": "Under moonlit blossoms, {name} guards their trove. Silver scales shimmer like dewdrops, a hoard gleaming beneath their claws. Every rustle, they whisper to the wind, \"Not a pebble stirs without my say."
+            },
+            {
+              "outcome": "rejected",
+              "detail": "demo fit: 118 characters; the bio box wants 160 to 210",
+              "text": "Silver scales shimmer in moonlight. {name} tends roses, each petal pristine. When nightingales sing, they snore along."
+            },
+            {
+              "outcome": "rejected",
+              "detail": "demo fit: uses the stock word \"dance\"",
+              "text": "Silver scales shimmer, garden blooms sway. {name} guards her treasures, eyes like moonlit lakes. Every dawn, they hum a song of dew, ending with a tiny dragon dance on every flower's petal."
+            },
+            {
+              "outcome": "rejected",
+              "detail": "demo fit: names the card 3 times; it wants the name once",
+              "text": "{name}, scales gleaming like moonlit frost, guards a glade. Dandelion seeds dance, their wisps entwined with {name}'s dreams. When {name} chuckles, silver petals drift from the sky."
+            },
+            {
+              "outcome": "rejected",
+              "detail": "demo fit: 140 characters; the bio box wants 160 to 210",
+              "text": "Silver scales glint in dappled light. {name} guards treasures in verdant haven. Every petal they touch, leaves a delicate, shimmering trace."
+            },
+            {
+              "outcome": "rejected",
+              "detail": "demo fit: 130 characters; the bio box wants 160 to 210",
+              "text": "{name} guards silver blooms, petals like scales. She hums, a low dragon purr. Each night, she sheds a silver scale, a garden gift."
+            },
+            {
+              "outcome": "rejected",
+              "detail": "demo fit: 126 characters; the bio box wants 160 to 210",
+              "text": "Silver scales shimmer in moonlit glade. {name} guards hoard, eyes like lanterns. Feeds leaves to saplings, whispering secrets."
+            },
+            {
+              "outcome": "rejected",
+              "detail": "demo fit: opens with \"in\"; vary the opening",
+              "text": "In a garden of lunar blossoms, {name} weaves through shadows, scales shimmering like moonlight on a still pond. They tend to the flowers, each petal whispered into bloom by their breath."
+            },
             {
               "outcome": "ok",
               "detail": "",
-              "text": "Brass gears whir in {name}'s scales, mirroring the garden's silver sheen. They tend to the roses, humming softly as if teaching them to sing. Every petal, a tiny, gleaming trophy, they claim without a bite."
+              "text": "Silver scales glint in moon-kissed garden. {name} curls tail 'round blooming roses. Whispers to petals, \"Grow, my dears.\" Unexpectedly, they blink with eyes of opal."
             }
           ],
           "error": null,
@@ -85,7 +145,7 @@
             {
               "seed": 122,
               "outcome": "ok",
-              "ref": "527551a6274d4cbb96d54d4aca4bd428",
+              "ref": "ddc75f08ddad4c37a6ad75f9077359db",
               "detail": "",
               "workflow": {
                 "name": "sdxl",
@@ -93,12 +153,47 @@
               }
             }
           ],
-          "bio": "Brass-bound tomes creak open, Sample lost in ancient pages. Steel-grey robes pool around, a quiet storm in the temple's hush. Moss-sprouting fingers trace symbols, leaving trails of earth in the air.",
+          "bio": "Steel-slate pages rustle. Sample hunkers in the sanctum's silence, fingers like stone bridges turning parchment. Every stone in the temple seems to hold its breath, echoing the giant's quiet.",
           "bio_attempts": [
+            {
+              "outcome": "unusable",
+              "detail": "stray braces or empty",
+              "text": "{She} Carves pages from stone, steel grey shavings piling. Moss-kissed fingers trace words. In temple's echo, {her} whisper sounds like distant landslides. {She} Marks each page with a pebble kiss."
+            },
+            {
+              "outcome": "rejected",
+              "detail": "demo fit: 221 characters; the bio box wants 160 to 210",
+              "text": "Steel grey eyes scan ancient scrolls. Stone fingers trace runes. Every stone creaks, a symphony of age. She hums, a boulder's low rumble, as moss sprouts from her chin, unexpected green in the temple's steel grey expanse."
+            },
+            {
+              "outcome": "rejected",
+              "detail": "demo fit: 152 characters; the bio box wants 160 to 210",
+              "text": "Stone columns groan as {name} reads, mossed fingers tracing lines of cold steel on ancient parchment. She deciphers sigils, not unlike a troll's caress."
+            },
+            {
+              "outcome": "rejected",
+              "detail": "demo fit: 158 characters; the bio box wants 160 to 210",
+              "text": "Stone pages turn as {name} reads, a boulder among statues. Moss-kissed fingers trace silver script. She pauses, offering a leafy tendril to a curious sparrow."
+            },
+            {
+              "outcome": "rejected",
+              "detail": "C. Unethical Behavior",
+              "text": "Steel grey pages turn. {name} squats, stone shoulders brushing temple walls. Moss-knuckled fingers trace runes. Every evening, they carve a pebble from their hide, leaving tiny stone statues behind."
+            },
+            {
+              "outcome": "rejected",
+              "detail": "demo fit: fills 86% of the bio box (5 lines); it wants 50% to 80%",
+              "text": "Brass-engraved tomes creak open. {name} towers, stone skin reflecting temple's silver moonlight. They turn pages, leaves rustling like distant landslides. Unexpectedly, they hum a tune, like a mountain stream."
+            },
+            {
+              "outcome": "rejected",
+              "detail": "demo fit: opens with \"in\"; vary the opening",
+              "text": "In the temple's hush, {name} turns pages, a boulder's gentleness. Steel grey eyes scan lines, moss-kissed fingers trace. Sudden as a fault line, they hum, their voice echoing stone."
+            },
             {
               "outcome": "ok",
               "detail": "",
-              "text": "Brass-bound tomes creak open, {name} lost in ancient pages. Steel-grey robes pool around, a quiet storm in the temple's hush. Moss-sprouting fingers trace symbols, leaving trails of earth in the air."
+              "text": "Steel-slate pages rustle. {name} hunkers in the sanctum's silence, fingers like stone bridges turning parchment. Every stone in the temple seems to hold its breath, echoing the giant's quiet."
             }
           ],
           "error": null,

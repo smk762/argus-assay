@@ -1,0 +1,283 @@
+{
+  "id": "00d7373d630b1f68",
+  "status": "published",
+  "awaiting": [],
+  "draft": {
+    "format": 1,
+    "kind": "card",
+    "request": {
+      "template_id": "demo-cast",
+      "template_version": 1,
+      "template_hash": "0x781f2f17e65402cef5c46a2b7767947951a8eced410d01aa104927bd7283d8f1",
+      "model": "sdxl/aureanuanceXL_v2/aureanuanceXL_v2.safetensors",
+      "loras": [],
+      "sampling": {
+        "sampler": "euler",
+        "scheduler": "normal",
+        "steps": 25,
+        "cfg": 6.0,
+        "clip_skip": 1,
+        "guidance": null
+      },
+      "width": 1152,
+      "height": 896,
+      "prompt": "waist-up portrait of one (non-binary:1.4) (ageless:1.3) compact clockwork automaton, a brass robot with a round glass face and riveted limbs, no human skin, the only subject in the picture, centered and facing the viewer, clothing and colour scheme copper, pouring tea, background: kitchen, painted fantasy and science-fiction illustration, full bleed, detailed",
+      "negative": "text, letters, words, caption, title, label, logo, watermark, signature, border, frame, card frame, trading card, playing card, game ui, icons, badges, numbers, two people, second person, multiple people, crowd, companion, child, teenager, empty scene, landscape, gore, blood, weapon pointed at viewer, cross, crucifix, halo, religious symbol, nudity",
+      "variables": {
+        "age": "ageless",
+        "background": "kitchen",
+        "build": "compact",
+        "colour": "copper",
+        "gender": "non-binary",
+        "pose": "pouring tea",
+        "role": "clockwork automaton, a brass robot with a round glass face and riveted limbs, no human skin"
+      },
+      "seed": 2665159690,
+      "init_image": null
+    },
+    "attempts": [
+      {
+        "seed": 8502,
+        "outcome": "safety_rejected",
+        "ref": "f14e59586dc84048841084f55eae48e2",
+        "detail": "omitted: sfw-exposed"
+      },
+      {
+        "seed": 3943511226,
+        "outcome": "safety_rejected",
+        "ref": "18b4cc441cb44d0c9d3feb36a7816dca",
+        "detail": "omitted: sfw-exposed"
+      },
+      {
+        "seed": 2665159690,
+        "outcome": "ok",
+        "ref": "21be5076d9ee4f8299146c957a690730",
+        "detail": "",
+        "workflow": {
+          "name": "sdxl",
+          "sha256": "02e08f842f7a66e0e1be2ebc506ab8339f3b39df639beb86fc04dc240f3ef38d"
+        }
+      }
+    ],
+    "renderer": "darkroom",
+    "asset_id": "0x9cfcde654e53566f4752476d2413b1d5d976ded44189440f1d3a00af476ac530",
+    "to": "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
+    "name": "Brass Butler",
+    "description": "Copper cogs spin, Brass Butler pours. Steam hisses from their fingertips, mimicking the kettle's song. Sugar cubes clink like tiny cogs in their hands. Every pour, they click and whirr, counting the drops.",
+    "external_url": null,
+    "consumer": "argus-mint",
+    "teaser": null,
+    "frame": {
+      "id": "card-green",
+      "version": 1,
+      "hash": "0xed8933833831ea63e4f8c91eea897814159af3a7b21acfb560c70162366ccf37"
+    },
+    "bio": {
+      "ref": {
+        "id": "demo-bio",
+        "version": 1,
+        "hash": "0xfee903b50f7131012c3fef6bb3c89daff4fc67e9ad3a1584fe44693f0774e861",
+        "model": "mistral-nemo:12b-instruct-2407-q4_K_M"
+      },
+      "text": "Copper cogs spin, Brass Butler pours. Steam hisses from their fingertips, mimicking the kettle's song. Sugar cubes clink like tiny cogs in their hands. Every pour, they click and whirr, counting the drops.",
+      "attempts": [
+        {
+          "outcome": "ok",
+          "detail": "",
+          "text": "Copper cogs spin, {name} pours. Steam hisses from their fingertips, mimicking the kettle's song. Sugar cubes clink like tiny cogs in their hands. Every pour, they click and whirr, counting the drops."
+        }
+      ],
+      "edited": false
+    },
+    "texts": {
+      "class": "Automaton · Copper",
+      "stats": "No. 7"
+    },
+    "style": null,
+    "library": null,
+    "made_with": {
+      "argus-mint": "0.3.1.dev18+gfd7685ed7",
+      "darkroom": "0.1.4.dev76+g2977981da"
+    },
+    "edits": [],
+    "auto_check": null,
+    "art_sha256": "f4470aed5c51dcefe604923ee672cba66c9c29014d4a539378dcafd52bb4d0e1",
+    "image_sha256": "da21d901e718511a8cca38dffdb37c7cd1c36705da2ae9c42770b4f047e6498a",
+    "created_at": "2026-11-23T03:22:21.663541Z",
+    "reviews": [
+      {
+        "role": "moderator",
+        "decision": "approved",
+        "by": "moderator-1",
+        "at": "2026-11-23T03:22:21.669967Z",
+        "image_sha256": "da21d901e718511a8cca38dffdb37c7cd1c36705da2ae9c42770b4f047e6498a",
+        "note": ""
+      },
+      {
+        "role": "owner",
+        "decision": "approved",
+        "by": "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
+        "at": "2026-11-23T03:22:21.687829Z",
+        "image_sha256": "da21d901e718511a8cca38dffdb37c7cd1c36705da2ae9c42770b4f047e6498a",
+        "note": ""
+      }
+    ]
+  },
+  "published": {
+    "signer": "0x70997970C51812dc3A010C7d01b50e0d17dc79C8",
+    "render": {
+      "renderer": "darkroom",
+      "prompt": "waist-up portrait of one (non-binary:1.4) (ageless:1.3) compact clockwork automaton, a brass robot with a round glass face and riveted limbs, no human skin, the only subject in the picture, centered and facing the viewer, clothing and colour scheme copper, pouring tea, background: kitchen, painted fantasy and science-fiction illustration, full bleed, detailed",
+      "seed": 2665159690,
+      "attempts": [
+        {
+          "seed": 8502,
+          "outcome": "safety_rejected",
+          "ref": "f14e59586dc84048841084f55eae48e2",
+          "detail": "omitted: sfw-exposed"
+        },
+        {
+          "seed": 3943511226,
+          "outcome": "safety_rejected",
+          "ref": "18b4cc441cb44d0c9d3feb36a7816dca",
+          "detail": "omitted: sfw-exposed"
+        },
+        {
+          "seed": 2665159690,
+          "outcome": "ok",
+          "ref": "21be5076d9ee4f8299146c957a690730",
+          "detail": "",
+          "workflow": {
+            "name": "sdxl",
+            "sha256": "02e08f842f7a66e0e1be2ebc506ab8339f3b39df639beb86fc04dc240f3ef38d"
+          }
+        }
+      ],
+      "art_cid": "bafkreihui4fo2xcr3tx6mbesh3thfs5gnsocsaknjjjzg6g4v7ksxngq4e",
+      "image_cid": "bafkreig2ehmqdzyykenizsry3763g7d42hbwobo2flu4ij3qwtyepzsjri"
+    },
+    "reviews": [
+      {
+        "role": "moderator",
+        "decision": "approved",
+        "by": "moderator-1",
+        "at": "2026-11-23T03:22:21.669967Z",
+        "image_sha256": "da21d901e718511a8cca38dffdb37c7cd1c36705da2ae9c42770b4f047e6498a",
+        "note": ""
+      },
+      {
+        "role": "owner",
+        "decision": "approved",
+        "by": "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
+        "at": "2026-11-23T03:22:21.687829Z",
+        "image_sha256": "da21d901e718511a8cca38dffdb37c7cd1c36705da2ae9c42770b4f047e6498a",
+        "note": ""
+      }
+    ],
+    "metadata": {
+      "name": "Brass Butler",
+      "description": "Copper cogs spin, Brass Butler pours. Steam hisses from their fingertips, mimicking the kettle's song. Sugar cubes clink like tiny cogs in their hands. Every pour, they click and whirr, counting the drops.",
+      "image": "ipfs://bafkreig2ehmqdzyykenizsry3763g7d42hbwobo2flu4ij3qwtyepzsjri",
+      "attributes": [],
+      "provenance": {
+        "template": "demo-cast",
+        "template_version": 1,
+        "template_hash": "0x781f2f17e65402cef5c46a2b7767947951a8eced410d01aa104927bd7283d8f1",
+        "seed": 2665159690,
+        "attempts": 3,
+        "asset_id": "0x9cfcde654e53566f4752476d2413b1d5d976ded44189440f1d3a00af476ac530",
+        "consumer": "argus-mint",
+        "frame": {
+          "id": "card-green",
+          "version": 1,
+          "hash": "0xed8933833831ea63e4f8c91eea897814159af3a7b21acfb560c70162366ccf37"
+        },
+        "art": "ipfs://bafkreihui4fo2xcr3tx6mbesh3thfs5gnsocsaknjjjzg6g4v7ksxngq4e",
+        "bio": {
+          "id": "demo-bio",
+          "version": 1,
+          "hash": "0xfee903b50f7131012c3fef6bb3c89daff4fc67e9ad3a1584fe44693f0774e861",
+          "model": "mistral-nemo:12b-instruct-2407-q4_K_M"
+        },
+        "variables": {
+          "age": "ageless",
+          "background": "kitchen",
+          "build": "compact",
+          "colour": "copper",
+          "gender": "non-binary",
+          "pose": "pouring tea",
+          "role": "clockwork automaton, a brass robot with a round glass face and riveted limbs, no human skin"
+        },
+        "model": "sdxl/aureanuanceXL_v2/aureanuanceXL_v2.safetensors"
+      }
+    },
+    "metadata_cid": "bafkreicuzp6mwerogzflqufdeaxzw3yuxnkvtntmu3gcmhxazijp6mbyaq",
+    "voucher": {
+      "to": "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
+      "asset_id": "0x9cfcde654e53566f4752476d2413b1d5d976ded44189440f1d3a00af476ac530",
+      "content_hash": "0xeb6351412c8d3b90e04994131187a3d20128e0ea2005bcb427f80f603466fb9e",
+      "price": 0,
+      "deadline": 1900000000
+    },
+    "signature": "0x01b38cab0b49cf8b9614150f92d871c40743c0505972af5d887822bc8649b8e073c3f621d911fb29e8e96f6082c12e42b8e9763b06de9733c5fbd1c70d0b5e801c",
+    "typed_data": {
+      "types": {
+        "EIP712Domain": [
+          {
+            "name": "name",
+            "type": "string"
+          },
+          {
+            "name": "version",
+            "type": "string"
+          },
+          {
+            "name": "chainId",
+            "type": "uint256"
+          },
+          {
+            "name": "verifyingContract",
+            "type": "address"
+          }
+        ],
+        "MintVoucher": [
+          {
+            "name": "to",
+            "type": "address"
+          },
+          {
+            "name": "assetId",
+            "type": "bytes32"
+          },
+          {
+            "name": "contentHash",
+            "type": "bytes32"
+          },
+          {
+            "name": "price",
+            "type": "uint256"
+          },
+          {
+            "name": "deadline",
+            "type": "uint64"
+          }
+        ]
+      },
+      "primaryType": "MintVoucher",
+      "domain": {
+        "name": "argus-mint Card",
+        "version": "1",
+        "chainId": 84532,
+        "verifyingContract": "0xCAa3573b5550870A5e15C47c650b8700D70a8fA7"
+      },
+      "message": {
+        "to": "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
+        "assetId": "0x9cfcde654e53566f4752476d2413b1d5d976ded44189440f1d3a00af476ac530",
+        "contentHash": "0xeb6351412c8d3b90e04994131187a3d20128e0ea2005bcb427f80f603466fb9e",
+        "price": 0,
+        "deadline": 1900000000
+      }
+    }
+  },
+  "posts": []
+}

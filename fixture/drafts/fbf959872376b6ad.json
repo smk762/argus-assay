@@ -1,0 +1,113 @@
+{
+  "id": "fbf959872376b6ad",
+  "status": "approved",
+  "awaiting": [],
+  "draft": {
+    "format": 1,
+    "kind": "card",
+    "request": {
+      "template_id": "demo-portrait",
+      "template_version": 1,
+      "template_hash": "0xd659b69292f4422d56ee789cbff7d585bd39f6a4527ff2c2ac5b5d0cd245573c",
+      "model": "sdxl/aureanuanceXL_v2/aureanuanceXL_v2.safetensors",
+      "loras": [],
+      "sampling": {
+        "sampler": "euler",
+        "scheduler": "normal",
+        "steps": 25,
+        "cfg": 6.0,
+        "clip_skip": 1,
+        "guidance": null
+      },
+      "width": 1152,
+      "height": 896,
+      "prompt": "waist-up portrait of one female wizard in long flowing robes, alone in the picture, centered and facing the viewer, clothing and colour scheme azure blue, casting a spell, background: temple, painted fantasy illustration, full bleed, detailed",
+      "negative": "text, letters, words, caption, title, label, logo, watermark, signature, border, frame, card frame, trading card, playing card, game ui, icons, badges, numbers, two people, second person, multiple people, crowd, companion, robot beside, empty scene, landscape, gore, cross, crucifix, mitre, rosary, halo, church, religious symbol, nudity",
+      "variables": {
+        "background": "temple",
+        "colour": "azure blue",
+        "gender": "female",
+        "pose": "casting a spell",
+        "role": "wizard in long flowing robes"
+      },
+      "seed": 8473,
+      "init_image": null
+    },
+    "attempts": [
+      {
+        "seed": 8473,
+        "outcome": "ok",
+        "ref": "4919e4c4f85c4c0ebeaf6302d02caa5e",
+        "detail": "",
+        "workflow": {
+          "name": "sdxl",
+          "sha256": "02e08f842f7a66e0e1be2ebc506ab8339f3b39df639beb86fc04dc240f3ef38d"
+        }
+      }
+    ],
+    "renderer": "darkroom",
+    "asset_id": "0x89964876bb9e20b0262233b1c023a63554302b2f1653191a12c0e63e3fdc0608",
+    "to": "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
+    "name": "Azure Stormcaller",
+    "description": "Azure robes billow like temple's twilight. Azure Stormcaller weaves spells, her fingers tracing glyphs in air. She hums in azure hue, ink from quill bleeding into magic.",
+    "external_url": null,
+    "consumer": "argus-mint",
+    "teaser": null,
+    "frame": {
+      "id": "card-green",
+      "version": 1,
+      "hash": "0xed8933833831ea63e4f8c91eea897814159af3a7b21acfb560c70162366ccf37"
+    },
+    "bio": {
+      "ref": {
+        "id": "demo-bio",
+        "version": 1,
+        "hash": "0xfee903b50f7131012c3fef6bb3c89daff4fc67e9ad3a1584fe44693f0774e861",
+        "model": "mistral-nemo:12b-instruct-2407-q4_K_M"
+      },
+      "text": "Azure robes billow like temple's twilight. Azure Stormcaller weaves spells, her fingers tracing glyphs in air. She hums in azure hue, ink from quill bleeding into magic.",
+      "attempts": [
+        {
+          "outcome": "ok",
+          "detail": "",
+          "text": "Azure robes billow like temple's twilight. {name} weaves spells, her fingers tracing glyphs in air. She hums in azure hue, ink from quill bleeding into magic."
+        }
+      ],
+      "edited": false
+    },
+    "texts": {
+      "class": "Wizard · Azure",
+      "stats": "No. 3"
+    },
+    "style": null,
+    "library": null,
+    "made_with": {
+      "argus-mint": "0.3.1.dev18+gfd7685ed7"
+    },
+    "edits": [],
+    "auto_check": null,
+    "art_sha256": "ae7b08b359eb3bf591d9df5a59b44182869739b2d550ce0202cc88ac0e8d153f",
+    "image_sha256": "5f7f2ad0515491106b105242132dcd4db9d96be192ce52725a86d67c618464ef",
+    "created_at": "2026-11-23T03:11:59.517579Z",
+    "reviews": [
+      {
+        "role": "moderator",
+        "decision": "approved",
+        "by": "moderator-1",
+        "at": "2026-11-23T03:11:59.525000Z",
+        "image_sha256": "5f7f2ad0515491106b105242132dcd4db9d96be192ce52725a86d67c618464ef",
+        "note": ""
+      },
+      {
+        "role": "owner",
+        "decision": "approved",
+        "by": "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
+        "at": "2026-11-23T03:11:59.547790Z",
+        "image_sha256": "5f7f2ad0515491106b105242132dcd4db9d96be192ce52725a86d67c618464ef",
+        "note": ""
+      }
+    ]
+  },
+  "published": null,
+  "posts": []
+}

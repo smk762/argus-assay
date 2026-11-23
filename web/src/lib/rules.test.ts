@@ -189,9 +189,12 @@ describe("no free-text prompts outside catalogue authoring (rule 3)", () => {
 
   it("has no prompt field to send in a draft or a sample request", () => {
     // tsc fails here if argus-mint's wire ever grows one: then the UI must not fill it from a text box.
-    const draftHasNone: "prompt" | "negative" | "negative_prompt" extends keyof CreateDraft ? false : true = true;
-    const sampleHasNone: "prompt" | "negative" | "negative_prompt" extends keyof SampleRequest ? false : true = true;
-    expect([draftHasNone, sampleHasNone]).toEqual([true, true]);
+    // A bare union extends keyof T only when every member is a key, so the guard asks whether any one
+    // of these names is present. One new field must fail the assignment; all three at once is too late.
+    const draftHasNone: [Extract<keyof CreateDraft, "prompt" | "negative" | "negative_prompt">] extends [never] ? true : false = true;
+    const sampleHasNone: [Extract<keyof SampleRequest, "prompt" | "negative" | "negative_prompt">] extends [never] ? true : false = true;
+    const oneFieldTripsIt: [Extract<keyof { prompt: string }, "prompt" | "negative" | "negative_prompt">] extends [never] ? true : false = false;
+    expect([draftHasNone, sampleHasNone, oneFieldTripsIt]).toEqual([true, true, false]);
   });
 
   it("picks every template variable from a list, and types no prompt, outside the authoring module", () => {

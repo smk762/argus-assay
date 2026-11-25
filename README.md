@@ -101,6 +101,8 @@ In docker: `docker compose up` (with `COMPOSE_PROFILES=mock` from `.env.example`
 make pages     # the fixture as a data tape, exported to web/out/: pure static files, a hash CSP on every page
 ```
 
+`.github/workflows/pages.yml` deploys it to Cloudflare Pages from every `dev` commit that passes CI.
+
 The static build (`ASSAY_STATIC=1`) needs no argus-mint. The page answers its own calls from the tape (`web/public/data-tape/`, made from `fixture/` by `scripts/make_tape.mjs`) in the browser:
 - Reviews, the owner's card editor, publishing (the recorded result) and catalogue decisions work, in the tab until reload.
 - Making drafts and samples needs a GPU, so it is off. The example teaser project, with its backgrounds, tracker and teaser drafts, is there to read. Authoring it, rendering and reviewing backgrounds, making teaser drafts and training need a running argus-mint.

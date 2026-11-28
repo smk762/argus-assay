@@ -2,7 +2,7 @@
 # runs without argus-mint, a GPU or a wallet. Against a live server, omit that profile and set
 # NEXT_PUBLIC_MINT_URL to it (argus-mint: `make serve-up`, its compose profile `server`).
 services:
-  web:
+  web:  # nosemgrep: service-peer-label  UI only: the Next.js review app, no ServiceHealth /health for the directory to list
     build:
       context: .
       dockerfile: Dockerfile
@@ -20,7 +20,7 @@ services:
         required: false
     restart: unless-stopped
 
-  mock-mint:
+  mock-mint:  # nosemgrep: service-peer-label  test fixture: replays the recorded demo in place of argus-mint (profile mock)
     profiles: [mock]
     image: node:22-alpine
     working_dir: /repo
